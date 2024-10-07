@@ -20,6 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\parser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\parser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Config\config.ini" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
