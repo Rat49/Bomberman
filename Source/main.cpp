@@ -1,5 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
+#include "EventSystemManager.hpp"
+#include <iostream>
+
+void OnWindowClosedEvent() {
+	std::cout << "The window is closed!" << std::endl;
+}
 
 void GameLoop()
 {
@@ -7,13 +13,23 @@ void GameLoop()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
+    EventSystemManager& EventManager = EventSystemManager::GetInstance();
+
+    EventManager.Subscribe(EventID::WindowClosed, OnWindowClosedEvent);
+
     while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
+            {
+                EventManager.Emit(EventID::WindowClosed);
+
+                EventManager.Unsubscribe(EventID::WindowClosed, OnWindowClosedEvent);
+
                 window.close();
+            }
         }
 
         window.clear();
