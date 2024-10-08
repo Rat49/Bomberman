@@ -1,20 +1,20 @@
-#include "parser.hpp"
+#include "ConfigParser.hpp"
 #include <fstream>
 #include <iostream>
 
-bool Parser::isSection(const std::string& line) 
+bool ConfigParser::isSection(const std::string& line) 
 {
     return line.front() == '[' && line.back() == ']';
 }
 
-std::string Parser::removeWhitespace(const std::string& str) 
+std::string ConfigParser::removeWhitespace(const std::string& str)
 {
     const auto x = str.find_first_not_of(" \t");    //finds whitespace (space or tab) before relevant characters
     const auto y = str.find_last_not_of(" \t");     //finds whitespace after characters
     return (x == std::string::npos) ? "" : str.substr(x, y - x + 1);
 }
 
-void Parser::parse() 
+void ConfigParser::parse()
 {
     std::ifstream file(m_configFile);
     if (!file) 
@@ -55,7 +55,7 @@ void Parser::parse()
     }
 }
 
-void Parser::printMap() 
+void ConfigParser::printMap()
 {
     for (const auto& section : m_configData) 
     {
@@ -65,4 +65,14 @@ void Parser::printMap()
             std::cout << pair.first << "=" << pair.second << "\n";
         }
     }
+}
+
+const std::unordered_map<std::string, std::string>& ConfigParser::getSectionValues(const std::string& section) const
+{
+	auto it = m_configData.find(section);
+	if (it != m_configData.end())
+	{
+		return it->second;
+	}
+    return {};
 }

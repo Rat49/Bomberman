@@ -1,12 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
-#include "parser.hpp"
+#include <iostream>
+#include "ConfigParser.hpp"
 
 void GameLoop()
 {
-    Parser parser("Config/config.ini");
+    ConfigParser parser("Config/config.ini");
     parser.parse();
-    parser.printMap();
+	const auto& sectionValues = parser.getSectionValues("Files");
+    std::cout << sectionValues.size();
+    
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);

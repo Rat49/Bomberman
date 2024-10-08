@@ -4,17 +4,17 @@
 #include <string>
 #include <unordered_map>
 
-class Parser 
+class ConfigParser 
 {
 public:
-	Parser(const std::string& configFile) : m_configFile(configFile) 
+	ConfigParser(const std::string& configFile) : m_configFile(configFile)
 	{}
 
 	void parse();
 
 	void printMap();
 
-	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> const getConfigData() { return m_configData; }
+	const std::unordered_map<std::string, std::string>& getSectionValues(const std::string& section) const;
 
 private:
 	bool isSection(const std::string& line);
