@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
-#include "parser.h"
+#include "parser.hpp"
 
 void GameLoop()
 {
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> configData;
-    parse("Config/config.ini", configData);
-    printMap(configData);
+    Parser parser("Config/config.ini");
+    parser.parse();
+    parser.printMap();
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
