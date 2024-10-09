@@ -1,0 +1,35 @@
+#pragma once
+#include <vector>
+#include <memory>
+
+class TestBase;
+
+/*
+* Module which allows you to add test of any type and perform them outside of the game.
+*/
+class TestModule
+{
+public:
+	TestModule();
+	~TestModule();
+
+	// Determine if we can use this module at all
+	bool isEnabled() const {
+		return isTestModuleEnabled;
+	}
+
+	// Add your implementation of test
+	void addTest(const std::shared_ptr<TestBase>& testRunner);
+	// Remove the test if you changed your mind..
+	void removeTest(const std::shared_ptr<TestBase>& testRunner);
+
+	// Start all the tests. First will be called setup and then run for each test.
+	void run();
+
+	// Tick for all tests
+	void update(float deltaTime);
+
+private:
+	std::vector<std::shared_ptr<TestBase>> m_tests;
+	bool isTestModuleEnabled;
+};
