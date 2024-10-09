@@ -6,6 +6,7 @@ class TestBase;
 
 /*
 * Module which allows you to add test of any type and perform them outside of the game.
+* Best place to register your test is in your module constructor!
 */
 class TestModule
 {
