@@ -1,7 +1,6 @@
 # Bomberman
 
-![OSD example](Assets/Docs/logo.png)
-
+![Logo](Assets/Docs/logo.png)
 
 ## Restart of the title using the pure C++
 **Sperasoft developers decided to make something outstanding!**  
