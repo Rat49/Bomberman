@@ -11,13 +11,8 @@ public:
 		File3
 	};
 
-	enum ConfigFileType {
-		TEMPORARY = 1,
-		PERMANENT = 0
-	};
-
 	struct ConfigFileData {
-		ConfigFileType isTemporary;
+		bool isTemporary;
 		std::string path;
 		std::unordered_map<std::string, std::unordered_map<std::string, std::string>> sections;
 	};
@@ -29,8 +24,8 @@ public:
 	const std::unordered_map<std::string, std::string>& getConfigFileSection(const ConfigFileName& configFile, const std::string& section) const;
 
 	std::unordered_map<ConfigFileName, ConfigFileData> configFiles = {
-		{File1, {TEMPORARY, "Data/Config/config.ini"}},
-		{File2, {TEMPORARY, "Data/Config/config.ini"}},
-		{File3, {PERMANENT, "Data/Config/config.ini"}}
+		{File1, {false, "Data/Config/config.ini"}},
+		{File2, {false, "Data/Config/config.ini"}},
+		{File3, {true, "Data/Config/config.ini"}}
 	};
 };
