@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
-#include "EventSystemManager.hpp"
+#include "EventSystem/EventSystem.hpp"
 #include <iostream>
 
-void OnWindowClosedEvent() {
+// callback function to be called when the window is closed
+void onWindowClosedEvent() {
 	std::cout << "The window is closed!" << std::endl;
 }
 
@@ -13,9 +14,14 @@ void GameLoop()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
-    EventSystemManager& EventManager = EventSystemManager::GetInstance();
+    // get the EventSystem instance
+    EventSystem& eventSystem = EventSystem::getInstance();
 
-    EventManager.Subscribe(EventID::WindowClosed, OnWindowClosedEvent);
+    // register a new event
+    int32_t  windowClosedEventID = eventSystem.registerEvent();
+
+    // subscribe to the window closed event
+    eventSystem.subscribe(windowClosedEventID, onWindowClosedEvent);
 
     while (window.isOpen())
     {
@@ -24,9 +30,11 @@ void GameLoop()
         {
             if (event.type == sf::Event::Closed)
             {
-                EventManager.Emit(EventID::WindowClosed);
+                // emit the window closed event
+                eventSystem.emit(windowClosedEventID);
 
-                EventManager.Unsubscribe(EventID::WindowClosed, OnWindowClosedEvent);
+                // unsubscribe from the event
+                eventSystem.unsubscribe(windowClosedEventID, onWindowClosedEvent);
 
                 window.close();
             }

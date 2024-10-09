@@ -18,12 +18,12 @@
     <ClCompile Include="Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EventSystemManager.cpp">
+    <ClCompile Include="Source\EventSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\EventSystemManager.hpp">
+    <ClInclude Include="Source\EventSystem.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
