@@ -1,6 +1,6 @@
 # Bomberman
 
-![OSD example](assets/readme/logo.png)
+![OSD example](Assets/Docs/logo.png)
 
 
 ## Restart of the title using the pure C++
