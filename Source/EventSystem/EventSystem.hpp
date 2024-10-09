@@ -8,20 +8,28 @@
 class EventSystem
 {
 public:
-	static EventSystem& getInstance(); // returns the singleton instance of EventSystem
+	static EventSystem& getInstance();
 
-	using Callback = std::function<void()>; // define a type for the callback function
+	using Callback = std::function<void()>;
 
-	int32_t registerEvent(); // function to register a new event and return its unique ID
+	// Function to register a new event and return its unique ID
+	int32_t registerEvent();
 
-	void subscribe(int32_t eventID, Callback callback); // subscribe a callback to an event
+	// Subscribe a callback to an event
+	void subscribe(int32_t eventID, Callback callback);
 
-	void unsubscribe(int32_t eventID, Callback callback); // unsubscribe a callback from an event
+	// Unsubscribe a callback from an event
+	void unsubscribe(int32_t eventID, Callback callback);
 
-	void emit(int32_t eventID); // emit an event to notify all subscribed callbacks
+	// Emit an event to notify all subscribed callbacks
+	void emit(int32_t eventID); 
 
 private:
 	EventSystem() = default;
-	std::map<int32_t, std::vector<Callback>> subscribers; // map to hold event IDs and their associated callbacks
-	std::atomic<int32_t> nextEventID{ 0 }; // atomic counter to generate unique event IDs
+
+	// Map to hold event IDs and their associated callbacks
+	std::map<int32_t, std::vector<Callback>> subscribers;
+
+	// Atomic counter to generate unique event IDs
+	std::atomic<int32_t> nextEventID{ 0 };
 };

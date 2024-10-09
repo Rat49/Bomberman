@@ -3,25 +3,11 @@
 #include "EventSystem/EventSystem.hpp"
 #include <iostream>
 
-// callback function to be called when the window is closed
-void onWindowClosedEvent() {
-	std::cout << "The window is closed!" << std::endl;
-}
-
 void GameLoop()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
-
-    // get the EventSystem instance
-    EventSystem& eventSystem = EventSystem::getInstance();
-
-    // register a new event
-    int32_t  windowClosedEventID = eventSystem.registerEvent();
-
-    // subscribe to the window closed event
-    eventSystem.subscribe(windowClosedEventID, onWindowClosedEvent);
 
     while (window.isOpen())
     {
@@ -30,12 +16,6 @@ void GameLoop()
         {
             if (event.type == sf::Event::Closed)
             {
-                // emit the window closed event
-                eventSystem.emit(windowClosedEventID);
-
-                // unsubscribe from the event
-                eventSystem.unsubscribe(windowClosedEventID, onWindowClosedEvent);
-
                 window.close();
             }
         }
