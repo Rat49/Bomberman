@@ -1,0 +1,51 @@
+#include "ConfigParser.hpp"
+#include <fstream>
+#include <iostream>
+
+const bool ConfigParser::isSection(const std::string& line) const {
+	return line.front() == '[' && line.back() == ']';
+}
+
+const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& ConfigParser::parse(const FileData::ConfigFileName& configFile, FileData& data) {
+	// finding file and checking if exists
+	auto it = data.configFiles.find(configFile);
+	std::ifstream file(it->second.path);
+	if (!file)
+	{
+		std::cout << "Can't open file: " << configFile << std::endl;
+		return {};
+	}
+
+	// going through file, placing sections and values inside currentMap 
+
+	std::string line, section;
+	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> currentMap;
+
+	while (std::getline(file, line)) {
+		const auto commentPos = line.find_first_of(" ;#");
+		if (commentPos != std::string::npos) {
+			line = line.substr(0, commentPos);
+		}
+		if (!line.empty()) {
+			if (isSection(line)) {
+				section = line.substr(1, line.size() - 2);
+			}
+			else {
+				std::size_t equalPos = line.find('=');
+				if (equalPos == std::string::npos) {
+					std::cout << "Wrong format of config file\n";
+				}
+				std::string key = line.substr(0, equalPos);
+				std::string value = line.substr(equalPos + 1);
+
+				currentMap[section][key] = value;
+			}
+		}
+		
+	}
+	// if file is permanent save this map for later usage
+	if (!it->second.isTemporary) {
+		data.configFiles[configFile].sections = currentMap;
+	}
+	return currentMap;
+}

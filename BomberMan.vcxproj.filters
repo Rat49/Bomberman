@@ -18,17 +18,23 @@
     <ClCompile Include="Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\ConfigParser.cpp">
+    <ClCompile Include="Source\ConfigSystem\ConfigParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ConfigSystem\FileData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\ConfigParser.hpp">
+    <ClInclude Include="Source\ConfigSystem\ConfigParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ConfigSystem\FileData.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Config\config.ini">
+    <None Include="Data\Config\config.ini">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
