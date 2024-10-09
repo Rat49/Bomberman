@@ -1,11 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
+#include "NavigationModule/Navigation.hpp"
 
 void GameLoop()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
+
+    NavigationModule nav = NavigationModule(1);
+    std::pair<int, int> playerPosition = { 1, 1 };
+    std::pair<int, int> enemyPosition = { 4, 9 };
+    nav.print(playerPosition, enemyPosition);
 
     while (window.isOpen())
     {
