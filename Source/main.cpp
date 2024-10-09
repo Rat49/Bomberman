@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
-#include "EventSystem/EventSystem.hpp"
 #include <iostream>
 
 void GameLoop()

@@ -14,7 +14,7 @@ int32_t EventSystem::registerEvent()
 
 void EventSystem::subscribe(int32_t eventID, Callback callback)
 {
-	auto& callbacks = subscribers[eventID]; 
+	auto& callbacks = subscribers[eventID];
 
 	// Check if the callback is already subscribed
 	auto it = std::find_if(callbacks.begin(), callbacks.end(),
@@ -23,7 +23,7 @@ void EventSystem::subscribe(int32_t eventID, Callback callback)
 		});
 
 	// Add the callback if it is not already subscribed
-	if (it == callbacks.end()) 
+	if (it == callbacks.end())
 	{
 		callbacks.push_back(callback);
 	}
@@ -34,7 +34,7 @@ void EventSystem::unsubscribe(int32_t eventID, Callback callback)
 	auto it = subscribers.find(eventID);
 
 	// If the event exists, remove the specified callback
-	if (it != subscribers.end()) 
+	if (it != subscribers.end())
 	{
 		auto& callbacks = it->second;
 		callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
@@ -43,9 +43,10 @@ void EventSystem::unsubscribe(int32_t eventID, Callback callback)
 			}), callbacks.end());
 
 		// Remove the event if no more callbacks exist
-		if (callbacks.empty()) 
+		if (callbacks.empty())
 		{
-			subscribers.erase(it); 
+			subscribers.erase(it);
+		}
 	}
 }
 
@@ -54,9 +55,9 @@ void EventSystem::emit(int32_t eventID)
 	auto it = subscribers.find(eventID);
 
 	// Trigger all callbacks for the event if it exists
-	if (it != subscribers.end()) 
+	if (it != subscribers.end())
 	{
-		for (const auto& callback : it->second) 
+		for (const auto& callback : it->second)
 		{
 			callback();
 		}

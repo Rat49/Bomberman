@@ -3,6 +3,7 @@
 #include <functional>
 #include <map>
 #include <vector>
+#include <ostream>
 
 
 class EventSystem
@@ -18,11 +19,11 @@ public:
 	// Subscribe a callback to an event
 	void subscribe(int32_t eventID, Callback callback);
 
-	// Unsubscribe a callback from an event
+	// UnSubscribe a callback from an event
 	void unsubscribe(int32_t eventID, Callback callback);
 
 	// Emit an event to notify all subscribed callbacks
-	void emit(int32_t eventID); 
+	void emit(int32_t eventID);
 
 private:
 	EventSystem() = default;
