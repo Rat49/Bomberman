@@ -7,7 +7,7 @@ class LogManager
 {
 
 public:
-	void Init();
+	LogManager();
 
 	void AddListener(LogListenerInterface* listener) { mLlistenersList.push_back(listener); };
 

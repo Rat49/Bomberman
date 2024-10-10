@@ -5,7 +5,7 @@
 #include <cassert>
 
 
-void LogManager::Init()
+LogManager::LogManager()
 {
     constexpr auto LogFile = "Bomberman.log";
     AddListener(new FileLogListener(LogFile, UINT16_MAX, UINT16_MAX));

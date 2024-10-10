@@ -1,6 +1,5 @@
 #include "Common/Modules.hpp"
 #include "GameModule/GameModule.hpp"
-#include "TestModule/TestModule.hpp"
 #include <fstream>
 #include <Windows.h>
 
@@ -20,9 +19,6 @@ int WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdL
 #endif
 
     Modules::initialize();
-#ifndef FINAL
-	Modules::Tests->run();
-#endif
     Modules::Game->run();
     Modules::terminate();
 

@@ -12,4 +12,5 @@ public:
 	virtual void setup() = 0;
 	virtual void run() = 0;
 	virtual void update(float deltaTime) = 0;
+	virtual bool isComplete() const = 0;
 };
