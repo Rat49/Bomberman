@@ -11,6 +11,10 @@ using Duration = std::chrono::duration<float, std::micro>;
 
 void GameModule::run()
 {
+#ifndef FINAL
+	Modules::Tests->run();
+#endif
+
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
@@ -41,10 +45,9 @@ void GameModule::run()
             }
         }
 
-        if (Modules::Tests->isEnabled())
-        {
-            Modules::Tests->update(deltaTime);
-        }
+#ifndef FINAL
+        Modules::Tests->update(deltaTime);
+#endif
 
         window.clear();
         window.draw(shape);

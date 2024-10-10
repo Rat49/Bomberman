@@ -1,21 +1,13 @@
 #include "TestModule.hpp"
 #include "TestBase.hpp"
-#include "EventSystem/EventSystem.hpp"
-#include "Common/Modules.hpp"
 #include <iostream>
 
+#ifndef FINAL
 
 TestModule::TestModule()
 {
 	const int64_t ProposedMaxTestNum = 16;
 	m_tests.reserve(ProposedMaxTestNum);
-
-	// for now let's just avoid using tests in release
-#ifndef FINAL
-	isTestModuleEnabled = true; 
-#else
-	isTestModuleEnabled = false;
-#endif
 }
 
 TestModule::~TestModule()
@@ -38,7 +30,7 @@ void TestModule::removeTest(const std::shared_ptr<TestBase>& testRunner)
 
 void TestModule::run()
 {
-	windowCloseEvent();
+	CreateAllTests();
 
 	for(const auto& test : m_tests)
 	{
@@ -59,21 +51,4 @@ void TestModule::update(float deltaTime)
 	}
 }
 
-// Callback function to be called when the window is closed
-void onWindowClosedEvent() {
-	std::cout << "The window is closed!" << std::endl;
-}
-
-// Test function for window close event
-void TestModule::windowCloseEvent() 
-{
-	EventSystem& eventSystem = *Modules::EventSystems;
-
-	int32_t windowClosedEventID = eventSystem.registerEvent();
-
-	// Subscribe to the window closed event
-	eventSystem.subscribe(windowClosedEventID, onWindowClosedEvent);
-
-	// Simulate window closing
-	eventSystem.emit(windowClosedEventID);
-}
+#endif

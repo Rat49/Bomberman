@@ -2,6 +2,8 @@
 #include <vector>
 #include <memory>
 
+#ifndef FINAL
+
 class TestBase;
 
 /*
@@ -14,10 +16,7 @@ public:
 	TestModule();
 	~TestModule();
 
-	// Determine if we can use this module at all
-	bool isEnabled() const {
-		return isTestModuleEnabled;
-	}
+	static void CreateAllTests();
 
 	// Add your implementation of test
 	void addTest(const std::shared_ptr<TestBase>& testRunner);
@@ -35,5 +34,6 @@ public:
 
 private:
 	std::vector<std::shared_ptr<TestBase>> m_tests;
-	bool isTestModuleEnabled;
 };
+
+#endif
