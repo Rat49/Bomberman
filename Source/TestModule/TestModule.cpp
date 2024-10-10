@@ -1,5 +1,6 @@
 #include "TestModule.hpp"
 #include "TestBase.hpp"
+#include "Common/Logs.hpp"
 #include <iostream>
 
 
@@ -38,12 +39,12 @@ void TestModule::run()
 {
 	for(const auto& test : m_tests)
 	{
-		std::cout << "Test " << test->getName() << " started\n";
+		LOG("Test " + test->getName() + " started");
 
 		test->setup();
 		test->run();
 
-		std::cout << "Test " << test->getName() << " complete\n";
+		LOG("Test " + test->getName() + " complete");
 	}
 }
 
