@@ -2,22 +2,22 @@
 #include <fstream>
 #include <iostream>
 
-const bool ConfigParser::isSection(const std::string& line) const {
+const bool ConfigParser::isSection(const std::string& line) const 
+{
 	return line.front() == '[' && line.back() == ']';
 }
 
-const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& ConfigParser::parse(const FileData::ConfigFileName& configFile, FileData& data) {
+ConfigFileData ConfigParser::parse(const std::string& configFile, const bool& isPermanent) 
+{
 	// finding file and checking if exists
-	auto it = data.configFiles.find(configFile);
-	std::ifstream file(it->second.path);
+	std::ifstream file(configFile);
 	if (!file)
 	{
 		std::cout << "Can't open file: " << configFile << std::endl;
-		return {};
+		return ConfigFileData(isPermanent);
 	}
 
 	// going through file, placing sections and values inside currentMap 
-
 	std::string line, section;
 	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> currentMap;
 
@@ -41,11 +41,6 @@ const std::unordered_map<std::string, std::unordered_map<std::string, std::strin
 				currentMap[section][key] = value;
 			}
 		}
-		
 	}
-	// if file is permanent save this map for later usage
-	if (!it->second.isTemporary) {
-		data.configFiles[configFile].sections = currentMap;
-	}
-	return currentMap;
+	return ConfigFileData(isPermanent, currentMap);
 }

@@ -1,14 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <Windows.h>
 #include <iostream>
-#include "ConfigSystem/ConfigParser.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
 
 void GameLoop()
 {
-    FileData data;
-    ConfigParser parser;
-    parser.parse(FileData::File3, data);
-    data.printConfigFile(FileData::File3);
+    ConfigSystem configSystem;
+    ConfigFileData fileData;
+    configSystem.addFile("Data/Config/config.ini", true, fileData);
+    std::cout << configSystem.isValuePresent("Data/Config/config.ini", "database", "server");
+
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);

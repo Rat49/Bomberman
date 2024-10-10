@@ -20,12 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ConfigSystem\ConfigParser.cpp" />
-    <ClCompile Include="Source\ConfigSystem\FileData.cpp" />
+    <ClCompile Include="Source\ConfigSystem\ConfigSystem.cpp" />
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\ConfigSystem\ConfigParser.hpp" />
-    <ClInclude Include="Source\ConfigSystem\FileData.hpp" />
+    <ClInclude Include="Source\ConfigSystem\ConfigSystem.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\Config\config.ini" />
