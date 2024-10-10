@@ -3,18 +3,12 @@
 #include "Common/Logs.hpp"
 #include <iostream>
 
+#ifndef FINAL
 
 TestModule::TestModule()
 {
 	const int64_t ProposedMaxTestNum = 16;
 	m_tests.reserve(ProposedMaxTestNum);
-
-	// for now let's just avoid using tests in release
-#ifndef FINAL
-	isTestModuleEnabled = true; 
-#else
-	isTestModuleEnabled = false;
-#endif
 }
 
 TestModule::~TestModule()
@@ -37,6 +31,8 @@ void TestModule::removeTest(const std::shared_ptr<TestBase>& testRunner)
 
 void TestModule::run()
 {
+	CreateAllTests();
+
 	for(const auto& test : m_tests)
 	{
 		LOG("Test " + test->getName() + " started");
@@ -55,3 +51,5 @@ void TestModule::update(float deltaTime)
 		test->update(deltaTime);
 	}
 }
+
+#endif
