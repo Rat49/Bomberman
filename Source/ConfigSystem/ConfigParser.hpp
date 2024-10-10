@@ -17,7 +17,7 @@ struct ConfigFileData {
 
 class ConfigParser {
 public:
-	ConfigFileData parse(const std::string& configFile, const bool& isPermanent);
+	ConfigFileData parse(const std::string& configFile, const bool& isPermanent) const;
 
 private:
 	const bool isSection(const std::string& line) const;

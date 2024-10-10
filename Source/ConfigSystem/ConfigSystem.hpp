@@ -9,7 +9,7 @@ public:
 
 	void addFile(const std::string& configFile, const bool& isPermanent, ConfigFileData& fileData);
 
-	void removeFile(std::string configFile);
+	void removeFile(const std::string& configFile);
 
 	const bool isFilePresent(const std::string& configFile) const;
 

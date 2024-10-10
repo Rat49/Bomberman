@@ -9,7 +9,7 @@ void ConfigSystem::addFile(const std::string& configFile, const bool& isPermanen
 	}
 }
 
-void ConfigSystem::removeFile(std::string configFile)
+void ConfigSystem::removeFile(const std::string& configFile)
 {
 	configFiles.erase(configFile);
 }
