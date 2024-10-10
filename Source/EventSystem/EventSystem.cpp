@@ -1,10 +1,5 @@
 #include "EventSystem.hpp"
 
-EventSystem& EventSystem::getInstance()
-{
-	static EventSystem instance;
-	return instance;
-}
 
 int32_t EventSystem::registerEvent()
 {

@@ -1,6 +1,7 @@
 #include "GameModule/GameModule.hpp"
 #include "Common/Modules.hpp"
 #include "TestModule/TestModule.hpp"
+#include "EventSystem/EventSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
 
@@ -17,6 +18,7 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
+
     while (window.isOpen())
     {
         // handling delta time
@@ -28,7 +30,15 @@ void GameModule::run()
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
+            {
+                // Runs tests before closing
+				if (Modules::Tests->isEnabled())
+				{
+					Modules::Tests->run();
+				}
+
                 window.close();
+            }
         }
 
         if (Modules::Tests->isEnabled())

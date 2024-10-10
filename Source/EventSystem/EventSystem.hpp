@@ -3,13 +3,12 @@
 #include <functional>
 #include <map>
 #include <vector>
-#include <ostream>
-
+#include <atomic>
 
 class EventSystem
 {
 public:
-	static EventSystem& getInstance();
+	EventSystem() = default;
 
 	using Callback = std::function<void()>;
 
@@ -26,11 +25,9 @@ public:
 	void emit(int32_t eventID);
 
 private:
-	EventSystem() = default;
-
 	// Map to hold event IDs and their associated callbacks
 	std::map<int32_t, std::vector<Callback>> subscribers;
 
 	// Atomic counter to generate unique event IDs
-	std::atomic<int32_t> nextEventID{ 0 };
+	std::atomic<int32_t> nextEventID = 0 ;
 };
