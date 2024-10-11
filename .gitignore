@@ -1,5 +1,11 @@
 # Generated
 .vs/
+.bin/
+.gen/
 Build/
 Intermediate/
 *.user
+*.vcxproj
+*.sln
+*.filters
+*.lnk
