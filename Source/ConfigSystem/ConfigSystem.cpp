@@ -1,7 +1,7 @@
 #include "ConfigSystem.hpp"
 #include <iostream>
 
-void ConfigSystem::addFile(const std::string& configFile, const bool& isPermanent, ConfigFileData& fileData)
+void ConfigSystem::addFile(const std::string& configFile, bool isPermanent, ConfigFileData& fileData)
 {
 	fileData = parser.parse(configFile, isPermanent);
 	if (isPermanent) {
@@ -14,12 +14,12 @@ void ConfigSystem::removeFile(const std::string& configFile)
 	configFiles.erase(configFile);
 }
 
-const bool ConfigSystem::isFilePresent(const std::string& configFile) const
+bool ConfigSystem::isFilePresent(const std::string& configFile) const
 {
 	return configFiles.find(configFile) != configFiles.end();
 }
 
-const bool ConfigSystem::isSectionPresent(const std::string& configFile, const std::string& sectionName) const
+bool ConfigSystem::isSectionPresent(const std::string& configFile, const std::string& sectionName) const
 {
 	if (isFilePresent(configFile)) {
 		auto it = configFiles.find(configFile);
@@ -28,7 +28,7 @@ const bool ConfigSystem::isSectionPresent(const std::string& configFile, const s
 	return false;
 }
 
-const bool ConfigSystem::isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const
+bool ConfigSystem::isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const
 {
 	if (isSectionPresent(configFile, sectionName)) {
 		auto it = configFiles.find(configFile);

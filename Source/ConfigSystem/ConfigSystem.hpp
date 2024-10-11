@@ -7,15 +7,15 @@
 class ConfigSystem {
 public:
 
-	void addFile(const std::string& configFile, const bool& isPermanent, ConfigFileData& fileData);
+	void addFile(const std::string& configFile, bool isPermanent, ConfigFileData& fileData);
 
 	void removeFile(const std::string& configFile);
 
-	const bool isFilePresent(const std::string& configFile) const;
+	bool isFilePresent(const std::string& configFile) const;
 
-	const bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
+	bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
 
-	const bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
+	bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
 	const std::string& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 

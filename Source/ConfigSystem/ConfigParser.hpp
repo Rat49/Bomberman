@@ -9,16 +9,16 @@ struct ConfigFileData {
 
 	ConfigFileData() {}
 
-	ConfigFileData(const bool& isPerm) : isPermanent(isPerm) {}
+	ConfigFileData(bool isPerm) : isPermanent(isPerm) {}
 
-	ConfigFileData(const bool& isPerm, const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& sections_) :
+	ConfigFileData(bool isPerm, const std::unordered_map<std::string, std::unordered_map<std::string, std::string>>& sections_) :
 		isPermanent(isPerm), sections(sections_) {}
 };
 
 class ConfigParser {
 public:
-	ConfigFileData parse(const std::string& configFile, const bool& isPermanent) const;
+	ConfigFileData parse(const std::string& configFile, bool isPermanent) const;
 
 private:
-	const bool isSection(const std::string& line) const;
+	bool isSection(const std::string& line) const;
 };

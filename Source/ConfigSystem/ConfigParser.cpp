@@ -2,12 +2,12 @@
 #include <fstream>
 #include <iostream>
 
-const bool ConfigParser::isSection(const std::string& line) const 
+bool ConfigParser::isSection(const std::string& line) const 
 {
 	return line.front() == '[' && line.back() == ']';
 }
 
-ConfigFileData ConfigParser::parse(const std::string& configFile, const bool& isPermanent) const
+ConfigFileData ConfigParser::parse(const std::string& configFile, bool isPermanent) const
 {
 	// finding file and checking if exists
 	std::ifstream file(configFile);
