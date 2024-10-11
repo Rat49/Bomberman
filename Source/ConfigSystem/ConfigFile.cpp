@@ -11,7 +11,13 @@ bool ConfigFile::open()
 const ConfigSection& ConfigFile::getSection(const std::string& name) const
 {
 	auto it = m_sections.find(name);
-	return it->second;
+	if (it != m_sections.end()) {
+		return it->second;
+	}
+	else {
+		static const ConfigSection defaultValue;
+		return defaultValue;
+	}
 }
 
 void ConfigFile::setSection(const std::string& name, const ConfigSection& section)

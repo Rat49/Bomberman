@@ -32,7 +32,7 @@ bool ConfigSystem::isValuePresent(const std::string& configFile, const std::stri
 {
 	if (isSectionPresent(configFile, sectionName)) {
 		auto it = configFiles.find(configFile);
-		auto it2 = it->second.getSection(sectionName);
+		auto& it2 = it->second.getSection(sectionName);
 		return it2.isValuePresent(valueName);
 	}
 	return false;
@@ -40,9 +40,15 @@ bool ConfigSystem::isValuePresent(const std::string& configFile, const std::stri
 
 const ConfigValue& ConfigSystem::getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const
 {
-	auto it = configFiles.find(configFile);
-	auto it2 = it->second.getSection(sectionName);
-	return it2.getValue(valueName);
+	if (isValuePresent(configFile, sectionName, valueName)) {
+		auto it = configFiles.find(configFile);
+		auto& it2 = it->second.getSection(sectionName);
+		return it2.getValue(valueName);
+	}
+	else {
+		static const ConfigValue defaultValue;
+		return defaultValue;
+	}
 }
 
 void ConfigSystem::setValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value)

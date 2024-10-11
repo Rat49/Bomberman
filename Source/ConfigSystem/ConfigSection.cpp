@@ -3,7 +3,13 @@
 const ConfigValue& ConfigSection::getValue(const std::string& name) const
 {
 	auto it = m_values.find(name);
-	return it->second;
+	if (it != m_values.end()) {
+		return it->second;
+	}
+	else {
+		static const ConfigValue defaultValue;
+		return defaultValue;
+	}
 }
 
 void ConfigSection::setValue(const std::string& name, const ConfigValue& value)
