@@ -1,6 +1,6 @@
 # Bomberman
 
-![Logo](Assets/Docs/logo.jpg)
+![Logo](Assets/Docs/logo.pic)
 
 ## Restart of the title using the pure C++
 **Sperasoft developers decided to make something outstanding!**  
