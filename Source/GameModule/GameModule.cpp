@@ -35,12 +35,6 @@ void GameModule::run()
         {
             if (event.type == sf::Event::Closed)
             {
-                // Runs tests before closing
-				if (Modules::Tests->isEnabled())
-				{
-					Modules::Tests->run();
-				}
-
                 window.close();
             }
         }

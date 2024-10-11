@@ -29,9 +29,6 @@ public:
 	// Tick for all tests
 	void update(float deltaTime);
 
-	// Test function for window close event
-	void windowCloseEvent();
-
 private:
 	std::vector<std::shared_ptr<TestBase>> m_tests;
 };
