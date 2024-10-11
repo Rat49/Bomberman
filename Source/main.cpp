@@ -8,11 +8,6 @@ void GameLoop()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
-    NavigationModule nav = NavigationModule(1);
-    std::pair<int, int> playerPosition = { 1, 1 };
-    std::pair<int, int> enemyPosition = { 4, 9 };
-    nav.print(playerPosition, enemyPosition);
-
     while (window.isOpen())
     {
         sf::Event event;

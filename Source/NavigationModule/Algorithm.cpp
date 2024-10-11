@@ -51,7 +51,6 @@ void AStar::navigate(std::pair<int, int> startingPosition, std::pair<int, int>& 
 		//if position wasn't visited before traverse it
 		if (visited.find(position) == visited.end()) {
 			visited.insert(position);
-			grid[position.first][position.second] = 'V';
 			returnActions(position, legalActions);
 
 			for (auto& iter : legalActions) {
