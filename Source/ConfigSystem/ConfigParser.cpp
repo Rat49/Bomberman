@@ -1,25 +1,24 @@
 #include "ConfigParser.hpp"
-#include <fstream>
 #include <iostream>
+#include <fstream>
 
 bool ConfigParser::isSection(const std::string& line) const 
 {
 	return line.front() == '[' && line.back() == ']';
 }
 
-ConfigFileData ConfigParser::parse(const std::string& configFile, bool isPermanent) const
+void ConfigParser::parse(ConfigFile& configFile) const
 {
-	// finding file and checking if exists
-	std::ifstream file(configFile);
+	const std::string& fileName = configFile.getName();
+	std::ifstream file(fileName);
 	if (!file)
 	{
-		std::cout << "Can't open file: " << configFile << std::endl;
-		return ConfigFileData(isPermanent);
+		std::cout << "Can't open file: " << fileName << std::endl;
+		return;
 	}
 
 	// going through file, placing sections and values inside currentMap 
 	std::string line, section;
-	std::unordered_map<std::string, std::unordered_map<std::string, std::string>> currentMap;
 
 	while (std::getline(file, line)) {
 		const auto commentPos = line.find_first_of(" ;#");
@@ -37,10 +36,8 @@ ConfigFileData ConfigParser::parse(const std::string& configFile, bool isPermane
 				}
 				std::string key = line.substr(0, equalPos);
 				std::string value = line.substr(equalPos + 1);
-
-				currentMap[section][key] = value;
+				configFile.addToSection(section, key, value);
 			}
 		}
 	}
-	return ConfigFileData(isPermanent, currentMap);
 }

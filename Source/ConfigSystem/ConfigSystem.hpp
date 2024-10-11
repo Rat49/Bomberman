@@ -3,11 +3,12 @@
 #include <string>
 #include <unordered_map>
 #include "ConfigParser.hpp"
+#include "ConfigFile.hpp"
 
 class ConfigSystem {
 public:
 
-	void addFile(const std::string& configFile, bool isPermanent, ConfigFileData& fileData);
+	void addFile(ConfigFile& fileData);
 
 	void removeFile(const std::string& configFile);
 
@@ -17,16 +18,12 @@ public:
 
 	bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
-	const std::string& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
+	const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
 	void setValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value);
 
-	void deleteTemporaryFiles();
-
-	void printConfigFile(const std::string& configFile) const;
-
 private:
-	std::unordered_map<std::string, ConfigFileData> configFiles;
+	std::unordered_map<std::string, ConfigFile> configFiles;
 
 	ConfigParser parser;
 };

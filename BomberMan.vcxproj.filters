@@ -21,12 +21,27 @@
     <ClCompile Include="Source\ConfigSystem\ConfigParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ConfigSystem\ConfigSection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ConfigSystem\ConfigFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Source\ConfigSystem\ConfigSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\ConfigSystem\ConfigParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ConfigSystem\ConfigFile.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ConfigSystem\ConfigSection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ConfigSystem\ConfigValue.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\ConfigSystem\ConfigSystem.hpp">

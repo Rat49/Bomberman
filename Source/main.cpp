@@ -6,10 +6,11 @@
 void GameLoop()
 {
     ConfigSystem configSystem;
-    ConfigFileData fileData;
-    configSystem.addFile("Data/Config/config.ini", true, fileData);
-    std::cout << configSystem.isValuePresent("Data/Config/config.ini", "database", "server");
-
+    ConfigFile file1("Data/Config/config.ini", true);
+    configSystem.addFile(file1);
+    std::cout << file1.getSection("Files").getValue("one").getString();
+    configSystem.setValue("Data/Config/config.ini", "database", "server", "lala");
+    std::cout << configSystem.getValue("Data/Config/config.ini", "database", "server").getString();
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
