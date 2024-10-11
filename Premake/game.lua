@@ -2,6 +2,7 @@ paths = require "paths"
 -----------------------------------------------------------------------------------------------------------------------
 project "Bomberman"
     language "C++"
+	cppdialect "C++17"
     characterset "MBCS"
     kind "WindowedApp"
     targetname "Bomberman"

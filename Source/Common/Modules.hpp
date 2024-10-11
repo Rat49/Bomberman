@@ -7,6 +7,7 @@ class LogManager;
 #endif
 
 class GameModule;
+class NavigationModule;
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -22,4 +23,5 @@ struct Modules
 #endif
 
 	static std::unique_ptr<GameModule> Game;
+	static std::unique_ptr<NavigationModule> Navigation;
 };

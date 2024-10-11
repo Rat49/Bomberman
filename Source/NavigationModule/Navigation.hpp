@@ -8,15 +8,15 @@ class Algorithm;
 class NavigationModule {
 
 public:
-	NavigationModule(/*, some parameter for mapping the grid*/);
+	NavigationModule() = default;
+	NavigationModule(std::vector<std::vector<char>>& grid/*, some parameter for mapping the grid*/);
 
 	//Algorithm used for navigation
 	Algorithm* algorithm;
 
-private:
-
-	//mapped grid of players environment
+	//mapped grid of players environment for now char of tiles
 	std::vector<std::vector<char>> grid;
+private:
 
 	//called to parse our game into a grid
 	void parseGrid(/*some representation of our game environment*/);
