@@ -1,5 +1,6 @@
 #include "TestModule.hpp"
 #include "TestBase.hpp"
+#include "Common/Logs.hpp"
 #include <iostream>
 
 #ifndef FINAL
@@ -34,20 +35,34 @@ void TestModule::run()
 
 	for(const auto& test : m_tests)
 	{
-		std::cout << "Test " << test->getName() << " started\n";
+		LOG("Test " + test->getName() + " started");
 
 		test->setup();
 		test->run();
-
-		std::cout << "Test " << test->getName() << " complete\n";
 	}
 }
 
 void TestModule::update(float deltaTime)
 {
-	for (const auto& test : m_tests)
+	if (m_tests.empty())
 	{
-		test->update(deltaTime);
+		return;
+	}
+
+	std::vector<std::shared_ptr<TestBase>>::iterator it = m_tests.begin();
+	while(it != m_tests.end())
+	{
+		(*it)->update(deltaTime);
+
+		if ((*it)->isComplete())
+		{
+			LOG("Test " + (*it)->getName() + " complete");
+			it = m_tests.erase(it);
+		}
+		else
+		{
+			++it;
+		}
 	}
 }
 

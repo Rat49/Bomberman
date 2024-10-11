@@ -3,6 +3,7 @@
 
 #ifndef FINAL
 class TestModule;
+class LogManager;
 #endif
 
 class GameModule;
@@ -17,6 +18,8 @@ struct Modules
 
 #ifndef FINAL
 	static std::unique_ptr<TestModule> Tests;
+	static std::unique_ptr<LogManager> Logs;
 #endif
+
 	static std::unique_ptr<GameModule> Game;
 };

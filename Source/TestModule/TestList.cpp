@@ -2,11 +2,16 @@
 #include "Common/Modules.hpp"
 //include your test file here
 // -----------------------------
+#include "TestModule/SampleTest.hpp"
 
+#ifndef FINAL
 
 void TestModule::CreateAllTests()
 {
 	// add your tests based on TestBase class here using this preset
 	// Modules::Tests->addTest(std::make_shared<your-test-type>());
 	// ----------------------------------------------------------------
+	Modules::Tests->addTest(std::make_shared<SampleTest>());
 }
+
+#endif
