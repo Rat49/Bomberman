@@ -7,6 +7,8 @@ class LogManager;
 #endif
 
 class GameModule;
+class EventSystem;
+
 class NavigationModule;
 
 /*
@@ -23,5 +25,6 @@ struct Modules
 #endif
 
 	static std::unique_ptr<GameModule> Game;
+	static std::unique_ptr<EventSystem> Events;
 	static std::unique_ptr<NavigationModule> Navigation;
 };

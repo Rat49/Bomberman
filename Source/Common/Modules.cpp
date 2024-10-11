@@ -2,6 +2,7 @@
 #include "GameModule/GameModule.hpp"
 #include "TestModule/TestModule.hpp"
 #include "LogModule/LogManager.hpp"
+#include "EventSystem/EventSystem.hpp"
 #include "NavigationModule/Navigation.hpp"
 
 #ifndef FINAL
@@ -10,6 +11,7 @@ std::unique_ptr<LogManager> Modules::Logs;
 #endif
 
 std::unique_ptr<GameModule> Modules::Game;
+std::unique_ptr<EventSystem> Modules::Events;
 std::unique_ptr<NavigationModule> Modules::Navigation;
 
 void Modules::initialize()
@@ -22,6 +24,8 @@ void Modules::initialize()
 	Modules::Game = std::make_unique<GameModule>();
 	Modules::Navigation = std::make_unique<NavigationModule>();
 	// add your modules here
+	Modules::Events = std::make_unique<EventSystem>();
+
 }
 
 void Modules::terminate()
@@ -29,6 +33,8 @@ void Modules::terminate()
 	Modules::Game.release();
 	Modules::Navigation.release();
 	// add your modules here
+	Modules::Events.release();
+
 
 #ifndef FINAL
 	Modules::Tests.release();
