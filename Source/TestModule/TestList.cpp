@@ -4,6 +4,7 @@
 // -----------------------------
 #include "TestModule/SampleTest.hpp"
 #include "TestModule/WindowClosingTest.hpp"
+#include "TestModule/ConfigSystemTest.hpp"
 #include "TestModule/NavigationModuleTest.hpp"
 
 #ifndef FINAL
@@ -15,6 +16,7 @@ void TestModule::CreateAllTests()
 	// ----------------------------------------------------------------
 	Modules::Tests->addTest(std::make_shared<SampleTest>());
 	Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
+	Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
 	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 }
 
