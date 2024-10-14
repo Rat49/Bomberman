@@ -17,10 +17,8 @@ void WindowClosingTest::setup()
 	windowCloseEventID = Modules::Events->registerEvent();
 
 	// Subscribe the event to a callback that will close the window
-	Modules::Events->subscribe(windowCloseEventID, [this]() {
-		onWindowClosedEvent();
-		windowClosed = true;
-		});
+	Modules::Events->subscribe<void>(windowCloseEventID, std::function<void()>(std::bind(&WindowClosingTest::onWindowClosedEvent, this)));
+
 }
 
 void WindowClosingTest::onWindowClosedEvent()
