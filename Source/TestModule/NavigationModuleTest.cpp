@@ -1,6 +1,7 @@
 #include "NavigationModuleTest.hpp"
 #include "NavigationModule/Navigation.hpp"
 #include "NavigationModule/Algorithm.hpp"
+#include "NavigationModule/NavigationEnum.hpp"
 #include <functional>
 #include <thread>
 #include <chrono>
@@ -24,16 +25,16 @@ const std::string& NavigationModuleTest::getName() const
 }
 
 void NavigationModuleTest::setup(){
-	std::vector<std::vector<char>> grid = { //standard grid for bomberman
-			{'O','O','O','O','O','O','O','O','O','O','O'},
-			{'O','P','G','G','G','G','G','G','G','G','O'},
-			{'O','G','O','G','O','G','O','G','O','G','O'},
-			{'O','G','G','G','G','G','G','G','G','G','O'},
-			{'O','G','O','G','O','G','O','G','O','E','O'},
-			{'O','G','G','G','G','G','G','G','G','G','O'},
-			{'O','G','O','G','O','G','O','G','O','G','O'},
-			{'O','G','G','G','G','G','G','G','G','G','O'},
-			{'O','O','O','O','O','O','O','O','O','O','O'}
+	std::vector<std::vector<bool>> grid = { //standard grid for bomberman
+			{1,1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,1},
+			{1,0,1,0,1,0,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,0,1},
+			{1,1,1,1,1,1,1,1,1,1,1}
 	};
 
 	nav = new NavigationModule(grid);
@@ -62,31 +63,30 @@ void NavigationModuleTest::navigate(std::pair<int, int>& playerPosition, std::pa
 		std::cout << YELLOW << "O = Obstacle" << RESET << std::endl;
 		for (int i = 0; i < nav->grid.size(); i++) {
 			for (int j = 0; j < nav->grid[0].size(); j++) {
-				color(i, j);
+				if(!checkOcuppied(playerPosition, enemyPosition, i, j))
+					color(i, j);
 			}
 			std::cout << std::endl;
 		}
 		//record the time it takes for function to exec
 		auto start = std::chrono::high_resolution_clock::now();
 
-		nav->algorithm->navigate(playerPosition, moveTo);
+		nav->algorithm->navigate(playerPosition, enemyPosition, moveTo);
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 		std::cout << "Execution time: " << duration.count() << " microseconds" << std::endl;
 
 		//Change player location
-		nav->grid[playerPosition.first][playerPosition.second] = 'G';
 		playerPosition.first += moveTo.first;
 		playerPosition.second += moveTo.second;
-		if (nav->grid[playerPosition.first][playerPosition.second] == 'E')
+		if (playerPosition == enemyPosition)
 			updateEnemy = false;
-		nav->grid[playerPosition.first][playerPosition.second] = 'P';
 		//change the enemy location
-		moveEnemy(enemyPosition, updateEnemy);
+		moveEnemy(enemyPosition, playerPosition, updateEnemy);
 
 		//sleep so we can see the output and clear it after
-		std::this_thread::sleep_for(std::chrono::seconds(3));
+		std::this_thread::sleep_for(std::chrono::seconds(2));
 		system("cls");
 	}
 }
@@ -94,25 +94,37 @@ void NavigationModuleTest::navigate(std::pair<int, int>& playerPosition, std::pa
 //prints out a colored char from a grid
 void NavigationModuleTest::color(int i, int j) {
 	std::string fill;
-	char c = nav->grid[i][j];
+	int c = nav->grid[i][j];
+	char out = 'O';
 	switch (c) {
-	case 'P': fill = GREEN; break;
-	case 'E': fill = RED; break;
-	case 'O': fill = YELLOW; break;
-	case 'G': fill = MAGENTA; break;
+	case Passable: { fill = MAGENTA; out = 'G';  break; }
+	case NotPassable: { fill = YELLOW; out = 'O'; break; }
 	default:
 		break;
 	}
-	std::cout << fill << c << RESET;
+	std::cout << fill << out << RESET;
 }
 
+const bool NavigationModuleTest::checkOcuppied(const std::pair<int, int>& playerPosition,
+	const std::pair<int, int>& enemyPosition,
+	int i, int j) {
+	if (playerPosition.first == i && playerPosition.second == j) {
+		std::cout << GREEN << "P" << RESET;
+		return true;
+	}
+	if (enemyPosition.first == i && enemyPosition.second == j) {
+		std::cout << RED << "E" << RESET;
+		return true;
+	}
+	return false;
+}
 //moves an enemy in a random direction that isn't occupied by the player
-void NavigationModuleTest::moveEnemy(std::pair<int, int>& enemyPosition, bool updateEnemy) {
+void NavigationModuleTest::moveEnemy(std::pair<int, int>& enemyPosition,const std::pair<int, int>& playerPosition, bool updateEnemy) {
 	if (!updateEnemy)
 		return;
 	std::vector<std::pair<int, int>> actions;
 
-	nav->algorithm->returnActions(enemyPosition, actions);
+	nav->algorithm->returnActions(enemyPosition,playerPosition, actions);
 
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -122,8 +134,6 @@ void NavigationModuleTest::moveEnemy(std::pair<int, int>& enemyPosition, bool up
 
 	if (index < actions.size()) {
 		auto action = actions[index];
-		nav->grid[enemyPosition.first][enemyPosition.second] = 'G';
 		enemyPosition = action;
-		nav->grid[enemyPosition.first][enemyPosition.second] = 'E';
 	}
 }

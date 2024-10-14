@@ -21,7 +21,12 @@ private:
 	void color(int i, int j);
 
 	//moves an enemy in a random direction that isn't occupied by the player
-	void moveEnemy(std::pair<int, int>& enemyPosition, bool updateEnemy);
+	void moveEnemy(std::pair<int, int>& enemyPosition, const std::pair<int, int>& playerPosition, bool updateEnemy);
+
+	//checks if tile is occupied and colors it if it is
+	const bool checkOcuppied(const std::pair<int, int>& playerPosition,
+							const std::pair<int, int>& enemyPosition,
+							int i , int j);
 
 	const std::string Name = "NavigationModuleTest";
 	NavigationModule* nav;

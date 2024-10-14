@@ -1,9 +1,11 @@
 #include "Algorithm.hpp"
+#include "NavigationEnum.hpp"
 #include <functional> 
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
 
+#include <iostream>
 //hash for pairs
 struct pair_hash {
 	template <class T1, class T2>
@@ -13,7 +15,9 @@ struct pair_hash {
 };
 
 //returns vector of possible actions from a current position
-void Algorithm::returnActions(std::pair<int, int> currentPosition, std::vector<std::pair<int, int>>& actions) {
+void Algorithm::returnActions(const std::pair<int, int>& currentPosition,
+							const std::pair<int, int>&  playerPosition,
+							std::vector<std::pair<int, int>>& actions) {
 	actions.clear();
 	std::vector<std::pair<int, int>> directions = { {-1, 0},//up
 													{1, 0},//down
@@ -26,8 +30,8 @@ void Algorithm::returnActions(std::pair<int, int> currentPosition, std::vector<s
 		tmpPosition.first += iter.first;
 		tmpPosition.second += iter.second;
 
-		if (grid[tmpPosition.first][tmpPosition.second] != 'O' &&
-			grid[tmpPosition.first][tmpPosition.second] != 'P') {
+		if (grid[tmpPosition.first][tmpPosition.second] != NotPassable &&
+			tmpPosition != playerPosition) {
 			actions.push_back(tmpPosition);
 		}
 
@@ -37,7 +41,9 @@ void Algorithm::returnActions(std::pair<int, int> currentPosition, std::vector<s
 
 //finds best path via path length and heuristic
 //only works as a bfs for now
-void AStar::navigate(std::pair<int, int> startingPosition, std::pair<int, int>& moveTo) {
+void AStar::navigate(const std::pair<int, int>& startingPosition,
+	const std::pair<int, int>& endPosition,
+	std::pair<int, int>& moveTo) {
 	//set of all visited positions
 	std::unordered_set<std::pair<int, int>, pair_hash> visited;
 
@@ -55,14 +61,14 @@ void AStar::navigate(std::pair<int, int> startingPosition, std::pair<int, int>& 
 		//if position wasn't visited before traverse it
 		if (visited.find(position) == visited.end()) {
 			visited.insert(position);
-			returnActions(position, legalActions);
+			returnActions(position, startingPosition, legalActions);
 
 			for (auto& iter : legalActions) {
 				if (pathLength == 0) {
 					direction.first = iter.first - position.first;
 					direction.second = iter.second - position.second;
 				}
-				if (grid[iter.first][iter.second] == 'E') {
+				if (iter == endPosition) {
 					moveTo = direction;
 					return;
 				}
