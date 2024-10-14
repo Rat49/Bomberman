@@ -1,4 +1,8 @@
 #include "Algorithm.hpp"
+#include <functional> 
+#include <unordered_set>
+#include <unordered_map>
+#include <queue>
 
 //hash for pairs
 struct pair_hash {
