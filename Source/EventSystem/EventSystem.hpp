@@ -4,13 +4,14 @@
 #include <map>
 #include <vector>
 #include <atomic>
+#include <typeindex>
 
 class EventSystem
 {
 public:
 	EventSystem() = default;
 
-	//using Callback = std::function<void()>;
+	using FunctionHandle = int32_t;
 
 	// Function to register a new event and return its unique ID
 	template<typename... Args>
@@ -18,22 +19,29 @@ public:
 
 	// Subscribe a callback to an event
 	template<typename ReturnType, typename... Args>
-	void subscribe(int32_t eventID, std::function<ReturnType(Args...)> callback);
+	FunctionHandle  subscribe(int32_t eventID, std::function<ReturnType(Args...)> callback);
 
 	// UnSubscribe a callback from an event
 	template<typename ReturnType, typename... Args>
-	void unsubscribe(int32_t eventID, std::function<ReturnType(Args...)> callback);
+	void unsubscribe(int32_t eventID, FunctionHandle handle);
 
 	// Emit an event to notify all subscribed callbacks
 	template<typename... Args>
 	void emit(int32_t eventID, Args... args);
 
 private:
+	struct Subscriber {
+		FunctionHandle handle;
+		std::function<void(void*)> callback;
+		std::type_index callbackType;
+	};
+
 	// Map to hold event IDs and their associated callbacks
-	std::map<int32_t, std::vector<std::function<void(void*)>>> subscribers;
+	std::map<int32_t, std::vector<Subscriber>> subscribers;
 
 	// Atomic counter to generate unique event IDs
 	std::atomic<int32_t> nextEventID = 0 ;
+	std::atomic<int32_t> nextHandleID = 0;
 };
 
 
@@ -47,29 +55,38 @@ int32_t EventSystem::registerEvent()
 }
 
 template<typename ReturnType, typename... Args>
-void EventSystem::subscribe(int32_t eventID, std::function<ReturnType(Args...)> callback)
+EventSystem::FunctionHandle EventSystem::subscribe(int32_t eventID, std::function<ReturnType(Args...)> callback)
 {
+	FunctionHandle handle = nextHandleID++;
+
 	auto wrappedCallback = [callback](void* data) {
 		auto args = static_cast<std::tuple<Args...>*>(data);
 		std::apply(callback, *args);
 		};
 
-	subscribers[eventID].push_back(wrappedCallback);
+	subscribers[eventID].push_back({ handle, wrappedCallback, typeid(callback) });
+	return handle;
 }
 
 template<typename ReturnType, typename... Args>
-void EventSystem::unsubscribe(int32_t eventID, std::function<ReturnType(Args...)> callback)
+void EventSystem::unsubscribe(int32_t eventID, FunctionHandle handle)
 {
 	auto it = subscribers.find(eventID);
+
 	if (it != subscribers.end())
 	{
-		auto& callbacks = it->second;
-		callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
-			[&callback](const std::function<void(void*)>& storedCallback) {
-				return storedCallback.target_type() == callback.target_type();
-			}), callbacks.end());
+		auto& callbackList = it->second;
 
-		if (callbacks.empty())
+		// Remove a callback based on its handle
+		callbackList.erase(
+			std::remove_if(callbackList.begin(), callbackList.end(),
+				[handle](const Subscriber& sub) {
+					return sub.handle == handle;
+				}),
+			callbackList.end());
+
+		// If there are no more callbacks, remove the event
+		if (callbackList.empty())
 		{
 			subscribers.erase(it);
 		}
@@ -82,10 +99,12 @@ void EventSystem::emit(int32_t eventID, Args... args)
 	auto it = subscribers.find(eventID);
 	if (it != subscribers.end())
 	{
-		std::tuple<Args...> data(args...);
-		for (const auto& callback : it->second)
+		auto argsTuple = std::make_tuple(args...);
+
+		for (const auto& subscriber : it->second)
 		{
-			callback(static_cast<void*>(&data));
+			// Call each declared callback with the arguments passed
+			subscriber.callback(&argsTuple);
 		}
 	}
 }
