@@ -14,19 +14,19 @@ void WindowClosingTest::setup()
 	LOG("WindowCloseTest: setup()");
 
 	// Register the window close event
-	windowCloseEventID = Modules::Events->registerEvent<int32_t, float, std::string>();
+	windowCloseEventID = Modules::Events->registerEvent();
 
 	// Subscribe the event to a callback that will close the window
-	handle = Modules::Events->subscribe<void, int32_t, float, std::string>(
+	handle = Modules::Events->subscribe<int32_t, float, std::string>(
 		windowCloseEventID,
-		std::function<void(int32_t, float, std::string)>(
-			std::bind(&WindowClosingTest::onWindowClosedEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
+		std::bind(&WindowClosingTest::onWindowClosedEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
 
 	// Emit the event to see if it works
 	Modules::Events->emit<int32_t, float, std::string>(windowCloseEventID, 42, 3.14f, "Window closed test");
 
 	// Unsubscribe to test if the callback is really removed
-	Modules::Events->unsubscribe<int32_t, float, std::string>(windowCloseEventID, handle);
+	Modules::Events->unsubscribe(windowCloseEventID, handle);
 
 	// Emit the event again to confirm that the callback is not called
 	Modules::Events->emit<int32_t, float, std::string>(windowCloseEventID, 42, 3.14f, "Should not trigger");
