@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <utility>
+#include <SFML/System/Vector2.hpp>
 
 class Algorithm {
 public:
@@ -10,18 +10,18 @@ public:
 	virtual ~Algorithm() {};
 
 	//finds best path via path length and heuristic
-	virtual void navigate(const std::pair<int, int>& startingPosition,
-		const std::pair<int, int>& endPosition,
-		std::pair<int, int>& moveTo) = 0;
+	virtual void navigate(const sf::Vector2i& startingPosition,
+		const sf::Vector2i& endPosition,
+		sf::Vector2i& moveTo) = 0;
 
 	//returns vector of possible actions from a current position
-	void returnActions(const std::pair<int, int>& currentPosition,
-		const std::pair<int, int>& endPosition,
-		std::vector<std::pair<int, int>>& actions);
+	void returnActions(const sf::Vector2i& currentPosition,
+		const sf::Vector2i& playerPosition,
+		std::vector<sf::Vector2i>& actions);
 protected:
 
 	//mapped grid of players environment
-	std::vector<std::vector<bool>>& grid;
+	std::vector<std::vector<bool>> grid;
 };
 
 class AStar : public Algorithm {
@@ -32,7 +32,7 @@ public:
 
 	//finds best path via path length and heuristic
 	//only works as a bfs for now
-	void navigate(const std::pair<int, int>& startingPosition,
-		const std::pair<int, int>& playerPosition,
-		std::pair<int, int>& moveTo) override;
+	void navigate(const sf::Vector2i& startingPosition,
+		const sf::Vector2i& endPosition,
+		sf::Vector2i& moveTo) override;
 };

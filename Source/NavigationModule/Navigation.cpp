@@ -1,5 +1,4 @@
 #include "Navigation.hpp" 
-#include "Algorithm.hpp"
 
 NavigationModule::NavigationModule(std::vector<std::vector<bool>>& grid/*, some parameter for mapping the grid*/) : grid(grid) {
 
@@ -7,7 +6,7 @@ NavigationModule::NavigationModule(std::vector<std::vector<bool>>& grid/*, some 
 	// grid = parseGrid(/*some parameter for mapping the grid*/);
 
 	//construct an algorithm for navigation based on config input
-	algorithm = new AStar(this->grid); 
+	algorithm = std::make_unique<AStar>(grid);
 }
 
 //called to parse our game into a grid

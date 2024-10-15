@@ -1,12 +1,11 @@
 #include "NavigationModuleTest.hpp"
-#include "NavigationModule/Navigation.hpp"
 #include "NavigationModule/Algorithm.hpp"
-#include "NavigationModule/NavigationEnum.hpp"
 #include <functional>
 #include <thread>
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <memory>
 
 namespace{
 	constexpr const char* RESET = "\033[0m";
@@ -37,21 +36,21 @@ void NavigationModuleTest::setup(){
 			{1,1,1,1,1,1,1,1,1,1,1}
 	};
 
-	nav = new NavigationModule(grid);
+	nav = std::make_unique<NavigationModule>(grid);
 }
 
 void NavigationModuleTest::run(){
-	std::pair<int, int> playerPosition{ 1, 1 };
-	std::pair<int, int> enemyPosition{ 4, 9 };
+	sf::Vector2i playerPosition{ 1, 1 };
+	sf::Vector2i enemyPosition{ 4, 9 };
 
 	navigate(playerPosition, enemyPosition);
 }
 
 //prints out the path finding process as well as execution time of every iteration
 //mainly used for debugging
-void NavigationModuleTest::navigate(std::pair<int, int>& playerPosition, std::pair<int, int>& enemyPosition) {
+void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, sf::Vector2i& enemyPosition) {
 
-	std::pair<int, int> moveTo;
+	sf::Vector2i moveTo;
 	bool updateEnemy = true;
 
 	while (playerPosition != enemyPosition) {
@@ -78,8 +77,8 @@ void NavigationModuleTest::navigate(std::pair<int, int>& playerPosition, std::pa
 		std::cout << "Execution time: " << duration.count() << " microseconds" << std::endl;
 
 		//Change player location
-		playerPosition.first += moveTo.first;
-		playerPosition.second += moveTo.second;
+		playerPosition.x += moveTo.x;
+		playerPosition.y += moveTo.y;
 		if (playerPosition == enemyPosition)
 			updateEnemy = false;
 		//change the enemy location
@@ -94,35 +93,37 @@ void NavigationModuleTest::navigate(std::pair<int, int>& playerPosition, std::pa
 //prints out a colored char from a grid
 void NavigationModuleTest::color(int i, int j) {
 	std::string fill;
-	int c = nav->grid[i][j];
+	bool c = nav->grid[i][j];
 	char out = 'O';
 	switch (c) {
-	case Passable: { fill = MAGENTA; out = 'G';  break; }
-	case NotPassable: { fill = YELLOW; out = 'O'; break; }
-	default:
-		break;
+	case 0: { fill = MAGENTA; out = 'G';  break; }
+	default: { fill = YELLOW; out = 'O'; break; }
 	}
 	std::cout << fill << out << RESET;
 }
 
-const bool NavigationModuleTest::checkOcuppied(const std::pair<int, int>& playerPosition,
-	const std::pair<int, int>& enemyPosition,
+const bool NavigationModuleTest::checkOcuppied(const sf::Vector2i& playerPosition,
+	const sf::Vector2i& enemyPosition,
 	int i, int j) {
-	if (playerPosition.first == i && playerPosition.second == j) {
+
+	if (playerPosition.x == i && playerPosition.y == j) {
 		std::cout << GREEN << "P" << RESET;
 		return true;
 	}
-	if (enemyPosition.first == i && enemyPosition.second == j) {
+	if (enemyPosition.x == i && enemyPosition.y == j) {
 		std::cout << RED << "E" << RESET;
 		return true;
 	}
 	return false;
 }
 //moves an enemy in a random direction that isn't occupied by the player
-void NavigationModuleTest::moveEnemy(std::pair<int, int>& enemyPosition,const std::pair<int, int>& playerPosition, bool updateEnemy) {
+void NavigationModuleTest::moveEnemy(sf::Vector2i& enemyPosition, 
+	const sf::Vector2i& playerPosition,
+	bool updateEnemy) {
+
 	if (!updateEnemy)
 		return;
-	std::vector<std::pair<int, int>> actions;
+	std::vector<sf::Vector2i> actions;
 
 	nav->algorithm->returnActions(enemyPosition,playerPosition, actions);
 

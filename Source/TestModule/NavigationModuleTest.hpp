@@ -1,6 +1,8 @@
 #pragma once
 #include "TestModule/TestBase.hpp"
+#include "NavigationModule/Navigation.hpp"
 #include <iostream>
+#include <memory>
 
 class NavigationModule;
 
@@ -15,19 +17,19 @@ public:
 
 private:
 	//mainly used for debugging
-	void navigate(std::pair<int, int>& playerPosition, std::pair<int, int>& enemyPosition);
+	void navigate(sf::Vector2i& playerPosition, sf::Vector2i& enemyPosition);
 
 	//prints out a colored char from a grid
 	void color(int i, int j);
 
 	//moves an enemy in a random direction that isn't occupied by the player
-	void moveEnemy(std::pair<int, int>& enemyPosition, const std::pair<int, int>& playerPosition, bool updateEnemy);
+	void moveEnemy(sf::Vector2i& enemyPosition, const sf::Vector2i& playerPosition, bool updateEnemy);
 
 	//checks if tile is occupied and colors it if it is
-	const bool checkOcuppied(const std::pair<int, int>& playerPosition,
-							const std::pair<int, int>& enemyPosition,
+	const bool checkOcuppied(const sf::Vector2i& playerPosition,
+							const sf::Vector2i& enemyPosition,
 							int i , int j);
 
 	const std::string Name = "NavigationModuleTest";
-	NavigationModule* nav;
+	std::unique_ptr<NavigationModule> nav;
 };
