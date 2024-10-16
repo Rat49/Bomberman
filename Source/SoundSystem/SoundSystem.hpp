@@ -3,7 +3,8 @@
 #include <SFML/Audio.hpp>
 #include <string>
 #include <map>
-#include <vector>
+#include <list>
+#include <memory>
 
 class SoundSystem
 {
@@ -12,11 +13,17 @@ public:
 
 	void playSound(const std::string& soundName);
 
+	void stopSound(const std::string& soundName);
+
+	void pauseSound(const std::string& soundName);
+
+	bool isSoundPlaying(const std::string& soundName) const;
+
 private:
-	// A map that associates a sound name with the corresponding Sound Buffer
+	// Map that stores sound buffers
 	std::map<std::string, sf::SoundBuffer> soundBuffers;
 
-	// A vector that stores instances of active sounds
-	std::vector<sf::Sound> activeSounds;
+	// List of unique pointers to active sounds
+	std::list<std::unique_ptr<sf::Sound>> activeSounds;
 };
 
