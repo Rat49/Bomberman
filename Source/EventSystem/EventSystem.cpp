@@ -1,60 +1,26 @@
-#include "EventSystem.hpp"
+#include "EventSystem/EventSystem.hpp"
 
-
-int32_t EventSystem::registerEvent()
-{
-	// Return the current ID and increment it for the next event
+int32_t EventSystem::registerEvent() {
 	return nextEventID++;
 }
 
-void EventSystem::subscribe(int32_t eventID, Callback callback)
-{
-	auto& callbacks = subscribers[eventID];
-
-	// Check if the callback is already subscribed
-	auto it = std::find_if(callbacks.begin(), callbacks.end(),
-		[&callback](const Callback& c) {
-			return c.target_type() == callback.target_type();
-		});
-
-	// Add the callback if it is not already subscribed
-	if (it == callbacks.end())
-	{
-		callbacks.push_back(callback);
-	}
-}
-
-void EventSystem::unsubscribe(int32_t eventID, Callback callback)
-{
+void EventSystem::unsubscribe(int32_t eventID, FunctionHandle handle) {
 	auto it = subscribers.find(eventID);
 
-	// If the event exists, remove the specified callback
-	if (it != subscribers.end())
-	{
-		auto& callbacks = it->second;
-		callbacks.erase(std::remove_if(callbacks.begin(), callbacks.end(),
-			[&callback](const Callback& c) {
-				return c.target_type() == callback.target_type();
-			}), callbacks.end());
+	if (it != subscribers.end()) {
+		auto& callbackList = it->second;
 
-		// Remove the event if no more callbacks exist
-		if (callbacks.empty())
-		{
+		// Remove a callback based on its handle
+		callbackList.erase(
+			std::remove_if(callbackList.begin(), callbackList.end(),
+				[handle](const Subscriber& sub) {
+					return sub.handle == handle;
+				}),
+			callbackList.end());
+
+		// If there are no more callbacks, remove the event
+		if (callbackList.empty()) {
 			subscribers.erase(it);
-		}
-	}
-}
-
-void EventSystem::emit(int32_t eventID)
-{
-	auto it = subscribers.find(eventID);
-
-	// Trigger all callbacks for the event if it exists
-	if (it != subscribers.end())
-	{
-		for (const auto& callback : it->second)
-		{
-			callback();
 		}
 	}
 }
