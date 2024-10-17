@@ -5,6 +5,13 @@
 #include <iostream>
 #include <tuple>
 
+struct WindowCloseParams
+{
+	int32_t param1;
+	float param2;
+	std::string param3;
+};
+
 class WindowClosingTest : public TestBase
 {
 public:
@@ -19,6 +26,7 @@ private:
 	sf::RenderWindow window;
 	bool windowClosed = false;
 	int32_t windowCloseEventID = -1;
-	EventSystem::FunctionHandle handle;  
+	EventSystem::FunctionHandle handle;
+
 	void onWindowClosedEvent(int32_t param1, float param2, const std::string& param3);
 };
