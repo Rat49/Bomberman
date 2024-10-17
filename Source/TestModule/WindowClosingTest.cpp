@@ -16,25 +16,31 @@ void WindowClosingTest::setup()
 	// Register the window close event
 	windowCloseEventID = Modules::Events->registerEvent();
 
-	// Subscribe the event to a callback that will close the window
-	handle = Modules::Events->subscribe<int32_t, float, std::string>(
-		windowCloseEventID,
-		std::bind(&WindowClosingTest::onWindowClosedEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+	auto params = new WindowCloseParams{ 42, 3.14f, "Window closed test" };
 
+	// Subscribe the event to a callback that will close the window
+	handle = Modules::Events->subscribe(
+		windowCloseEventID,
+		[this](void* data) 
+		{
+			auto params = static_cast<WindowCloseParams*>(data);
+			this->onWindowClosedEvent(params->param1, params->param2, params->param3);
+		});
 
 	// Emit the event to see if it works
-	Modules::Events->emit<int32_t, float, std::string>(windowCloseEventID, 42, 3.14f, "Window closed test");
+	Modules::Events->emit(windowCloseEventID, params);
 
 	// Unsubscribe to test if the callback is really removed
 	Modules::Events->unsubscribe(windowCloseEventID, handle);
 
 	// Emit the event again to confirm that the callback is not called
-	Modules::Events->emit<int32_t, float, std::string>(windowCloseEventID, 42, 3.14f, "Should not trigger");
+	Modules::Events->emit(windowCloseEventID, params);
 }
 
 void WindowClosingTest::onWindowClosedEvent(int32_t param1, float param2, const std::string& param3)
 {
-	std::cout << "The window is closed with params: " << param1 << ", " << param2 << ", " << param3 << std::endl;
+	std::string message = "The window is closed with params: " + std::to_string(param1) + ", " + std::to_string(param2) + ", " + param3;
+	LOG(message);
 	windowClosed = true;
 }
 
