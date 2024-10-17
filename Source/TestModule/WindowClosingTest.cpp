@@ -21,7 +21,7 @@ void WindowClosingTest::setup()
 	// Subscribe the event to a callback that will close the window
 	handle = Modules::Events->subscribe(
 		windowCloseEventID,
-		[this](void* data) 
+		[this](void* data)
 		{
 			auto params = static_cast<WindowCloseParams*>(data);
 			this->onWindowClosedEvent(params->param1, params->param2, params->param3);

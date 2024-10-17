@@ -9,7 +9,7 @@ EventSystem::FunctionHandle EventSystem::subscribe(int32_t eventID, Callback cal
 {
 	FunctionHandle handle = nextHandleID++;
 
-	subscribers[eventID].push_back({ handle, callback });
+	subscribers[eventID].push_back({ handle, std::move(callback) });
 	return handle;
 }
 
