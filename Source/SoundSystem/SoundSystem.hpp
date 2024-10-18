@@ -37,13 +37,13 @@ private:
 	std::map<int32_t, sf::SoundBuffer> soundBuffers;
 
 	// List of active sounds, paired with their soundID
-	std::list<std::pair<int32_t, std::unique_ptr<sf::Sound>>> activeSounds;
+	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
 
 	//MUSIC
 	// Map that stores music for background music
 	std::map<int32_t, std::unique_ptr<sf::Music>> musicTracks;
 
-	// Unique pointer for the currently playing music
-	std::unique_ptr<sf::Music> currentMusic;
+	// Shared pointer for the currently playing music
+	std::shared_ptr<sf::Music> currentMusic;
 
 };

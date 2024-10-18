@@ -28,7 +28,7 @@ void SoundSystem::playSound(int32_t soundID)
 		sound->play();
 
 		// Saving active sounds
-		activeSounds.push_back({ soundID, std::move(sound) });
+		activeSounds.emplace(soundID, std::move(sound));
 		LOG("Playing sound: %d", soundID);
 	}
 	else 
@@ -40,38 +40,40 @@ void SoundSystem::playSound(int32_t soundID)
 // Stop sound
 void SoundSystem::stopSound(int32_t soundID)
 {
-	for (auto it = activeSounds.begin(); it != activeSounds.end(); ++it)
+	auto it = activeSounds.find(soundID);
+	if (it != activeSounds.end())
 	{
-		if (it->first == soundID)
-		{
-			it->second->stop();
-			LOG("Stopped sound: %d", soundID);
-		}
+		it->second->stop();
+		LOG("Stopped sound: %d", soundID);
+	}
+	else 
+	{
+		LOG("Sound %d not found!", soundID);
 	}
 }
 
 // Pause sound
 void SoundSystem::pauseSound(int32_t soundID)
 {
-	for (auto& soundPair : activeSounds)
+	auto it = activeSounds.find(soundID);
+	if (it != activeSounds.end())
 	{
-		if (soundPair.first == soundID)
-		{
-			soundPair.second->pause();
-			LOG("Paused sound: %d", soundID);
-		}
+		it->second->pause();
+		LOG("Paused sound: %d", soundID);
+	}
+	else
+	{
+		LOG("Sound %d not found!", soundID);
 	}
 }
 
 // Check if sound is playing
 bool SoundSystem::isSoundPlaying(int32_t soundID) const
 {
-	for (const auto& soundPair : activeSounds)
+	auto it = activeSounds.find(soundID);
+	if (it != activeSounds.end())
 	{
-		if (soundPair.first == soundID && soundPair.second->getStatus() == sf::Sound::Playing)
-		{
-			return true;
-		}
+		return it->second->getStatus() == sf::Sound::Playing;
 	}
 	return false;
 }
@@ -97,7 +99,7 @@ void SoundSystem::playMusic(int32_t musicID)
 	auto it = musicTracks.find(musicID);
 	if (it != musicTracks.end())
 	{
-		currentMusic = std::move(it->second);
+		currentMusic = std::shared_ptr<sf::Music>(std::move(it->second));
 		currentMusic->setVolume(100.f);
 		currentMusic->play();
 		LOG("Playing music: %d", musicID);
