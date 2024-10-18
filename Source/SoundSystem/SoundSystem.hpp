@@ -2,7 +2,6 @@
 
 #include <SFML/Audio.hpp>
 #include <map>
-#include <list>
 #include <memory>
 
 class SoundSystem
@@ -36,7 +35,7 @@ private:
 	// Map that stores sound buffers
 	std::map<int32_t, sf::SoundBuffer> soundBuffers;
 
-	// List of active sounds, paired with their soundID
+	// Map of active sounds, paired with their soundID
 	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
 
 	//MUSIC

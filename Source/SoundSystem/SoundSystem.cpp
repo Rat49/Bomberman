@@ -9,11 +9,11 @@ bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 	sf::SoundBuffer buffer;
 	if (!buffer.loadFromFile(filePath)) 
 	{
-		LOG("Failed to load sound from %s", filePath.c_str());
+		LOG("Failed to load sound from $", filePath.c_str());
 		return false;
 	}
 	soundBuffers.emplace(soundID, std::move(buffer));
-	LOG("Successfully loaded sound: %d", soundID);
+	LOG("Successfully loaded sound: $", soundID);
 	return true;
 }
 
@@ -29,11 +29,11 @@ void SoundSystem::playSound(int32_t soundID)
 
 		// Saving active sounds
 		activeSounds.emplace(soundID, std::move(sound));
-		LOG("Playing sound: %d", soundID);
+		LOG("Playing sound:$", soundID);
 	}
 	else 
 	{
-		LOG("Sound %d not found!", soundID);
+		LOG("Sound $ not found!", soundID);
 	}
 }
 
@@ -44,11 +44,11 @@ void SoundSystem::stopSound(int32_t soundID)
 	if (it != activeSounds.end())
 	{
 		it->second->stop();
-		LOG("Stopped sound: %d", soundID);
+		LOG("Stopped sound: $", soundID);
 	}
 	else 
 	{
-		LOG("Sound %d not found!", soundID);
+		LOG("Sound $ not found!", soundID);
 	}
 }
 
@@ -59,11 +59,11 @@ void SoundSystem::pauseSound(int32_t soundID)
 	if (it != activeSounds.end())
 	{
 		it->second->pause();
-		LOG("Paused sound: %d", soundID);
+		LOG("Paused sound: $", soundID);
 	}
 	else
 	{
-		LOG("Sound %d not found!", soundID);
+		LOG("Sound $ not found!", soundID);
 	}
 }
 
@@ -85,11 +85,11 @@ bool SoundSystem::addMusic(int32_t musicID, const std::string& filePath)
 	auto music = std::make_unique<sf::Music>();
 	if (!music->openFromFile(filePath))
 	{
-		LOG("Failed to load music from %s", filePath.c_str());
+		LOG("Failed to load music from $", filePath.c_str());
 		return false;
 	}
 	musicTracks.emplace(musicID, std::move(music));
-	LOG("Successfully loaded music: %d", musicID);
+	LOG("Successfully loaded music: $", musicID);
 	return true;
 }
 
@@ -102,11 +102,11 @@ void SoundSystem::playMusic(int32_t musicID)
 		currentMusic = std::shared_ptr<sf::Music>(std::move(it->second));
 		currentMusic->setVolume(100.f);
 		currentMusic->play();
-		LOG("Playing music: %d", musicID);
+		LOG("Playing music: $", musicID);
 	}
 	else
 	{
-		LOG("Music %d not found!", musicID);
+		LOG("Music $ not found!", musicID);
 	}
 }
 
