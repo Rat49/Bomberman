@@ -1,19 +1,26 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <functional>
 #include <vector>
 #include <string>
 #include <atomic>
+#include <utility>
 #include <SFML/Graphics.hpp>
+#include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
 
-class EventSystem;
+using ActionID       = int32_t;
+using EventID        = int32_t;
+using Vector2D       = sf::Vector2f;
+using FunctionHandle = int32_t;
+using Callback       = std::function<void(void*)>;
 
-using ActionID = int32_t;
-using EventID  = int32_t;
-using Vector2D = sf::Vector2f;
-using Callback = std::function<void()>;
-const Vector2D ZeroVector2D(0.0f, 0.0f);
+enum TriggerState 
+{
+	Active,
+	Inactive
+};
 
 struct Button
 {
@@ -39,10 +46,27 @@ enum class EActionType
 	Axis2DAction
 };
 
+struct ButtonState
+{
+	bool buttonState;
+};
+
+struct Axis1DState
+{
+	float axis1DState;
+};
+
+struct Axis2DState
+{
+	sf::Vector2f axis2DState;
+};
+
 struct ActionData {
 	std::string actionName;
 	EActionType actionType;
+	ActionID actionID;
 	EventID eventID;
+	TriggerState triggerState;
 
 	union BindingUnion {
 		Button button;
@@ -51,7 +75,7 @@ struct ActionData {
 	}Binding;
 
 	union StateUnion {
-		Vector2D axis2DState;
+		sf::Vector2f axis2DState;
 		float axis1DState;
 		bool buttonState;
 	}State;
@@ -62,28 +86,33 @@ class InputModule
 public:
 	InputModule();
 
-	ActionID BindAction(const std::string& ActionName, const Button& button);
+	~InputModule();
 
-	ActionID BindAxis1D(const std::string& ActionName, const Axis1D& axis1D);
+	ActionID BindAction(const std::string& actionName, const Button& button, TriggerState triggerState);
 
-	ActionID BindAxis2D(const std::string& ActionName, const Axis2D& axis2);
+	ActionID BindAxis1D(const std::string& actionName, const Axis1D& axis1D, TriggerState triggerState);
 
-	EventID RegisterEvent(const ActionID ID, const Callback& callback);
+	ActionID BindAxis2D(const std::string& actionName, const Axis2D& axis2, TriggerState triggerState);
 
-	bool UnregisterEvent(const ActionID ID, const Callback& callback);
+	FunctionHandle RegisterEvent(ActionID ID, Callback callback);
 
-	bool GetButtonState(const ActionID ID) const;
+	bool UnregisterEvent(ActionID ID, FunctionHandle functionHandle);
 
-	float GetAxis1D(const ActionID ID) const;
+	bool GetButtonState(ActionID ID) const;
 
-	Vector2D GetAxis2D(const ActionID ID) const;
+	float GetAxis1D(ActionID ID) const;
+
+	sf::Vector2f GetAxis2D(ActionID ID) const;
 
 	void Update();
 
 private:
+	bool isAlmostZero(float x);
+
 	std::atomic<ActionID> actionID;
 
-	std::unique_ptr<EventSystem> InputEventSystem;
+	std::map<ActionID, ActionData> actions;
 
-	std::unordered_map<ActionID, ActionData> Actions;
+	std::map<ActionID, std::vector<int32_t>> events;
 };
+
