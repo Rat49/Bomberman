@@ -10,6 +10,8 @@ class GameModule;
 class EventSystem;
 class ConfigSystem;
 class NavigationModule;
+class SpriteModule;
+
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -28,4 +30,5 @@ struct Modules
 	static std::unique_ptr<EventSystem> Events;
 	static std::unique_ptr<ConfigSystem> Config;
 	static std::unique_ptr<NavigationModule> Navigation;
+	static std::unique_ptr<SpriteModule> Sprite;
 };
