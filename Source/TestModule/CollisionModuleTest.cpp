@@ -1,6 +1,8 @@
 #include "CollisionModuleTest.hpp"
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 #include <iostream>
 #include <random>
 #include <thread>
@@ -19,6 +21,8 @@ const std::string& CollisionModuleTest::getName() const
 }
 
 void CollisionModuleTest::setup() {
+	IDBeginOverlap = Modules::Events->registerEvent();
+	IDEndOverlap = Modules::Events->registerEvent();
 }
 
 void CollisionModuleTest::run() {
@@ -27,14 +31,20 @@ void CollisionModuleTest::run() {
 	float minWidth = 50.f, maxWidth = 200.f;
 	float minHeight = 50.f, maxHeight = 150.f;
 
+	// Create two Collision rectangles with random sizes
+	sf::Vector2f size1(getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight));
+	sf::Vector2f size2(getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight));
+
+	CollisionRectangle rect1(sf::Vector2f(100.f, 100.f), size1, IDBeginOverlap, IDEndOverlap);
+	CollisionRectangle rect2(sf::Vector2f(220.f, 160.f), size2, IDBeginOverlap, IDEndOverlap);
+
 	while (window.isOpen()) {
-		sf::Vector2f size1(getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight));
-		sf::Vector2f size2(getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight));
+		// Set random sizes
+		size1 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
+		size2 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 
-		// Create two Collision rectangles with random sizes
-		CollisionRectangle rect1(sf::Vector2f(100.f, 100.f), size1);
-		CollisionRectangle rect2(sf::Vector2f(220.f, 160.f), size2);
-
+		rect1.getRectangle().setSize(size1);
+		rect2.getRectangle().setSize(size2);
 		sf::Event event;
 		while (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
@@ -42,7 +52,8 @@ void CollisionModuleTest::run() {
 		}
 
 		// Check for overlap between the two rectangles
-		if (rect1.isOverlapping(rect2)) {
+		rect1.isOverlapping(rect2);
+		if (rect1.getIsOverlapped()) {
 			LOG("Collision");
 		}
 		else {

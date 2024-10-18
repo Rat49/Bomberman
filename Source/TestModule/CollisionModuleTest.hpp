@@ -13,4 +13,6 @@ public:
 
 private:
 	const std::string Name = "CollisionModuleTest";
+	int32_t IDBeginOverlap;
+	int32_t IDEndOverlap;
 };
