@@ -40,7 +40,7 @@ private:
 
 	//MUSIC
 	// Map that stores music for background music
-	std::map<int32_t, std::unique_ptr<sf::Music>> musicTracks;
+	std::map<int32_t, std::shared_ptr<sf::Music>> musicTracks;
 
 	// Shared pointer for the currently playing music
 	std::shared_ptr<sf::Music> currentMusic;

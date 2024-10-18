@@ -99,7 +99,7 @@ void SoundSystem::playMusic(int32_t musicID)
 	auto it = musicTracks.find(musicID);
 	if (it != musicTracks.end())
 	{
-		currentMusic = std::shared_ptr<sf::Music>(std::move(it->second));
+		currentMusic = it->second;
 		currentMusic->setVolume(100.f);
 		currentMusic->play();
 		LOG("Playing music: $", musicID);
