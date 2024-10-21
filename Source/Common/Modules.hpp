@@ -10,6 +10,7 @@ class GameModule;
 class EventSystem;
 class ConfigSystem;
 class NavigationModule;
+class SoundSystem;
 class QuestSystem;
 
 /*
@@ -29,5 +30,6 @@ struct Modules
 	static std::unique_ptr<EventSystem> Events;
 	static std::unique_ptr<ConfigSystem> Config;
 	static std::unique_ptr<NavigationModule> Navigation;
+	static std::unique_ptr<SoundSystem> Sounds;
 	static std::unique_ptr<QuestSystem> Quests;
 };
