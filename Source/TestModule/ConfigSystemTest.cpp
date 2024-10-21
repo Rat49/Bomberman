@@ -20,6 +20,10 @@ void ConfigSystemTest::run()
 
 	ConfigFile file1("../../Data/Config/config.ini", true);
 	Modules::Config->addFile(file1);
+
+	ConfigFile questSystemFile("../../Data/Config/questSystem.ini", true);
+	Modules::Config->addFile(questSystemFile);
+
 	std::cout << file1.getSection("Files").getValue("one").getString() << std::endl;
 	Modules::Config->setValue("../../Data/Config/config.ini", "database", "server", "lala");
 	std::cout << Modules::Config->getValue("../../Data/Config/config.ini", "database", "server").getString() << std::endl;;

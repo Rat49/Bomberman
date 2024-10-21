@@ -1,17 +1,31 @@
 #pragma once
 #include "QuestInfo.hpp"
+#include "BaseObjective.hpp"
 
 class Quest {
 public:
-	Quest(int32_t id) { questInfo.setId(id); }
+	Quest(int32_t id, const std::string& questFile);
 
-	enum QuestProgress {
+	~Quest();
+
+	enum class QuestProgress {
 		NOT_AVAILABLE, AVAILABLE, IN_PROGRESS, FINISHED
 	};
-	const std::string& getQuestProgress() const;
+
+	void startQuest();
+
+	void instantiateCurrentObjective();
+
+	void nextObjective();
 
 private:
 	QuestInfo questInfo;
-	QuestProgress questProgress = QuestProgress::NOT_AVAILABLE;
-	int32_t currObjectiveCount = 0;
+	QuestProgress questProgress = QuestProgress::AVAILABLE;
+	int32_t currObjectiveCount = -1;
+	std::string fileName;
+
+	int32_t eventFinished = -1;
+	EventSystem::FunctionHandle eventFinishedHandle = -1;
+
+	std::vector<std::unique_ptr<BaseObjective>> objectives;
 };

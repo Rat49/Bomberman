@@ -5,6 +5,7 @@
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "NavigationModule/Navigation.hpp"
+#include "QuestSystem/QuestSystem.hpp"
 
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
@@ -15,6 +16,7 @@ std::unique_ptr<GameModule> Modules::Game;
 std::unique_ptr<EventSystem> Modules::Events;
 std::unique_ptr<ConfigSystem> Modules::Config;
 std::unique_ptr<NavigationModule> Modules::Navigation;
+std::unique_ptr<QuestSystem> Modules::Quests;
 
 void Modules::initialize()
 {
@@ -28,6 +30,7 @@ void Modules::initialize()
 	// add your modules here
 	Modules::Events = std::make_unique<EventSystem>();
 	Modules::Config = std::make_unique<ConfigSystem>();
+	Modules::Quests = std::make_unique<QuestSystem>();
 }
 
 void Modules::terminate()
@@ -37,7 +40,7 @@ void Modules::terminate()
 	// add your modules here
 	Modules::Events.release();
 	Modules::Config.release();
-
+	Modules::Quests.release();
 #ifndef FINAL
 	Modules::Tests.release();
 	Modules::Logs.release();

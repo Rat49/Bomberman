@@ -1,10 +1,9 @@
 #pragma once
 #include "TestModule/TestBase.hpp"
+#include "EventSystem/EventSystem.hpp"
 #include <iostream>
 
-class ConfigSystem;
-
-class ConfigSystemTest : public TestBase
+class QuestSystemTest : public TestBase
 {
 public:
 	const std::string& getName() const override;
@@ -14,5 +13,7 @@ public:
 	bool isComplete() const override;
 
 private:
-	const std::string Name = "ConfigSystemTest";
+	int32_t placeBombEventID, destroyBlockEventID;
+	const std::string Name = "QuestSystemTest";
+	EventSystem::FunctionHandle handle;
 };
