@@ -12,18 +12,41 @@ const std::string& ConfigSystemTest::getName() const
 void ConfigSystemTest::setup()
 {
 	LOG("ConfigSystemTest: setup()");
-	configSystem = new ConfigSystem();
 }
 
 void ConfigSystemTest::run()
 {
 	LOG("ConfigSystemTest: run()");
+	
+	LOG("get value from test file -> $", Modules::Config->getValue(FileName::configTest, "Files", "one").getString());
+	Modules::Config->setValue(FileName::configTest, "database", "server", "lala");
+	LOG("set value lala, and get it from test file -> $", Modules::Config->getValue(FileName::configTest, "database", "server").getString());
+	
 
-	ConfigFile file1("../../Data/Config/config.ini", true);
-	configSystem->addFile(file1);
-	std::cout << file1.getSection("Files").getValue("one").getString() << std::endl;
-	configSystem->setValue("../../Data/Config/config.ini", "database", "server", "lala");
-	std::cout << configSystem->getValue("../../Data/Config/config.ini", "database", "server").getString() << std::endl;;
+	// from Lazar Stojanovic's Atlas::parseDescriptionFile
+	// first way with getting file
+	LOG("Parsing WalkingAnimation file");
+	ConfigFile& walkingAnimations = Modules::Config->getFile(FileName::WalkingAnimation);
+
+	int frameIndex = 1;
+	const auto& sections = walkingAnimations.getAllSections();
+	for(const auto& sectionName : sections)
+	{
+		if (!walkingAnimations.isSectionPresent(sectionName))
+			break;
+
+		if (walkingAnimations.getSection(sectionName).areValuesPresent({"x", "y", "width", "height"}))
+		{
+			//take values for animation
+			const ConfigSection& mySection = walkingAnimations.getSection(sectionName);
+			float x = mySection.getValue("x").getFloat();
+			float y = mySection.getValue("y").getFloat();
+			int32_t width = mySection.getValue("width").getInt32();
+			int32_t height = mySection.getValue("height").getInt32();
+			LOG("x: $, y: $, width: $, heigth: $", x, y, width, height);
+		}
+		frameIndex++;
+	}
 }
 
 bool ConfigSystemTest::isComplete() const

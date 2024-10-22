@@ -12,6 +12,8 @@ public:
 
 	bool open();
 
+	const std::vector<std::string> getAllSections() const;
+
 	const ConfigSection& getSection(const std::string& name) const;
 
 	void setSection(const std::string& name, const ConfigSection& section);
