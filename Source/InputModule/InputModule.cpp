@@ -146,7 +146,7 @@ void InputModule::Update()
 	{
 		EActionType actionType = action.second.actionType;
 		EventID eventID        = action.second.eventID;
-		bool shouldEmit        = (action.second.eventID != -1) ? true : false;
+		bool shouldEmit        = action.second.eventID != -1;
 		void* params           = nullptr;
 		switch (actionType)
 		{
@@ -165,7 +165,7 @@ void InputModule::Update()
 		case EActionType::Axis2DAction:
 			action.second.State.axis2DState.x = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.negativeAxis.Key) ? -1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.positiveAxis.Key) ? 1.0f : 0.0f);
 			action.second.State.axis2DState.y = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.negativeAxis.Key) ? 1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.positiveAxis.Key) ? -1.0f : 0.0f);
-			shouldEmit                        = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis2DState.x) || !FloatUtils::isAlmostZero(action.second.State.axis2DState.y));
+			shouldEmit                        = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis2DState));
 			params                            = &action.second.State.axis2DState;
 			break;
 

@@ -16,8 +16,8 @@ private:
 	const std::string Name = "InputModuleTest";
 	int32_t bindedFunctions = 0;
 	int32_t numberOfFunctions = 3;
-	void buttonTest(bool state);
-	void axis1DTest(float state);
-	void axis2DTest(sf::Vector2f state);
+	void buttonTest(void* buttonState);
+	void axis1DTest(void* axis1DState);
+	void axis2DTest(void* axis2DState);
 };
 
