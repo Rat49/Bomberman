@@ -1,7 +1,6 @@
 #pragma once
 #include "TestModule/TestBase.hpp"
 #include "EventSystem/EventSystem.hpp"
-#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <tuple>
 
@@ -18,7 +17,7 @@ public:
 	const std::string& getName() const override;
 	void setup() override;
 	void run() override;
-	void update(float) override { }
+	void update(float, sf::RenderWindow* ) override { }
 	bool isComplete() const override;
 
 private:

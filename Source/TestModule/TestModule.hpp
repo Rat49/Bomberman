@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <SFML/Graphics.hpp>
 
 #ifndef FINAL
 
@@ -27,7 +28,7 @@ public:
 	void run();
 
 	// Tick for all tests
-	void update(float deltaTime);
+	void update(float deltaTime, sf::RenderWindow* window);
 
 private:
 	std::vector<std::shared_ptr<TestBase>> m_tests;
