@@ -5,14 +5,13 @@
 #include <vector>
 #include <atomic>
 
+using FunctionHandle = int32_t;
+using Callback = std::function<void(void*)>;
+
 class EventSystem
 {
 public:
 	EventSystem() = default;
-
-	using FunctionHandle = int32_t;
-
-	using Callback = std::function<void(void*)>;
 
 	// Function to register a new event and return its unique ID
 	int32_t registerEvent();

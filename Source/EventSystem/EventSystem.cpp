@@ -5,7 +5,7 @@ int32_t EventSystem::registerEvent()
 	return nextEventID++;
 }
 
-EventSystem::FunctionHandle EventSystem::subscribe(int32_t eventID, Callback callback)
+FunctionHandle EventSystem::subscribe(int32_t eventID, Callback callback)
 {
 	FunctionHandle handle = nextHandleID++;
 
