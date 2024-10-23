@@ -4,6 +4,14 @@
 #include "Common/Logs.hpp"
 #include <iostream>
 
+// instead of namespace this could be also defined inside run() method, because it is only used there
+namespace {
+	const std::string X = "x";
+	const std::string Y = "y";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+}
+
 const std::string& ConfigSystemTest::getName() const
 {
 	return Name;
@@ -17,35 +25,27 @@ void ConfigSystemTest::setup()
 void ConfigSystemTest::run()
 {
 	LOG("ConfigSystemTest: run()");
-	
-	LOG("get value from test file -> $", Modules::Config->getValue(FileName::configTest, "Files", "one").getString());
-	Modules::Config->setValue(FileName::configTest, "database", "server", "lala");
-	LOG("set value lala, and get it from test file -> $", Modules::Config->getValue(FileName::configTest, "database", "server").getString());
-	
 
-	// from Lazar Stojanovic's Atlas::parseDescriptionFile
-	// first way with getting file
 	LOG("Parsing WalkingAnimation file");
 	ConfigFile& walkingAnimations = Modules::Config->getFile(FileName::WalkingAnimation);
 
-	int frameIndex = 1;
 	const auto& sections = walkingAnimations.getAllSections();
+
 	for(const auto& sectionName : sections)
 	{
 		if (!walkingAnimations.isSectionPresent(sectionName))
 			break;
 
-		if (walkingAnimations.getSection(sectionName).areValuesPresent({"x", "y", "width", "height"}))
+		if (walkingAnimations.getSection(sectionName).areValuesPresent({X, Y, WIDTH, HEIGHT}))
 		{
 			//take values for animation
 			const ConfigSection& mySection = walkingAnimations.getSection(sectionName);
-			float x = mySection.getValue("x").getFloat();
-			float y = mySection.getValue("y").getFloat();
-			int32_t width = mySection.getValue("width").getInt32();
-			int32_t height = mySection.getValue("height").getInt32();
+			float x = mySection.getValue(X).getFloat();
+			float y = mySection.getValue(Y).getFloat();
+			int32_t width = mySection.getValue(WIDTH).getInt32();
+			int32_t height = mySection.getValue(HEIGHT).getInt32();
 			LOG("x: $, y: $, width: $, heigth: $", x, y, width, height);
 		}
-		frameIndex++;
 	}
 }
 
