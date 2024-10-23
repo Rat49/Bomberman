@@ -1,11 +1,11 @@
 #include "EventSystem/EventSystem.hpp"
 
-int32_t EventSystem::registerEvent()
+EventID EventSystem::registerEvent()
 {
 	return nextEventID++;
 }
 
-EventSystem::FunctionHandle EventSystem::subscribe(int32_t eventID, Callback callback)
+FunctionHandle EventSystem::subscribe(EventID eventID, Callback callback)
 {
 	FunctionHandle handle = nextHandleID++;
 
@@ -13,7 +13,7 @@ EventSystem::FunctionHandle EventSystem::subscribe(int32_t eventID, Callback cal
 	return handle;
 }
 
-void EventSystem::unsubscribe(int32_t eventID, FunctionHandle handle)
+void EventSystem::unsubscribe(EventID eventID, FunctionHandle handle)
 {
 	auto it = subscribers.find(eventID);
 
@@ -38,7 +38,7 @@ void EventSystem::unsubscribe(int32_t eventID, FunctionHandle handle)
 	}
 }
 
-void EventSystem::emit(int32_t eventID, void* param)
+void EventSystem::emit(EventID eventID, void* param)
 {
 	auto it = subscribers.find(eventID);
 	if (it != subscribers.end())
