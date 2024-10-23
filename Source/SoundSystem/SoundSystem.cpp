@@ -82,6 +82,18 @@ bool SoundSystem::addSounds(int32_t soundID, const std::list<std::string>&filePa
 	return true;
 }
 
+void SoundSystem::playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID)
+{
+	auto sound = std::make_unique<sf::Sound>();
+	sound->setBuffer(buffer);
+	sound->setVolume(100.f);
+	sound->play();
+
+	// Saving active sounds
+	activeSounds.emplace(soundID, std::move(sound));
+	LOG("Playing sound: $", soundID);
+}
+
 // Playing sound from the buffer
 void SoundSystem::playSound(int32_t soundID)
 {
@@ -93,13 +105,7 @@ void SoundSystem::playSound(int32_t soundID)
 		// Check if there's only one buffer
 		if (buffers.size() == 1)
 		{
-			auto sound = std::make_unique<sf::Sound>();
-			sound->setBuffer(buffers.front());
-			sound->setVolume(100.f);
-			sound->play();
-
-			// Saving active sounds
-			activeSounds.emplace(soundID, std::move(sound));
+			playSoundFromBuffer(buffers.front(), soundID);
 			LOG("Playing single sound: $", soundID);
 		}
 		// More than one sound, pick a random one
@@ -111,14 +117,7 @@ void SoundSystem::playSound(int32_t soundID)
 			std::uniform_int_distribution<size_t> dist(0, std::distance(buffers.begin(), buffers.end()) - 1);
 			auto randomIt = std::next(buffers.begin(), dist(randomEngine));
 
-			auto sound = std::make_unique<sf::Sound>();
-			// Use random buffer
-			sound->setBuffer(*randomIt);
-			sound->setVolume(100.f);
-			sound->play();
-
-			// Saving active sounds
-			activeSounds.emplace(soundID, std::move(sound));
+			playSoundFromBuffer(*randomIt, soundID);
 			LOG("Playing sound:$", soundID);
 		}
 	}

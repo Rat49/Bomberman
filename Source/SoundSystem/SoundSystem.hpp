@@ -28,6 +28,8 @@ public:
 
 	bool isSoundPlaying(int32_t soundID) const;
 
+	void playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID);
+
 
 	// MUSIC: used to play compressed music that lasts several minutes
 
