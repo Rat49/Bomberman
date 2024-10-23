@@ -4,11 +4,9 @@
 class ConfigFile
 {
 public:
-	ConfigFile(const std::string& name="", bool isPermanent=false) : m_name(name), m_isPermanent(isPermanent) { }
+	ConfigFile(const std::string& name="") : m_name(name) { }
 
 	const std::string& getName() const { return m_name; }
-
-	bool getIsPermanent() const { return m_isPermanent; }
 
 	bool open();
 
@@ -26,6 +24,4 @@ private:
 	std::unordered_map <std::string, ConfigSection> m_sections;
 
 	std::string m_name;
-
-	bool m_isPermanent;
 };
