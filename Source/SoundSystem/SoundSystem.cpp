@@ -1,6 +1,7 @@
 #include "SoundSystem/SoundSystem.hpp"
 #include "Common/Logs.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include <random>
 #include <iostream>
 
 // SOUND
@@ -58,7 +59,7 @@ bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 }
 
 // Adding a sound effect that can have multiple sounds
-bool SoundSystem::addSoundEffects(int32_t soundID, const std::vector<std::string>&filePaths)
+bool SoundSystem::addSounds(int32_t soundID, const std::list<std::string>&filePaths)
 {
 	// Check if a sound with the same ID already exists
 	if (soundEffectBuffers.find(soundID) != soundEffectBuffers.end())
@@ -66,9 +67,6 @@ bool SoundSystem::addSoundEffects(int32_t soundID, const std::vector<std::string
 		LOG("Sound effect with ID $ already exists!", soundID);
 		return false; 
 	}
-
-	// Vector for sound buffers
-	std::vector<sf::SoundBuffer> buffers;
 
 	// Loading sound files
 	for (const auto& filePath : filePaths)
@@ -96,7 +94,7 @@ void SoundSystem::playSound(int32_t soundID)
 		if (buffers.size() == 1)
 		{
 			auto sound = std::make_unique<sf::Sound>();
-			sound->setBuffer(buffers[0]); 
+			sound->setBuffer(buffers.front());
 			sound->setVolume(100.f);
 			sound->play();
 
@@ -110,12 +108,12 @@ void SoundSystem::playSound(int32_t soundID)
 			// Create generator and distribution locally
 			std::random_device randomDevice;
 			std::mt19937 randomEngine{ randomDevice() };
-			std::uniform_int_distribution<size_t> dist(0, it->second.size() - 1);
-			size_t randomIndex = dist(randomEngine);
+			std::uniform_int_distribution<size_t> dist(0, std::distance(buffers.begin(), buffers.end()) - 1);
+			auto randomIt = std::next(buffers.begin(), dist(randomEngine));
 
 			auto sound = std::make_unique<sf::Sound>();
 			// Use random buffer
-			sound->setBuffer(buffers[randomIndex]);
+			sound->setBuffer(*randomIt);
 			sound->setVolume(100.f);
 			sound->play();
 

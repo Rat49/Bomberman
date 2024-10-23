@@ -3,8 +3,7 @@
 #include <SFML/Audio.hpp>
 #include <map>
 #include <memory>
-#include <vector>
-#include <random>
+#include <list>
 #include <string>
 
 class SoundSystem
@@ -18,8 +17,8 @@ public:
 	// Loading sounds from the configuration file
 	bool loadSoundsFromConfig(const std::string& configFilePath);
 
-	// Adding a sound effect that can have multiple sounds
-	bool addSoundEffects(int32_t soundID, const std::vector<std::string>& filePaths);
+	// Adding a sound that can have multiple sounds
+	bool addSounds(int32_t soundID, const std::list<std::string>& filePaths);
 
 	void playSound(int32_t soundID);
 
@@ -45,7 +44,7 @@ public:
 private:
 	//SOUNDS
 	// Map that associates a soundID with a list of SoundBuffer objects
-	std::map<int32_t, std::vector<sf::SoundBuffer>> soundEffectBuffers;
+	std::map<int32_t, std::list<sf::SoundBuffer>> soundEffectBuffers;
 
 	// Map of active sounds, paired with their soundID
 	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
