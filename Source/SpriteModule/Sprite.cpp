@@ -2,9 +2,10 @@
 #include <iostream>
 #include <cstdint>
 
+/*
 void Sprite::initialize(const std::string& name, const Atlas& atlas)
 {
-	auto textureRect = atlas.getTextureRect(name);
+	/*auto textureRect = atlas.getTextureRect(name);
 
 	if (textureRect)
 	{
@@ -12,3 +13,4 @@ void Sprite::initialize(const std::string& name, const Atlas& atlas)
 		setTextureRect(*textureRect);
 	}
 }
+*/

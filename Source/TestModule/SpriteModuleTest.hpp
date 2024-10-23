@@ -2,6 +2,7 @@
 
 #include <string>
 #include "TestModule/TestBase.hpp"
+#include "SFML/Graphics.hpp"
 
 class SpriteModule;
 
@@ -18,5 +19,6 @@ private:
 
 	const std::string name = "SpriteModuleTest";
 	int32_t m_animationId;
+	sf::RenderWindow m_window;
 };
 

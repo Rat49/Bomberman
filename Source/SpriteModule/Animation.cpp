@@ -1,26 +1,31 @@
 ﻿#include "Animation.hpp"
+#include "SpriteModule/Animation.hpp"
 #include <iostream>
 #include <cstdint>
 
 
 //Problem with animation init
-Animation::Animation(const std::string& atlasPath, const std::string& configFilePath, bool isLooping)
+Animation::Animation(const std::string& configFilePath)
 {
-	//Do i need to create constructor for AnimationInfo?
-	m_info.m_currentFrame = 0;
-	m_info.m_elapsedTime = 0.f;
-	m_info.m_isPlaying = false;
-	m_info.m_isLooping = isLooping;
-
 	//init atlas
-	m_info.m_atlas = std::make_shared<Atlas>();
-	if (!m_info.m_atlas->initialize(atlasPath, configFilePath))
+	m_atlas = std::make_unique<Atlas>();
+	if (!m_atlas->initialize(configFilePath))
 		return;
 
-	//how to init spriteInfo?
+	//set animation info
+	m_info.m_isLooping = m_atlas->isLooping();
+	m_info.m_frameDuration = m_atlas->getRenderDuration();
 
-	//how to get the name for section? 
-	m_info.m_atlas->initializeSprite("Walk1"); //for TEESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT!!!!!!!!!!!!!!!!!!!!
+	//get atlas and rects
+	for (const auto& [textureName, rects] : m_atlas->getAllTextureRects())
+	{
+		m_rects.push_back(rects);
+	}
+	m_textures.push_back(m_atlas->getTexture());
+
+	m_sprite.setTexture(*m_textures[0]);
+	m_sprite.setTextureRect(m_rects[0]);
+
 }
 
 void Animation::Update(float deltaTime)
@@ -29,49 +34,48 @@ void Animation::Update(float deltaTime)
 		return;
 
 
-	m_info.m_elapsedTime += deltaTime;
-	float currentFrameDuraton = m_info.m_spriteInfos[m_info.m_currentFrame].m_renderDuration;
+	m_elapsedTime += deltaTime;
 
 	//reset elapsed time for next frame and increase frame
-	if (m_info.m_elapsedTime > currentFrameDuraton)
+	if (m_elapsedTime > m_info.m_frameDuration)
 	{
-		m_info.m_elapsedTime -= currentFrameDuraton;
-		int32_t  previousFrame = m_info.m_currentFrame;
-		m_info.m_currentFrame++;
+		m_elapsedTime -= m_info.m_frameDuration;
+		int32_t  previousFrame = m_currentFrame;
+		m_currentFrame++;
 
 		//check if its end of animation
-		if (m_info.m_currentFrame >= static_cast<int32_t>(m_info.m_spriteInfos.size()))
+		if (m_currentFrame >= static_cast<int32_t>(m_rects.size()))
 		{
 			if (m_info.m_isLooping)
 			{
-				m_info.m_currentFrame = 0;
+				m_currentFrame = 0;
 			}
 			else
 			{
-				m_info.m_currentFrame = static_cast<int32_t>(m_info.m_spriteInfos.size() - 1); //keep last frame
+				m_currentFrame = static_cast<int32_t>(m_rects.size() - 1); //keep last frame
 				Stop();
 			}
 
 		}
 
 		//set texture and rect
-		if (previousFrame != m_info.m_currentFrame)
+		if (previousFrame != m_currentFrame)
 		{
-			m_info.m_sprite->setTexture(*m_info.m_spriteInfos[m_info.m_currentFrame].m_texture);  
-			m_info.m_sprite->setTextureRect(*m_info.m_spriteInfos[m_info.m_currentFrame].m_rect); //do i need to use sprite to change rects because i want do draw sprite on window
+			m_sprite.setTexture(*m_textures[0]);
+			m_sprite.setTextureRect(m_rects[m_currentFrame]);
 		}
 	}
 }
 
 void Animation::Play()
 {
-	m_info.m_isPlaying = true;
-	m_info.m_currentFrame = 0;
-	m_info.m_elapsedTime = 0;
+	m_isPlaying = true;
+	m_currentFrame = 0;
+	m_elapsedTime = 0;
 }
 
 void Animation::Stop()
 {
-	m_info.m_isPlaying = false;
-	m_info.m_elapsedTime = 0;
+	m_isPlaying = false;
+	m_elapsedTime = 0;
 }

@@ -1,10 +1,10 @@
 #include "SpriteModule.hpp"
 
 
-AnimationId SpriteModule::createAnimation(const std::string& atlasPath, const std::string& configFilePath, bool isLooping)
+AnimationId SpriteModule::createAnimation(const std::string& configFilePath)
 {
 	animId++;
-	m_animations[animId] = std::make_shared<Animation>(atlasPath, configFilePath, isLooping);
+	m_animations[animId] = std::make_shared<Animation>(configFilePath);
 	return animId;
 }
 
@@ -20,8 +20,11 @@ std::shared_ptr<Animation> SpriteModule::getAnimation(AnimationId id) const
 
 void SpriteModule::update(float deltaTime)
 {
+	/*
 	for (auto& pair : m_animations)
 	{
 		pair.second->Update(deltaTime); //call update from Animation class
 	}
+	*/
+	m_animations[0]->Update(deltaTime);
 }
