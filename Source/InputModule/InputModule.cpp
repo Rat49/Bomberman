@@ -1,5 +1,8 @@
 #include "InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
+#include "Common/Logs.hpp"
+#include "Common/FloatUtils.hpp"
+#include "Common/Modules.hpp"
 
 InputModule::InputModule()
 {
