@@ -10,6 +10,7 @@ namespace {
 	const std::string Y = "y";
 	const std::string WIDTH = "width";
 	const std::string HEIGHT = "height";
+	const std::string PATH_WALKING_ANIMATION = "../../Data/Config/WalkingAnimation.ini";
 }
 
 const std::string& ConfigSystemTest::getName() const
@@ -27,7 +28,8 @@ void ConfigSystemTest::run()
 	LOG("ConfigSystemTest: run()");
 
 	LOG("Parsing WalkingAnimation file");
-	ConfigFile& walkingAnimations = Modules::Config->getFile(FileName::WalkingAnimation);
+	Modules::Config->addFile(PATH_WALKING_ANIMATION);
+	const ConfigFile& walkingAnimations = Modules::Config->getFile(PATH_WALKING_ANIMATION);
 
 	const auto& sections = walkingAnimations.getAllSections();
 

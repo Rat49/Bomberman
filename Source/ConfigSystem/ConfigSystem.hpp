@@ -5,35 +5,29 @@
 #include "ConfigParser.hpp"
 #include "ConfigFile.hpp"
 
-enum class FileName {
-	configTest,
-	WalkingAnimation,
-	questSystem
-};
-
 class ConfigSystem {
 public:
 
-	ConfigSystem();
+	const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const;
 
-	ConfigFile& getFile(const FileName& configFile) const;
+	void ConfigSystem::addFile(const std::string& configFile);
 
-	void removeFile(const FileName& configFile);
+	void removeFile(const std::string& configFile);
 
-	bool isFilePresent(const FileName& configFile) const;
+	bool isFilePresent(const std::string& configFile) const;
 
-	bool isSectionPresent(const FileName& configFile, const std::string& sectionName) const;
+	bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
 
-	bool isValuePresent(const FileName& configFile, const std::string& sectionName, const std::string& valueName) const;
+	bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
-	bool areValuesPresent(const FileName& configFile, const std::string& sectionName, const std::vector<std::string>& keys) const;
+	bool areValuesPresent(const std::string& configFile, const std::string& sectionName, const std::vector<std::string>& keys) const;
 
-	const ConfigValue& getValue(const FileName& configFile, const std::string& sectionName, const std::string& valueName) const;
+	const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
-	void setValue(const FileName& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value);
+	void setValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value);
 
 private:
-	static std::unordered_map<FileName, ConfigFile> configFiles;
+	std::unordered_map<std::string, ConfigFile> configFiles;
 
 	ConfigParser parser;
 };
