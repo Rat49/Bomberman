@@ -5,18 +5,18 @@
 
 // SOUND
 // Load audio and save to folder
-//bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
-//{
-//	sf::SoundBuffer buffer;
-//	if (!buffer.loadFromFile(filePath)) 
-//	{
-//		LOG("Failed to load sound from $", filePath.c_str());
-//		return false;
-//	}
-//	soundBuffers.emplace(soundID, std::move(buffer));
-//	LOG("Successfully loaded sound: $", soundID);
-//	return true;
-//}
+bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
+{
+	sf::SoundBuffer buffer;
+	if (!buffer.loadFromFile(filePath))
+	{
+		LOG("Failed to load sound from $", filePath.c_str());
+		return false;
+	}
+	soundEffectBuffers[soundID].emplace_back(std::move(buffer));
+	LOG("Successfully loaded sound: $", soundID);
+	return true;
+}
 
 
 // Loading sounds from the configuration file
@@ -29,53 +29,57 @@ bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 	int32_t soundID = 1;
 	bool anySoundAdded = false;
 
-	// Step through the sections for each sound, TEST
-	std::vector<std::string> effects = { "WalkSound", "ExplosionSound" };
+	// This part is commented out for now because I don't have a method like getAllSections(), but once Tijana adds it, I will use it here like this
+	/*
+	// Step through all sections in the config file
+	auto sectionNames = configFile.getAllSections();
 
-	for (const auto& effectName : effects)
+	for (const auto& effectName : sectionNames)
 	{
-		if (!configFile.isSectionPresent(effectName))
-			continue;
+		std::vector<std::string> filePaths;
 
-		std::vector<std::string> soundPaths;
-		for (int i = 1; ; ++i)
+		// Iterate through keys in the section to gather all sound file paths
+		int32_t i = 1;
+		while (configFile.getSection(effectName).isValuePresent("sound" + std::to_string(i)))
 		{
-			// The prefix 'sound' is used this way because, in the 'ini' file, I have keys like 'sound1', 'sound2', 'sound3'
-			std::string soundKey = "sound" + std::to_string(i);
-			if (!configFile.getSection(effectName).isValuePresent(soundKey))
-				break;
-
-			std::string soundPath = configFile.getSection(effectName).getValue(soundKey).getString();
-			soundPaths.push_back(soundPath);
+			filePaths.push_back(configFile.getSection(effectName).getValue("sound" + std::to_string(i)).getString());
+			i++;
 		}
 
-		if (!soundPaths.empty())
+		if (!filePaths.empty())
 		{
-			// Load sound files for this effect
-			addSoundEffect(soundID++, soundPaths);
+			addSoundEffect(soundID++, filePaths);
 			anySoundAdded = true;
 		}
 	}
+	*/
 
 	return anySoundAdded;
 }
 
 // Adding a sound effect that can have multiple sounds
-bool SoundSystem::addSoundEffect(int32_t soundID, const std::vector<std::string>&filePaths)
+bool SoundSystem::addSoundEffects(int32_t soundID, const std::vector<std::string>&filePaths)
 {
+	// Check if a sound with the same ID already exists
+	if (soundEffectBuffers.find(soundID) != soundEffectBuffers.end())
+	{
+		LOG("Sound effect with ID $ already exists!", soundID);
+		return false; 
+	}
+
+	// Vector for sound buffers
 	std::vector<sf::SoundBuffer> buffers;
+
+	// Loading sound files
 	for (const auto& filePath : filePaths)
 	{
-		sf::SoundBuffer buffer;
-		if (!buffer.loadFromFile(filePath))
+		if (!addSound(soundID, filePath))
 		{
 			LOG("Failed to load sound from $", filePath.c_str());
 			return false;
 		}
-		buffers.push_back(std::move(buffer));
 	}
 
-	soundEffectBuffers.emplace(soundID, std::move(buffers));
 	LOG("Successfully loaded sound effect $", soundID);
 	return true;
 }
@@ -86,19 +90,39 @@ void SoundSystem::playSound(int32_t soundID)
 	auto it = soundEffectBuffers.find(soundID);
 	if (it != soundEffectBuffers.end() && !it->second.empty())
 	{
-		// Picking a random sound from a list
 		const auto& buffers = it->second;
-		std::uniform_int_distribution<size_t> dist(0, buffers.size() - 1);
-		size_t randomIndex = dist(randomEngine);
 
-		auto sound = std::make_unique<sf::Sound>();
-		sound->setBuffer(buffers[randomIndex]);
-		sound->setVolume(100.f);
-		sound->play();
+		// Check if there's only one buffer
+		if (buffers.size() == 1)
+		{
+			auto sound = std::make_unique<sf::Sound>();
+			sound->setBuffer(buffers[0]); 
+			sound->setVolume(100.f);
+			sound->play();
 
-		// Saving active sounds
-		activeSounds.emplace(soundID, std::move(sound));
-		LOG("Playing sound:$", soundID);
+			// Saving active sounds
+			activeSounds.emplace(soundID, std::move(sound));
+			LOG("Playing single sound: $", soundID);
+		}
+		// More than one sound, pick a random one
+		else
+		{
+			// Create generator and distribution locally
+			std::random_device randomDevice;
+			std::mt19937 randomEngine{ randomDevice() };
+			std::uniform_int_distribution<size_t> dist(0, it->second.size() - 1);
+			size_t randomIndex = dist(randomEngine);
+
+			auto sound = std::make_unique<sf::Sound>();
+			// Use random buffer
+			sound->setBuffer(buffers[randomIndex]);
+			sound->setVolume(100.f);
+			sound->play();
+
+			// Saving active sounds
+			activeSounds.emplace(soundID, std::move(sound));
+			LOG("Playing sound:$", soundID);
+		}
 	}
 	else 
 	{
