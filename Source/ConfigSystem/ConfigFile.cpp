@@ -8,6 +8,15 @@ bool ConfigFile::open()
 	return true;
 }
 
+const std::vector<std::string> ConfigFile::getAllSections() const
+{
+	std::vector<std::string> res;
+	for (const auto& it : m_sections) {
+		res.push_back(it.first);
+	}
+	return res;
+}
+
 const ConfigSection& ConfigFile::getSection(const std::string& name) const
 {
 	auto it = m_sections.find(name);

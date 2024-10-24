@@ -11,7 +11,7 @@ class EventSystem;
 class ConfigSystem;
 class NavigationModule;
 class SoundSystem;
-class QuestSystem;
+class InputModule;
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -31,5 +31,5 @@ struct Modules
 	static std::unique_ptr<ConfigSystem> Config;
 	static std::unique_ptr<NavigationModule> Navigation;
 	static std::unique_ptr<SoundSystem> Sounds;
-	static std::unique_ptr<QuestSystem> Quests;
+	static std::unique_ptr<InputModule> Input;
 };

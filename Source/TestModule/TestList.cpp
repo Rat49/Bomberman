@@ -6,7 +6,7 @@
 #include "TestModule/WindowClosingTest.hpp"
 #include "TestModule/ConfigSystemTest.hpp"
 #include "TestModule/NavigationModuleTest.hpp"
-#include "TestModule/QuestSystemTest.hpp"
+#include "TestModule/InputModuleTest.hpp"
 
 #ifndef FINAL
 
@@ -19,7 +19,7 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
 	Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
 	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
-	Modules::Tests->addTest(std::make_shared<QuestSystemTest>());
+	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
 }
 
 #endif
