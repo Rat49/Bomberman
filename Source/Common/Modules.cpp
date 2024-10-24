@@ -6,7 +6,6 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "NavigationModule/Navigation.hpp"
 #include "SoundSystem/SoundSystem.hpp"
-#include "CollisionModule/CollisionRectangle.hpp"
 
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
@@ -18,7 +17,6 @@ std::unique_ptr<EventSystem> Modules::Events;
 std::unique_ptr<ConfigSystem> Modules::Config;
 std::unique_ptr<NavigationModule> Modules::Navigation;
 std::unique_ptr<SoundSystem> Modules::Sounds;
-std::unique_ptr<CollisionRectangle> Modules::Collision;
 
 void Modules::initialize()
 {
@@ -33,7 +31,6 @@ void Modules::initialize()
 	Modules::Events = std::make_unique<EventSystem>();
 	Modules::Config = std::make_unique<ConfigSystem>();
 	Modules::Sounds = std::make_unique<SoundSystem>();
-	Modules::Collision = std::make_unique<CollisionRectangle>();
 }
 
 void Modules::terminate()
@@ -44,7 +41,6 @@ void Modules::terminate()
 	Modules::Events.release();
 	Modules::Config.release();
 	Modules::Sounds.release();
-	Modules::Collision.release();
 
 #ifndef FINAL
 	Modules::Tests.release();

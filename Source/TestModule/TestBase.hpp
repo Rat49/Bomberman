@@ -1,10 +1,14 @@
 #pragma once
 #include <string>
-#include <SFML/Graphics.hpp>
+
 /* 
 * Generic interface for the test.
 * Implement your test based on this class.
 */
+
+namespace sf {
+	class RenderWindow; 
+}
 class TestBase
 {
 public:

@@ -1,6 +1,7 @@
 #pragma once
 #include "TestModule/TestBase.hpp"
 #include "EventSystem/EventSystem.hpp"
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <tuple>
 

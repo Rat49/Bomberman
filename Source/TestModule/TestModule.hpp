@@ -1,12 +1,14 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include <SFML/Graphics.hpp>
 
 #ifndef FINAL
 
-class TestBase;
 
+class TestBase;
+namespace sf {
+	class RenderWindow;
+}
 /*
 * Module which allows you to add test of any type and perform them outside of the game.
 * Best place to register your test is in your module constructor!

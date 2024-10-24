@@ -3,15 +3,10 @@
 #include "EventSystem/EventSystem.hpp"
 #include "Common/Logs.hpp"
 
-CollisionRectangle::CollisionRectangle() {
-	rectangle.setPosition(sf::Vector2f(100.f, 100.f));
-	rectangle.setSize(sf::Vector2f(100.f, 100.f));
-}
 // Constructor that sets up the rectangle shape with a position and size
 CollisionRectangle::CollisionRectangle(const sf::Vector2f& position, const sf::Vector2f& size) {
 	rectangle.setPosition(position);
 	rectangle.setSize(size);
-
 }
 
 // Function to check for overlap with another Collision object
@@ -20,8 +15,13 @@ const bool CollisionRectangle::isOverlapping(CollisionRectangle& other){
 }
 
 // Getter function for the internal rectangle shape
-sf::RectangleShape& CollisionRectangle::getRectangle() {
+const sf::RectangleShape& CollisionRectangle::getRectangle() const{
 	return rectangle;
+}
+// Setter for Rectangle Properties
+void CollisionRectangle::setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size) {
+	rectangle.setPosition(position);
+	rectangle.setSize(size);
 }
 
 // setting a fill color of a rectangle
@@ -29,3 +29,15 @@ void CollisionRectangle::setColor(const sf::Color& color) {
 	rectangle.setFillColor(color);
 }
 
+//updates overlap status and calls handlers if needed
+void CollisionRectangle::update(CollisionRectangle& other) {
+	bool isCurrentlyOverlapping = isOverlapping(other);
+	if (isCurrentlyOverlapping && !getIsOverlapped()) {
+		setIsOverlapped(true);
+		BeginOverlapHandler(&other);  // Trigger BeginOverlap handler
+	}
+	else if (!isCurrentlyOverlapping && getIsOverlapped()) {
+		setIsOverlapped(false);
+		EndOverlapHandler(&other);    // Trigger EndOverlap handler
+	}
+}
