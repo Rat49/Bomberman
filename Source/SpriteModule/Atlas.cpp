@@ -6,6 +6,15 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include <Common/Modules.hpp>
 
+namespace {
+	const std::string X = "x";
+	const std::string Y = "y";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+	const std::string ATLAS_PATH = "atlasPath";
+	const std::string IS_LOOPING = "isLooping";
+	const std::string RENDER_DURATION = "renderDuration";
+}
 
 bool Atlas::initialize(const std::string& configFilePath) 
 {
@@ -28,6 +37,8 @@ bool Atlas::parseConfigFile(const std::string& configFilePath) //works
 	const ConfigFile& walkingAnimation = Modules::Config->getFile(configFilePath);
 
 	bool anyTextureAdded = false;
+	std::vector<std::string> m_configValues = { ATLAS_PATH, IS_LOOPING, RENDER_DURATION };
+	std::vector<std::string> m_rectValues = { X, Y, WIDTH, HEIGHT };
 
 	//check all sections
 	const auto& sections = walkingAnimation.getAllSections();
