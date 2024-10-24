@@ -13,6 +13,8 @@ public:
 
 	bool areValuesPresent(const std::vector<std::string>& keys) const;
 
+	bool isEmpty() const;
+
 private:
 	std::unordered_map<std::string, ConfigValue> m_values;
 };

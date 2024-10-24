@@ -23,37 +23,56 @@ bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 // Loading sounds from the configuration file
 bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 {
-	ConfigFile configFile(configFilePath, true);
-	Modules::Config->addFile(configFile);
+	ConfigFile configFile(configFilePath);
+	Modules::Config->addFile(configFilePath);
 
 	// Initial ID for the effects
 	int32_t soundID = 1;
 	bool anySoundAdded = false;
 
-	// This part is commented out for now because I don't have a method like getAllSections(), but once Tijana adds it, I will use it here like this
-	/*
 	// Step through all sections in the config file
 	auto sectionNames = configFile.getAllSections();
 
+	// Passage through all sections
 	for (const auto& effectName : sectionNames)
 	{
-		std::vector<std::string> filePaths;
+		// Get the section
+		const auto& section = configFile.getSection(effectName);
 
-		// Iterate through keys in the section to gather all sound file paths
-		int32_t i = 1;
-		while (configFile.getSection(effectName).isValuePresent("sound" + std::to_string(i)))
+		// Check if the section is empty
+		if (section.isEmpty())
 		{
-			filePaths.push_back(configFile.getSection(effectName).getValue("sound" + std::to_string(i)).getString());
+			LOG("Section $ is empty", effectName);
+			// Go to the next section
+			continue;
+		}
+
+		// Iterate through the keys in the section to gather the sound file paths
+		int32_t i = 1;
+		while (section.isValuePresent("sound" + std::to_string(i)))
+		{
+			std::string filePath = section.getValue("sound" + std::to_string(i)).getString();
+			sf::SoundBuffer buffer;
+
+			// Try loading the file into SoundBuffer
+			if (!buffer.loadFromFile(filePath))
+				LOG("Failed to load sound from $", filePath);
+			else
+			{
+				// Load the buffer into the soundEffectBuffers
+				soundEffectBuffers[soundID].emplace_back(std::move(buffer));
+				LOG("Successfully loaded sound: $", filePath);
+			}
+
 			i++;
 		}
-
-		if (!filePaths.empty())
-		{
-			addSoundEffect(soundID++, filePaths);
+		// If there are at least one buffer, set the flag
+		if (!soundEffectBuffers[soundID].empty()) {
 			anySoundAdded = true;
+			// Move to the next soundID
+			soundID++;
 		}
 	}
-	*/
 
 	return anySoundAdded;
 }

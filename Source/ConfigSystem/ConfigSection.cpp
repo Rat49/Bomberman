@@ -30,3 +30,8 @@ bool ConfigSection::areValuesPresent(const std::vector<std::string>& keys) const
 	}
 	return true;
 }
+
+bool ConfigSection::isEmpty() const
+{
+	return m_values.empty();
+}
