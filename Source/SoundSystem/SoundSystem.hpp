@@ -28,8 +28,6 @@ public:
 
 	bool isSoundPlaying(int32_t soundID) const;
 
-	void playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID);
-
 
 	// MUSIC: used to play compressed music that lasts several minutes
 
@@ -50,6 +48,8 @@ private:
 
 	// Map of active sounds, paired with their soundID
 	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
+
+	void playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID);
 
 
 	//MUSIC
