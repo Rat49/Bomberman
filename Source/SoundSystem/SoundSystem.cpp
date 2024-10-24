@@ -23,12 +23,15 @@ bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 // Loading sounds from the configuration file
 bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 {
-	ConfigFile configFile(configFilePath);
 	Modules::Config->addFile(configFilePath);
+	ConfigFile configFile= Modules::Config->getFile(configFilePath);
 
 	// Initial ID for the effects
 	int32_t soundID = 1;
 	bool anySoundAdded = false;
+
+	// Define a constant for the sound prefix
+	const std::string soundPrefix = "sound";
 
 	// Step through all sections in the config file
 	auto sectionNames = configFile.getAllSections();
@@ -49,14 +52,16 @@ bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 
 		// Iterate through the keys in the section to gather the sound file paths
 		int32_t i = 1;
-		while (section.isValuePresent("sound" + std::to_string(i)))
+		while (section.isValuePresent(soundPrefix + std::to_string(i)))
 		{
-			std::string filePath = section.getValue("sound" + std::to_string(i)).getString();
+			std::string filePath = section.getValue(soundPrefix + std::to_string(i)).getString();
 			sf::SoundBuffer buffer;
 
 			// Try loading the file into SoundBuffer
 			if (!buffer.loadFromFile(filePath))
+			{
 				LOG("Failed to load sound from $", filePath);
+			}
 			else
 			{
 				// Load the buffer into the soundEffectBuffers
