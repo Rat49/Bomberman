@@ -18,6 +18,7 @@ const bool CollisionRectangle::isOverlapping(CollisionRectangle& other){
 const sf::RectangleShape& CollisionRectangle::getRectangle() const{
 	return rectangle;
 }
+
 // Setter for Rectangle Properties
 void CollisionRectangle::setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size) {
 	rectangle.setPosition(position);

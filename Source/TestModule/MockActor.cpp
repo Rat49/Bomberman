@@ -2,12 +2,9 @@
 #include "Common/Logs.hpp"
 
 MockActor::MockActor() {
-	collisionBox = new CollisionComponent();
+	collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setParent(this);
-}
-MockActor::~MockActor() {
-	delete collisionBox;
 }
 
 void MockActor::print() {

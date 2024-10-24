@@ -1,5 +1,4 @@
 #include "CollisionModuleTest.hpp"
-#include "CollisionModule/MockActor.hpp"
 #include "Common/Logs.hpp"
 #include "Common/Modules.hpp"
 #include <iostream>
@@ -14,14 +13,13 @@ float getRandomFloat(float min, float max) {
 	return float(dis(gen));
 }
 
-const std::string& CollisionModuleTest::getName() const
-{
+const std::string& CollisionModuleTest::getName() const{
 	return Name;
 }
 
 void CollisionModuleTest::setup() {
-	actor1 = new MockActor();
-	actor2 = new MockActor();
+	actor1 = std::make_unique<MockActor>();
+	actor2 = std::make_unique<MockActor>();
 }
 
 void CollisionModuleTest::run() {
@@ -45,11 +43,11 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 		size1 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 		size2 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 
-		actor1->collisionBox->setRectangleProperties(position1, size1);
-		actor2->collisionBox->setRectangleProperties(position2, size2);
+		actor1->getCollisionBox().setRectangleProperties(position1, size1);
+		actor2->getCollisionBox().setRectangleProperties(position2, size2);
 
-		actor1->collisionBox->update(*actor2->collisionBox);
-		if (actor1->collisionBox->getIsOverlapped()) {
+		actor1->getCollisionBox().update(actor2->getCollisionBox());
+		if (actor1->getCollisionBox().getIsOverlapped()) {
 			LOG("Collision");
 		}
 		else {
@@ -59,11 +57,11 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 		window->clear();
 
 		// Color the Rectangles
-		actor1->collisionBox->setColor(sf::Color::Red);
-		actor2->collisionBox->setColor(sf::Color::Blue);
+		actor1->getCollisionBox().setColor(sf::Color::Red);
+		actor2->getCollisionBox().setColor(sf::Color::Blue);
 		// Draw the rectangles
-		window->draw(actor1->collisionBox->getRectangle());
-		window->draw(actor2->collisionBox->getRectangle());
+		window->draw(actor1->getCollisionBox().getRectangle());
+		window->draw(actor2->getCollisionBox().getRectangle());
 
 		window->display();
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -71,14 +69,7 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 	window->setSize(sf::Vector2u(200, 200));
 
 	//test for parent pointer
-	void* parent = actor1->collisionBox->getParent();
+	void* parent = actor1->getCollisionBox().getParent();
 	MockActor* mockActorParent = static_cast<MockActor*>(parent);
 	mockActorParent->print();
-}
-
-bool CollisionModuleTest::isComplete() const {
-	delete actor1;
-	delete actor2;
-
-	return true;
 }
