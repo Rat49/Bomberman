@@ -4,18 +4,13 @@
 #include "SpriteModule/Sprite.hpp"
 #include <vector>
 
+class Atlas;
 
-struct AnimationInfo
-{
-	bool m_isLooping;
-	float m_frameDuration;
-};
-
-class Animation : public sf::Sprite
+class Animation : public Sprite
 {
 public:
 
-	//create animation
+	//animation constructor
 	Animation() = delete;
 	Animation(const std::string& configFilePath);
 
@@ -26,21 +21,20 @@ public:
 
 	//function for updating animation
 	void Update(float deltaTime);
-
-	const sf::Sprite& getCurrentSprite() const { return m_sprite; }
 	
 private:
-	AnimationInfo m_info;
+	
+	//animation infos
+	bool m_isLooping;
+	float m_frameDuration;
 
 	//state variables
 	int32_t m_currentFrame = 0;
 	float m_elapsedTime = 0;
 	bool m_isPlaying = false;
 
-	std::vector<std::shared_ptr<sf::Texture>> m_textures;
+	std::shared_ptr<sf::Texture> m_atlasTexture;
 	std::vector<sf::IntRect> m_rects;
-
 	std::unique_ptr<Atlas> m_atlas;
-	sf::Sprite m_sprite;
 };
 

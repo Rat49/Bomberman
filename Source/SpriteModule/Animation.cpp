@@ -1,10 +1,9 @@
 ﻿#include "Animation.hpp"
-#include "SpriteModule/Animation.hpp"
+#include "Atlas.hpp"
 #include <iostream>
 #include <cstdint>
 
 
-//Problem with animation init
 Animation::Animation(const std::string& configFilePath)
 {
 	//init atlas
@@ -13,19 +12,15 @@ Animation::Animation(const std::string& configFilePath)
 		return;
 
 	//set animation info
-	m_info.m_isLooping = m_atlas->isLooping();
-	m_info.m_frameDuration = m_atlas->getRenderDuration();
+	m_isLooping = m_atlas->isLooping();
+	m_frameDuration = m_atlas->getRenderDuration();
 
 	//get atlas and rects
 	for (const auto& [textureName, rects] : m_atlas->getAllTextureRects())
 	{
 		m_rects.push_back(rects);
 	}
-	m_textures.push_back(m_atlas->getTexture());
-
-	m_sprite.setTexture(*m_textures[0]);
-	m_sprite.setTextureRect(m_rects[0]);
-
+	m_atlasTexture = m_atlas->getAtlasTexture();
 }
 
 void Animation::Update(float deltaTime)
@@ -37,16 +32,16 @@ void Animation::Update(float deltaTime)
 	m_elapsedTime += deltaTime;
 
 	//reset elapsed time for next frame and increase frame
-	if (m_elapsedTime > m_info.m_frameDuration)
+	if (m_elapsedTime > m_frameDuration)
 	{
-		m_elapsedTime -= m_info.m_frameDuration;
+		m_elapsedTime -= m_frameDuration;
 		int32_t  previousFrame = m_currentFrame;
 		m_currentFrame++;
 
 		//check if its end of animation
 		if (m_currentFrame >= static_cast<int32_t>(m_rects.size()))
 		{
-			if (m_info.m_isLooping)
+			if (m_isLooping)
 			{
 				m_currentFrame = 0;
 			}
@@ -61,12 +56,13 @@ void Animation::Update(float deltaTime)
 		//set texture and rect
 		if (previousFrame != m_currentFrame)
 		{
-			m_sprite.setTexture(*m_textures[0]);
-			m_sprite.setTextureRect(m_rects[m_currentFrame]);
+			setTexture(*m_atlasTexture);
+			setTextureRect(m_rects[m_currentFrame]);
 		}
 	}
 }
 
+//play animation
 void Animation::Play()
 {
 	m_isPlaying = true;
@@ -74,6 +70,7 @@ void Animation::Play()
 	m_elapsedTime = 0;
 }
 
+//stop animation
 void Animation::Stop()
 {
 	m_isPlaying = false;

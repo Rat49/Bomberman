@@ -19,71 +19,58 @@ bool Atlas::initialize(const std::string& configFilePath)
 		return false;
 
 	return true;
+	
 }
 bool Atlas::parseConfigFile(const std::string& configFilePath) //works
 {
 	//init config file
-	ConfigFile configFile(configFilePath, true);
-	Modules::Config->addFile(configFile);
+	Modules::Config->addFile(configFilePath);
+	const ConfigFile& walkingAnimation = Modules::Config->getFile(configFilePath);
 
-
-	//load atlas path
-	if (!configFile.isSectionPresent("AnimationConfig"))
-		return false;
-	if (!configFile.getSection("AnimationConfig").isValuePresent("atlasPath"))
-		return false;
-	m_atlasPath = configFile.getSection("AnimationConfig").getValue("atlasPath").getString();
-
-
-	//load isLooping value
-	if (!configFile.getSection("AnimationConfig").isValuePresent("isLooping"))
-		return false;
-	m_isLooping = configFile.getSection("AnimationConfig").getValue("isLooping").getBool();
-
-	//load render duration
-	if (!configFile.getSection("AnimationConfig").isValuePresent("renderDuration"))
-		return false;
-	m_renderDuration = configFile.getSection("AnimationConfig").getValue("renderDuration").getFloat();
-
-
-	//load rects
-	int frameIndex = 1;
 	bool anyTextureAdded = false;
 
-	while (true)
+	//check all sections
+	const auto& sections = walkingAnimation.getAllSections();
+	for (const auto& sectionName : sections)
 	{
-		std::string sectionName = m_baseFrameName + std::to_string(frameIndex);
-		const auto& section = configFile.getSection(sectionName);
 
-		if (!configFile.isSectionPresent(sectionName))
+		if (!walkingAnimation.isSectionPresent(sectionName))
 			break;
 
-		if (section.isValuePresent("x") &&
-			section.isValuePresent("y") &&
-			section.isValuePresent("width") &&
-			section.isValuePresent("height"))
+		if (walkingAnimation.getSection(sectionName).areValuesPresent({ "atlasPath", "isLooping", "renderDuration" }))
 		{
+			const ConfigSection& mySection = walkingAnimation.getSection(sectionName);
 
-			//take config values
-			int32_t x = section.getValue("x").getInt32();
-			int32_t y = section.getValue("y").getInt32();
-			int32_t width = section.getValue("width").getInt32();
-			int32_t height = section.getValue("height").getInt32();
-			
+			//load atlas path
+			m_atlasPath = mySection.getValue("atlasPath").getString();
+
+			//load isLooping value 
+			m_isLooping = mySection.getValue("isLooping").getBool();
+
+			//load render duration
+			m_renderDuration = mySection.getValue("renderDuration").getFloat();
+
+		}
+		else if (walkingAnimation.getSection(sectionName).areValuesPresent({ "x", "y", "width", "height" }))
+		{
+			//load rect infos
+			const ConfigSection& mySection = walkingAnimation.getSection(sectionName);
+			int32_t x = mySection.getValue("x").getInt32();
+			int32_t y = mySection.getValue("y").getInt32();
+			int32_t width = mySection.getValue("width").getInt32();
+			int32_t height = mySection.getValue("height").getInt32();
+
 			//set to map
 			m_texturesRect[sectionName] = sf::IntRect(x, y, width, height);
 			anyTextureAdded = true;
 		}
-		else
-			return false;
-
-		frameIndex++;
 	}
+
 	return anyTextureAdded;
 }
 
 
-//getters
+
 sf::IntRect Atlas::getTextureRect(const std::string& textureName) const
 {
 	auto textureRect = m_texturesRect.find(textureName);
@@ -95,18 +82,3 @@ sf::IntRect Atlas::getTextureRect(const std::string& textureName) const
 	return sf::IntRect();
 }
 
-
-
-//i will try to avoid Sprite class for now
-std::shared_ptr<Sprite> Atlas::initializeSprite(const std::string& textureName) const
-{
-	auto it = m_texturesRect.find(textureName);
-
-	if (it != m_texturesRect.end())
-	{
-		std::shared_ptr<Sprite> sprite = std::make_shared<Sprite>();
-		//sprite->initialize(textureName, *this);
-		return sprite;
-	}
-	return nullptr;
-}

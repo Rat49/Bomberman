@@ -3,17 +3,20 @@
 #include <iostream>
 #include <vector>
 #include "SpriteModule/Animation.hpp"
+#include <unordered_map>
 
 using AnimationId = int32_t;
 
 class SpriteModule
 {
 public:
+
 	AnimationId createAnimation(const std::string& configFilePath);
 	std::shared_ptr<Animation> getAnimation(AnimationId id) const;
 	void update(float deltaTime);
 
 private:
+
 	std::unordered_map<AnimationId, std::shared_ptr<Animation>> m_animations;
 	AnimationId animId = -1;
 

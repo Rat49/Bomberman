@@ -3,6 +3,8 @@
 #include "SFML/Graphics.hpp"
 #include "Common/Modules.hpp"
 #include "Common/Logs.hpp"
+#include <thread>
+#include <chrono>
 
 const std::string& SpriteModuleTest::getName() const
 {
@@ -10,9 +12,8 @@ const std::string& SpriteModuleTest::getName() const
 }
 
 void SpriteModuleTest::setup()
-{
-	m_window.create(sf::VideoMode(800, 600), "Animation Test");
-	//create animation and get animation id 
+{	
+	//create animation
 	m_animationId = Modules::Sprite->createAnimation("../../Data/Config/WalkingAnimation.ini");
 }
 
@@ -21,38 +22,27 @@ void SpriteModuleTest::run()
 	//get animation and play
 	if (const auto& animation = Modules::Sprite->getAnimation(m_animationId))
 	{
-		animation->Play();	
+		animation->Play();
 	}
 }
 
-
-void SpriteModuleTest::update(float deltaTime)
+void SpriteModuleTest::update(float deltaTime, sf::RenderWindow* window)
 {
-	//deltaTime++;
-	Modules::Sprite->update(deltaTime);
+	window->setSize(sf::Vector2u(800, 600));
 
+	Modules::Sprite->update(deltaTime); //update animation
 
-	if (m_window.isOpen())
+	window->clear(sf::Color::Green);
+
+	if (const auto& animation = Modules::Sprite->getAnimation(m_animationId))
 	{
-		sf::Event event;
-		while (m_window.pollEvent(event))
+		if (animation->isPlaying())
 		{
-			if (event.type == sf::Event::Closed)
-				m_window.close();
+			window->draw(*animation); //draw animation
 		}
-
-		m_window.clear();
-
-		if (const auto& animation = Modules::Sprite->getAnimation(m_animationId))
-		{
-			if (animation->isPlaying())
-			{
-				m_window.draw(animation->getCurrentSprite());
-			}
-		}
-
-		m_window.display();
 	}
+	window->display();
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 
 bool SpriteModuleTest::isComplete() const

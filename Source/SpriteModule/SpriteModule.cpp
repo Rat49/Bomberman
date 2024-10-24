@@ -20,11 +20,8 @@ std::shared_ptr<Animation> SpriteModule::getAnimation(AnimationId id) const
 
 void SpriteModule::update(float deltaTime)
 {
-	/*
 	for (auto& pair : m_animations)
 	{
-		pair.second->Update(deltaTime); //call update from Animation class
+		pair.second->Update(deltaTime); 
 	}
-	*/
-	m_animations[0]->Update(deltaTime);
 }

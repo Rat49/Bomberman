@@ -11,6 +11,7 @@ class EventSystem;
 class ConfigSystem;
 class NavigationModule;
 class SoundSystem;
+class InputModule;
 class SpriteModule;
 
 
@@ -32,5 +33,6 @@ struct Modules
 	static std::unique_ptr<ConfigSystem> Config;
 	static std::unique_ptr<NavigationModule> Navigation;
 	static std::unique_ptr<SoundSystem> Sounds;
+	static std::unique_ptr<InputModule> Input;
 	static std::unique_ptr<SpriteModule> Sprite;
 };
