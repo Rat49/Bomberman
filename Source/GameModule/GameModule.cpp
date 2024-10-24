@@ -1,6 +1,7 @@
 #include "GameModule/GameModule.hpp"
 #include "Common/Modules.hpp"
 #include "TestModule/TestModule.hpp"
+#include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -42,6 +43,7 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
+        Modules::Input->Update();
 
         window.clear();
         window.draw(shape);

@@ -16,5 +16,4 @@ public:
 
 private:
 	const std::string Name = "ConfigSystemTest";
-	ConfigSystem* configSystem;
 };
