@@ -11,6 +11,8 @@ public:
 
 	bool isValuePresent(const std::string& valueName) const;
 
+	bool areValuesPresent(const std::vector<std::string>& keys) const;
+
 private:
 	std::unordered_map<std::string, ConfigValue> m_values;
 };

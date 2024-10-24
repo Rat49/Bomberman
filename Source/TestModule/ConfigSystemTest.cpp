@@ -4,6 +4,15 @@
 #include "Common/Logs.hpp"
 #include <iostream>
 
+// instead of namespace this could be also defined inside run() method, because it is only used there
+namespace {
+	const std::string X = "x";
+	const std::string Y = "y";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+	const std::string PATH_WALKING_ANIMATION = "../../Data/Config/WalkingAnimation.ini";
+}
+
 const std::string& ConfigSystemTest::getName() const
 {
 	return Name;
@@ -12,18 +21,34 @@ const std::string& ConfigSystemTest::getName() const
 void ConfigSystemTest::setup()
 {
 	LOG("ConfigSystemTest: setup()");
-	configSystem = new ConfigSystem();
 }
 
 void ConfigSystemTest::run()
 {
 	LOG("ConfigSystemTest: run()");
 
-	ConfigFile file1("../../Data/Config/config.ini", true);
-	configSystem->addFile(file1);
-	std::cout << file1.getSection("Files").getValue("one").getString() << std::endl;
-	configSystem->setValue("../../Data/Config/config.ini", "database", "server", "lala");
-	std::cout << configSystem->getValue("../../Data/Config/config.ini", "database", "server").getString() << std::endl;;
+	LOG("Parsing WalkingAnimation file");
+	Modules::Config->addFile(PATH_WALKING_ANIMATION);
+	const ConfigFile& walkingAnimations = Modules::Config->getFile(PATH_WALKING_ANIMATION);
+
+	const auto& sections = walkingAnimations.getAllSections();
+
+	for(const auto& sectionName : sections)
+	{
+		if (!walkingAnimations.isSectionPresent(sectionName))
+			break;
+
+		if (walkingAnimations.getSection(sectionName).areValuesPresent({X, Y, WIDTH, HEIGHT}))
+		{
+			//take values for animation
+			const ConfigSection& mySection = walkingAnimations.getSection(sectionName);
+			float x = mySection.getValue(X).getFloat();
+			float y = mySection.getValue(Y).getFloat();
+			int32_t width = mySection.getValue(WIDTH).getInt32();
+			int32_t height = mySection.getValue(HEIGHT).getInt32();
+			LOG("x: $, y: $, width: $, heigth: $", x, y, width, height);
+		}
+	}
 }
 
 bool ConfigSystemTest::isComplete() const
