@@ -21,3 +21,12 @@ bool ConfigSection::isValuePresent(const std::string& valueName) const
 {
 	return m_values.find(valueName) != m_values.end();
 }
+
+bool ConfigSection::areValuesPresent(const std::vector<std::string>& keys) const
+{
+	for (const std::string& key : keys) {
+		if (!isValuePresent(key)) 
+			return false;
+	}
+	return true;
+}

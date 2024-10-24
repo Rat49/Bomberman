@@ -8,7 +8,9 @@
 class ConfigSystem {
 public:
 
-	void addFile(ConfigFile& fileData);
+	const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const;
+
+	void ConfigSystem::addFile(const std::string& configFile);
 
 	void removeFile(const std::string& configFile);
 
@@ -17,6 +19,8 @@ public:
 	bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
 
 	bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
+
+	bool areValuesPresent(const std::string& configFile, const std::string& sectionName, const std::vector<std::string>& keys) const;
 
 	const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 

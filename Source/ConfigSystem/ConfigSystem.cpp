@@ -1,11 +1,24 @@
 #include "ConfigSystem.hpp"
 #include <iostream>
 
-void ConfigSystem::addFile(ConfigFile& fileData)
+const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const
 {
-	parser.parse(fileData);
-	if (fileData.getIsPermanent()) {
-		configFiles[fileData.getName()] = fileData;
+	auto it = configFiles.find(configFile);
+	if(it != configFiles.end()) {
+		return it->second;
+	}
+
+	// I can add here else -> addFile but I don't know if I should
+	static const ConfigFile defaltValue(configFile);
+	return defaltValue;
+}
+
+void ConfigSystem::addFile(const std::string& configFile)
+{
+	if (!isFilePresent(configFile)) {
+		ConfigFile newFile(configFile);
+		parser.parse(newFile);
+		configFiles[newFile.getName()] = newFile;
 	}
 }
 
@@ -36,6 +49,14 @@ bool ConfigSystem::isValuePresent(const std::string& configFile, const std::stri
 		return it2.isValuePresent(valueName);
 	}
 	return false;
+}
+
+bool ConfigSystem::areValuesPresent(const std::string& configFile, const std::string& sectionName, const std::vector<std::string>& keys) const
+{
+	for(const auto& key: keys) {
+		if (!isValuePresent(configFile, sectionName, key)) return false;
+	}
+	return true;
 }
 
 const ConfigValue& ConfigSystem::getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const
