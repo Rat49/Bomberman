@@ -3,8 +3,6 @@
 #include <string>
 #include "TestModule/TestBase.hpp"
 
-class SpriteModule;
-
 class SpriteModuleTest : public TestBase
 {
 public:

@@ -5,7 +5,6 @@
 #include <memory>
 
 class NavigationModule;
-class Graphic;
 
 class NavigationModuleTest : public TestBase
 {

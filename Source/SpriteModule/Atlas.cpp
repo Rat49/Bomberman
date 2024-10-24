@@ -37,28 +37,28 @@ bool Atlas::parseConfigFile(const std::string& configFilePath) //works
 		if (!walkingAnimation.isSectionPresent(sectionName))
 			break;
 
-		if (walkingAnimation.getSection(sectionName).areValuesPresent({ "atlasPath", "isLooping", "renderDuration" }))
+		if (walkingAnimation.getSection(sectionName).areValuesPresent(m_configValues))
 		{
 			const ConfigSection& mySection = walkingAnimation.getSection(sectionName);
 
 			//load atlas path
-			m_atlasPath = mySection.getValue("atlasPath").getString();
+			m_atlasPath = mySection.getValue(ATLAS_PATH).getString();
 
 			//load isLooping value 
-			m_isLooping = mySection.getValue("isLooping").getBool();
+			m_isLooping = mySection.getValue(IS_LOOPING).getBool();
 
 			//load render duration
-			m_renderDuration = mySection.getValue("renderDuration").getFloat();
+			m_renderDuration = mySection.getValue(RENDER_DURATION).getFloat();
 
 		}
-		else if (walkingAnimation.getSection(sectionName).areValuesPresent({ "x", "y", "width", "height" }))
+		else if (walkingAnimation.getSection(sectionName).areValuesPresent(m_rectValues))
 		{
 			//load rect infos
 			const ConfigSection& mySection = walkingAnimation.getSection(sectionName);
-			int32_t x = mySection.getValue("x").getInt32();
-			int32_t y = mySection.getValue("y").getInt32();
-			int32_t width = mySection.getValue("width").getInt32();
-			int32_t height = mySection.getValue("height").getInt32();
+			int32_t x = mySection.getValue(X).getInt32();
+			int32_t y = mySection.getValue(Y).getInt32();
+			int32_t width = mySection.getValue(WIDTH).getInt32();
+			int32_t height = mySection.getValue(HEIGHT).getInt32();
 
 			//set to map
 			m_texturesRect[sectionName] = sf::IntRect(x, y, width, height);
