@@ -1,5 +1,6 @@
 #include "InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
 #include "Common/Logs.hpp"
 #include "Common/FloatUtils.hpp"
 #include "Common/Modules.hpp"
@@ -176,5 +177,78 @@ void InputModule::Update()
 			break;
 	}
 		if (shouldEmit) Modules::Events->emit(eventID, params);
+	}
+}
+
+ActionID InputModule::GetActionID(const std::string& actionName) const
+{
+	for (const auto& action : actions)
+	{
+		if (action.second.actionName == actionName)
+		{
+			return action.first;
+		}
+	}
+	return -1;
+}
+
+void InputModule::LoadInputSettings(const std::string& inputSettingPath)
+{
+	Modules::Config->addFile(inputSettingPath);
+	const ConfigFile& inputSettings = Modules::Config->getFile(inputSettingPath);
+	const auto& sections = inputSettings.getAllSections();
+
+	for (const auto& section : sections)
+	{
+		if (!inputSettings.isSectionPresent(section)) break;
+		if (inputSettings.getSection(section).areValuesPresent({ "type", "button"}))
+		{
+			Button button = {inputBinder.GetButton(inputSettings.getSection(section).getValue("button").getString())};
+
+			ActionData newAction        = {};
+			newAction.actionName        = section;
+			newAction.actionType        = EActionType::ButtonAction;
+			newAction.Binding.button    = button;
+			newAction.State.buttonState = false;
+			newAction.eventID           = -1;
+			actions.emplace(actionID, std::move(newAction));
+			actionID++;
+		}
+		else if (inputSettings.getSection(section).areValuesPresent({ "type", "negativeAxisButton", "positiveAxisButton"}))
+		{
+			Axis1D axis1D           = {};
+			axis1D.negativeAxis.Key = inputBinder.GetButton(inputSettings.getSection(section).getValue("negativeAxisButton").getString());
+			axis1D.positiveAxis.Key = inputBinder.GetButton(inputSettings.getSection(section).getValue("positiveAxisButton").getString());
+
+			ActionData newAction        = {};
+			newAction.actionName        = section;
+			newAction.actionType        = EActionType::Axis1DAction;
+			newAction.Binding.axis1D    = axis1D;
+			newAction.State.buttonState = false;
+			newAction.eventID           = -1;
+			actions.emplace(actionID, std::move(newAction));
+			actionID++;
+		}
+		else if (inputSettings.getSection(section).areValuesPresent({ "type", "negativeXAxisButton", "positiveXAxisButton", "negativeYAxisButton", "positiveYAxisButton" }))
+		{
+			Axis2D axis2D                      = {};
+			axis2D.Horizontal.negativeAxis.Key = inputBinder.GetButton(inputSettings.getSection(section).getValue("negativeXAxisButton").getString());
+			axis2D.Horizontal.positiveAxis.Key = inputBinder.GetButton(inputSettings.getSection(section).getValue("positiveXAxisButton").getString());
+			axis2D.Vertical.negativeAxis.Key   = inputBinder.GetButton(inputSettings.getSection(section).getValue("negativeYAxisButton").getString());
+			axis2D.Vertical.positiveAxis.Key   = inputBinder.GetButton(inputSettings.getSection(section).getValue("positiveYAxisButton").getString());
+
+			ActionData newAction        = {};
+			newAction.actionName        = section;
+			newAction.actionType        = EActionType::Axis2DAction;
+			newAction.Binding.axis2D    = axis2D;
+			newAction.State.buttonState = false;
+			newAction.eventID           = -1;
+			actions.emplace(actionID, std::move(newAction));
+			actionID++;
+		}
+		else
+		{
+			LOG("Input action invalid: $", section);
+		}
 	}
 }
