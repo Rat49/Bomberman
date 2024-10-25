@@ -7,13 +7,13 @@
 #include <chrono>
 
 float getRandomFloat(float min, float max) {
-	static std::random_device rd;   
-	static std::mt19937 gen(rd());  
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
 	std::uniform_real_distribution<> dis(min, max);
 	return float(dis(gen));
 }
 
-const std::string& CollisionModuleTest::getName() const{
+const std::string& CollisionModuleTest::getName() const {
 	return Name;
 }
 
@@ -39,7 +39,7 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 	sf::Vector2f size1;
 	sf::Vector2f size2;
 
-	for (int i = 0; i < 20;i++) {
+	for (int i = 0; i < 20; i++) {
 		size1 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 		size2 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 

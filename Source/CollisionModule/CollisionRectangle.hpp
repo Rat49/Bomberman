@@ -9,12 +9,12 @@ public:
 	CollisionRectangle(const sf::Vector2f& position, const sf::Vector2f& size);
 
 	//updates overlap status and calls handlers if needed
-	void update(CollisionRectangle& );
+	void update(CollisionRectangle&);
 
 	//event handlers
-	virtual void BeginOverlapHandler(void* ) {};
+	virtual void BeginOverlapHandler(void*) {};
 
-	virtual void EndOverlapHandler(void* ) {};
+	virtual void EndOverlapHandler(void*) {};
 
 	// Getter for the rectangle
 	const sf::RectangleShape& getRectangle() const;
@@ -29,8 +29,8 @@ public:
 	void setIsOverlapped(bool overlap) { isOverlapped = overlap; }
 
 	// Getter for the parent
-	void* getParent() const{ return parentComponent; }
-	
+	void* getParent() const { return parentComponent; }
+
 	// Setter for the parent
 	void setParent(void* parent) { this->parentComponent = parent; }
 

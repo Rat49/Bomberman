@@ -10,12 +10,12 @@ CollisionRectangle::CollisionRectangle(const sf::Vector2f& position, const sf::V
 }
 
 // Function to check for overlap with another Collision object
-const bool CollisionRectangle::isOverlapping(CollisionRectangle& other){
+const bool CollisionRectangle::isOverlapping(CollisionRectangle& other) {
 	return rectangle.getGlobalBounds().intersects(other.getRectangle().getGlobalBounds());
 }
 
 // Getter function for the internal rectangle shape
-const sf::RectangleShape& CollisionRectangle::getRectangle() const{
+const sf::RectangleShape& CollisionRectangle::getRectangle() const {
 	return rectangle;
 }
 
