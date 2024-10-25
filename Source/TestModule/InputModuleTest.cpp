@@ -65,7 +65,7 @@ void InputModuleTest::run()
 	LOG("InputModuleTest: run()");
 }
 
-void InputModuleTest::update(float)
+void InputModuleTest::update(float, sf::RenderWindow*)
 {
 	LOG("InputModuleTest: update()");
 }

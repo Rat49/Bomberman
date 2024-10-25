@@ -4,8 +4,11 @@
 
 #ifndef FINAL
 
-class TestBase;
 
+class TestBase;
+namespace sf {
+	class RenderWindow;
+}
 /*
 * Module which allows you to add test of any type and perform them outside of the game.
 * Best place to register your test is in your module constructor!
@@ -27,7 +30,7 @@ public:
 	void run();
 
 	// Tick for all tests
-	void update(float deltaTime);
+	void update(float deltaTime, sf::RenderWindow* window);
 
 private:
 	std::vector<std::shared_ptr<TestBase>> m_tests;

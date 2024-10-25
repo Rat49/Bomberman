@@ -41,7 +41,7 @@ void GameModule::run()
         }
 
 #ifndef FINAL
-        Modules::Tests->update(deltaTime);
+        Modules::Tests->update(deltaTime, &window);
 #endif
         Modules::Input->Update();
 
