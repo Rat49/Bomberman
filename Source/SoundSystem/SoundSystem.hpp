@@ -3,12 +3,22 @@
 #include <SFML/Audio.hpp>
 #include <map>
 #include <memory>
+#include <list>
+#include <string>
 
 class SoundSystem
 {
 public:
 	// SOUNDS: used for small sounds (gun shots, foot steps, etc.)
+
+	// Adding a single sound
 	bool addSound(int32_t soundID, const std::string& filePath);
+
+	// Loading sounds from the configuration file
+	bool loadSoundsFromConfig(const std::string& configFilePath);
+
+	// Adding a sound that can have multiple sounds
+	bool addSounds(int32_t soundID, const std::list<std::string>& filePaths);
 
 	void playSound(int32_t soundID);
 
@@ -17,6 +27,7 @@ public:
 	void pauseSound(int32_t soundID);
 
 	bool isSoundPlaying(int32_t soundID) const;
+
 
 	// MUSIC: used to play compressed music that lasts several minutes
 
@@ -32,11 +43,14 @@ public:
 
 private:
 	//SOUNDS
-	// Map that stores sound buffers
-	std::map<int32_t, sf::SoundBuffer> soundBuffers;
+	// Map that associates a soundID with a list of SoundBuffer objects
+	std::map<int32_t, std::list<sf::SoundBuffer>> soundEffectBuffers;
 
 	// Map of active sounds, paired with their soundID
 	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
+
+	void playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID);
+
 
 	//MUSIC
 	// Map that stores music for background music

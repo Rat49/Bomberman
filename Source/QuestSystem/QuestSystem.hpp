@@ -3,7 +3,7 @@
 
 class QuestSystem {
 public:
-	void addQuests(const std::string& file);
+	void addQuest(const std::string& file, const std::string& questName);
 
 	void startQuest(int32_t id);
 private:

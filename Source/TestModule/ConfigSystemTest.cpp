@@ -10,7 +10,7 @@ namespace {
 	const std::string Y = "y";
 	const std::string WIDTH = "width";
 	const std::string HEIGHT = "height";
-	const std::string PATH_WALKING_ANIMATION = "../../Data/Config/WalkingAnimation.ini";
+	const std::string PATH_WALKING_ANIMATION = "../../Data/Config/WalkingAnimationTest.ini";
 }
 
 const std::string& ConfigSystemTest::getName() const

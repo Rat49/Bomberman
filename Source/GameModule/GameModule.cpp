@@ -3,7 +3,6 @@
 #include "TestModule/TestModule.hpp"
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
-#include "QuestManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
 
@@ -42,7 +41,7 @@ void GameModule::run()
         }
 
 #ifndef FINAL
-        Modules::Tests->update(deltaTime);
+        Modules::Tests->update(deltaTime, &window);
 #endif
         Modules::Input->Update();
 

@@ -1,11 +1,9 @@
 #pragma once
+
 #include <string>
 #include "TestModule/TestBase.hpp"
 
-/* 
-* Sample test, which will log something for first 1 second
-*/
-class SampleTest : public TestBase
+class SpriteModuleTest : public TestBase
 {
 public:
 	const std::string& getName() const override;
@@ -15,7 +13,8 @@ public:
 	bool isComplete() const override;
 
 private:
-	const float MaxRunTime = 1.0f;
-	const std::string Name = "SampleTest";
-	float m_timePassed = 0.0f;
+
+	const std::string name = "SpriteModuleTest";
+	int32_t m_animationId;
 };
+

@@ -42,7 +42,7 @@ void TestModule::run()
 	}
 }
 
-void TestModule::update(float deltaTime)
+void TestModule::update(float deltaTime, sf::RenderWindow* window)
 {
 	if (m_tests.empty())
 	{
@@ -52,7 +52,7 @@ void TestModule::update(float deltaTime)
 	std::vector<std::shared_ptr<TestBase>>::iterator it = m_tests.begin();
 	while(it != m_tests.end())
 	{
-		(*it)->update(deltaTime);
+		(*it)->update(deltaTime, window);
 
 		if ((*it)->isComplete())
 		{

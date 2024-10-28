@@ -7,7 +7,7 @@
 #include "NavigationModule/Navigation.hpp"
 #include "SoundSystem/SoundSystem.hpp"
 #include "InputModule/InputModule.hpp"
-#include "QuestSystem/QuestSystem.hpp"
+#include "SpriteModule/SpriteModule.hpp"
 
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
@@ -20,7 +20,8 @@ std::unique_ptr<ConfigSystem> Modules::Config;
 std::unique_ptr<NavigationModule> Modules::Navigation;
 std::unique_ptr<SoundSystem> Modules::Sounds;
 std::unique_ptr<InputModule> Modules::Input;
-std::unique_ptr<QuestSystem> Modules::Quests;
+std::unique_ptr<SpriteModule> Modules::Sprite;
+
 
 void Modules::initialize()
 {
@@ -36,7 +37,7 @@ void Modules::initialize()
 	Modules::Config = std::make_unique<ConfigSystem>();
 	Modules::Sounds = std::make_unique<SoundSystem>();
 	Modules::Input = std::make_unique<InputModule>();
-	Modules::Quests = std::make_unique<QuestSystem>();
+	Modules::Sprite = std::make_unique<SpriteModule>();
 }
 
 void Modules::terminate()
@@ -48,7 +49,8 @@ void Modules::terminate()
 	Modules::Config.release();
 	Modules::Sounds.release();
 	Modules::Input.release();
-	Modules::Quests.release();
+	Modules::Sprite.release();
+
 
 #ifndef FINAL
 	Modules::Tests.release();

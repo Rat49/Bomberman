@@ -1,5 +1,7 @@
 #include "SoundSystem/SoundSystem.hpp"
 #include "Common/Logs.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
+#include <random>
 #include <iostream>
 
 // SOUND
@@ -7,29 +9,141 @@
 bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 {
 	sf::SoundBuffer buffer;
-	if (!buffer.loadFromFile(filePath)) 
+	if (!buffer.loadFromFile(filePath))
 	{
 		LOG("Failed to load sound from $", filePath.c_str());
 		return false;
 	}
-	soundBuffers.emplace(soundID, std::move(buffer));
+	soundEffectBuffers[soundID].emplace_back(std::move(buffer));
 	LOG("Successfully loaded sound: $", soundID);
 	return true;
+}
+
+
+// Loading sounds from the configuration file
+bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
+{
+	Modules::Config->addFile(configFilePath);
+	ConfigFile configFile= Modules::Config->getFile(configFilePath);
+
+	// Initial ID for the effects
+	int32_t soundID = 1;
+	bool anySoundAdded = false;
+
+	// Define a constant for the sound prefix
+	const std::string soundPrefix = "sound";
+
+	// Step through all sections in the config file
+	auto sectionNames = configFile.getAllSections();
+
+	// Passage through all sections
+	for (const auto& effectName : sectionNames)
+	{
+		// Get the section
+		const auto& section = configFile.getSection(effectName);
+
+		// Check if the section is empty
+		if (section.isEmpty())
+		{
+			LOG("Section $ is empty", effectName);
+			// Go to the next section
+			continue;
+		}
+
+		// Iterate through the keys in the section to gather the sound file paths
+		int32_t i = 1;
+		while (section.isValuePresent(soundPrefix + std::to_string(i)))
+		{
+			std::string filePath = section.getValue(soundPrefix + std::to_string(i)).getString();
+			sf::SoundBuffer buffer;
+
+			// Try loading the file into SoundBuffer
+			if (!buffer.loadFromFile(filePath))
+			{
+				LOG("Failed to load sound from $", filePath);
+			}
+			else
+			{
+				// Load the buffer into the soundEffectBuffers
+				soundEffectBuffers[soundID].emplace_back(std::move(buffer));
+				LOG("Successfully loaded sound: $", filePath);
+			}
+
+			i++;
+		}
+		// If there are at least one buffer, set the flag
+		if (!soundEffectBuffers[soundID].empty()) {
+			anySoundAdded = true;
+			// Move to the next soundID
+			soundID++;
+		}
+	}
+
+	return anySoundAdded;
+}
+
+// Adding a sound effect that can have multiple sounds
+bool SoundSystem::addSounds(int32_t soundID, const std::list<std::string>&filePaths)
+{
+	// Check if a sound with the same ID already exists
+	if (soundEffectBuffers.find(soundID) != soundEffectBuffers.end())
+	{
+		LOG("Sound effect with ID $ already exists!", soundID);
+		return false; 
+	}
+
+	// Loading sound files
+	for (const auto& filePath : filePaths)
+	{
+		if (!addSound(soundID, filePath))
+		{
+			LOG("Failed to load sound from $", filePath.c_str());
+			return false;
+		}
+	}
+
+	LOG("Successfully loaded sound effect $", soundID);
+	return true;
+}
+
+void SoundSystem::playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID)
+{
+	auto sound = std::make_unique<sf::Sound>();
+	sound->setBuffer(buffer);
+	sound->setVolume(100.f);
+	sound->play();
+
+	// Saving active sounds
+	activeSounds.emplace(soundID, std::move(sound));
+	LOG("Playing sound: $", soundID);
 }
 
 // Playing sound from the buffer
 void SoundSystem::playSound(int32_t soundID)
 {
-	if (soundBuffers.find(soundID) != soundBuffers.end())
+	auto it = soundEffectBuffers.find(soundID);
+	if (it != soundEffectBuffers.end() && !it->second.empty())
 	{
-		auto sound = std::make_unique<sf::Sound>();
-		sound->setBuffer(soundBuffers[soundID]);
-		sound->setVolume(100.f);
-		sound->play();
+		const auto& buffers = it->second;
 
-		// Saving active sounds
-		activeSounds.emplace(soundID, std::move(sound));
-		LOG("Playing sound:$", soundID);
+		// Check if there's only one buffer
+		if (buffers.size() == 1)
+		{
+			playSoundFromBuffer(buffers.front(), soundID);
+			LOG("Playing single sound: $", soundID);
+		}
+		// More than one sound, pick a random one
+		else
+		{
+			// Create generator and distribution locally
+			std::random_device randomDevice;
+			std::mt19937 randomEngine{ randomDevice() };
+			std::uniform_int_distribution<size_t> dist(0, std::distance(buffers.begin(), buffers.end()) - 1);
+			auto randomIt = std::next(buffers.begin(), dist(randomEngine));
+
+			playSoundFromBuffer(*randomIt, soundID);
+			LOG("Playing sound:$", soundID);
+		}
 	}
 	else 
 	{

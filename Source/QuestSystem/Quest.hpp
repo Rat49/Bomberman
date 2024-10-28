@@ -1,32 +1,19 @@
 #pragma once
-#include "QuestInfo.hpp"
 #include "BaseObjective.hpp"
 #include "EventSystem/EventTypes.hpp"
 
 class Quest {
 public:
-	Quest(int32_t id, const std::string& questFile);
+	Quest(const std::string& id, const std::string& fileName);
 
-	~Quest();
+	const std::string& getId() const { return id; }
 
-	enum class QuestProgress {
-		NOT_AVAILABLE, AVAILABLE, IN_PROGRESS, FINISHED
-	};
+	const int32_t getReward() const { return reward; }
 
-	void startQuest();
-
-	void instantiateCurrentObjective();
-
-	void nextObjective();
+	const std::string& getFile() const { return fileName; }
 
 private:
-	QuestInfo questInfo;
-	QuestProgress questProgress = QuestProgress::AVAILABLE;
-	int32_t currObjectiveCount = -1;
 	std::string fileName;
-
-	int32_t eventFinished = -1;
-	FunctionHandle eventFinishedHandle = -1;
-
-	std::vector<std::unique_ptr<BaseObjective>> objectives;
+	std::string id;
+	int32_t reward;
 };
