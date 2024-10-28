@@ -20,6 +20,7 @@ const std::string& CollisionModuleTest::getName() const {
 void CollisionModuleTest::setup() {
 	actor1 = std::make_unique<MockActor>();
 	actor2 = std::make_unique<MockActor>();
+	ray = std::make_unique<RayCast>();
 }
 
 void CollisionModuleTest::run() {
@@ -28,17 +29,29 @@ void CollisionModuleTest::run() {
 
 void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 
-	window->setSize(sf::Vector2u(800, 600));
+	window->setSize(sf::Vector2u(800, 800));
 
 	float minWidth = 50.f, maxWidth = 100.f;
 	float minHeight = 20.f, maxHeight = 70.f;
 
-	sf::Vector2f position1(50.f, 50.f);
-	sf::Vector2f position2(100.f, 100.f);
+	sf::Vector2f position1(20.f, 20.f);
+	sf::Vector2f position2(120.f, 120.f);
+
+	//ray origin and directions
+	sf::Vector2f origin(100.f, 100.f);
+	std::vector<sf::Vector2f> directions = { {1,0}, //right
+											{-1,0}, //left
+											{0,1}, //down
+											{0,-1} //up
+											};
 	// Create two Collision rectangles with random sizes
 	sf::Vector2f size1;
 	sf::Vector2f size2;
 
+	ray->setOrigin(origin);
+	int direction = 0;
+	sf::Vector2f endPoint;
+	bool isIntersecting;
 	for (int i = 0; i < 20; i++) {
 		size1 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
 		size2 = { getRandomFloat(minWidth, maxWidth), getRandomFloat(minHeight, maxHeight) };
@@ -46,6 +59,11 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 		actor1->getCollisionBox().setRectangleProperties(position1, size1);
 		actor2->getCollisionBox().setRectangleProperties(position2, size2);
 
+		//setting direction in circular pattern
+		ray->setDirection(directions[direction]);
+		direction = (direction+1) % directions.size();
+
+		/* for box collision test
 		actor1->getCollisionBox().update(actor2->getCollisionBox());
 		if (actor1->getCollisionBox().getIsOverlapped()) {
 			LOG("Collision");
@@ -53,18 +71,36 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 		else {
 			LOG("No Collision");
 		}
+		*/
 
+		endPoint = {origin + ray->getDirection()*200.f};
+		isIntersecting = ray->rayIntersectsRectangle(actor1->getCollisionBox(), endPoint);
+		if (isIntersecting) {
+			LOG("Collision");
+		}
+		else {
+			LOG("No Collision");
+		}
 		window->clear();
 
 		// Color the Rectangles
 		actor1->getCollisionBox().setColor(sf::Color::Red);
-		actor2->getCollisionBox().setColor(sf::Color::Blue);
+		//actor2->getCollisionBox().setColor(sf::Color::Blue);
 		// Draw the rectangles
 		window->draw(actor1->getCollisionBox().getRectangle());
-		window->draw(actor2->getCollisionBox().getRectangle());
+		//window->draw(actor2->getCollisionBox().getRectangle());
+
+		//color and draw a ray
+		sf::VertexArray rayLine(sf::Lines, 2);
+		rayLine[0].position = ray->getOrigin();
+		rayLine[0].color = sf::Color::Green;
+		rayLine[1].position = endPoint;
+		rayLine[1].color = sf::Color::Green;
+
+		window->draw(rayLine);
 
 		window->display();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
 	window->setSize(sf::Vector2u(200, 200));
 

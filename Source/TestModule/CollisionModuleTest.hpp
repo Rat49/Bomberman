@@ -2,6 +2,7 @@
 
 #include "TestModule/TestBase.hpp"
 #include "MockActor.hpp"
+#include "CollisionModule/RayCast.hpp"
 #include <memory>
 
 class CollisionModuleTest : public TestBase
@@ -17,4 +18,6 @@ private:
 	const std::string Name = "CollisionModuleTest";
 	std::unique_ptr<MockActor> actor1;
 	std::unique_ptr<MockActor> actor2;
+	std::unique_ptr<RayCast> ray;
+
 };
