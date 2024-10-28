@@ -3,6 +3,7 @@
 #include "TestModule/TestModule.hpp"
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
+#include "QuestManager.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
 
@@ -15,6 +16,11 @@ void GameModule::run()
 #ifndef FINAL
 	Modules::Tests->run();
 #endif
+
+    QuestManager qm = QuestManager("../../Data/Config/questSystem.ini");
+    qm.startQuest(0);
+    qm.emitMyEvent(EventType::PlaceBombs);
+    qm.emitMyEvent(EventType::DestroyBlocks);
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);

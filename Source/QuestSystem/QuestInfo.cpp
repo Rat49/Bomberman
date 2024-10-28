@@ -2,13 +2,20 @@
 #include "Common/Modules.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 
+namespace {
+	const std::string DISPLAY_NAME = "displayName";
+	const std::string REWARD = "reward";
+	const std::string QUEST_INFO = "QuestInfo";
+	const std::string OBJECTIVES_COUNT = "objectivesCount";
+}
+
 void QuestInfo::readQuestInfo(const std::string& file)
 {
-	const std::string questInfoPrefix = "QuestInfo" + std::to_string(id);
+	const std::string questInfoPrefix = QUEST_INFO + std::to_string(id);
 
-	displayName = Modules::Config->getValue(file, questInfoPrefix, "displayName").getString();
-	reward = Modules::Config->getValue(file, questInfoPrefix, "reward").getInt32();
-	objectivesCount = Modules::Config->getValue(file, questInfoPrefix, "objectivesCnt").getInt32();
+	displayName = Modules::Config->getValue(file, questInfoPrefix, DISPLAY_NAME).getString();
+	reward = Modules::Config->getValue(file, questInfoPrefix, REWARD).getInt32();
+	objectivesCount = Modules::Config->getValue(file, questInfoPrefix, OBJECTIVES_COUNT).getInt32();
 }
 
 const std::string& QuestInfo::getDisplayName() const

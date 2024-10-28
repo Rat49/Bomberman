@@ -1,6 +1,7 @@
 #pragma once
 #include "QuestInfo.hpp"
 #include "BaseObjective.hpp"
+#include "EventSystem/EventTypes.hpp"
 
 class Quest {
 public:
@@ -25,7 +26,7 @@ private:
 	std::string fileName;
 
 	int32_t eventFinished = -1;
-	EventSystem::FunctionHandle eventFinishedHandle = -1;
+	FunctionHandle eventFinishedHandle = -1;
 
 	std::vector<std::unique_ptr<BaseObjective>> objectives;
 };

@@ -9,7 +9,6 @@ void QuestSystem::addQuests(const std::string& file)
 	while (Modules::Config->isSectionPresent(file, questInfoPrefix + std::to_string(i))) {
 		quests.push_back(std::make_unique<Quest>(i++, file));
 	}
-	CreateObjective::getInstance().registerAllEvents();
 }
 
 void QuestSystem::startQuest(int32_t id)
@@ -17,9 +16,4 @@ void QuestSystem::startQuest(int32_t id)
 	if (quests.size() > id) {
 		quests[id]->startQuest();
 	}
-}
-
-void QuestSystem::emitMyEvent(const EventType& name) const
-{
-	CreateObjective::getInstance().emitEvent(name);
 }

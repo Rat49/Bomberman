@@ -15,5 +15,5 @@ public:
 private:
 	int32_t placeBombEventID, destroyBlockEventID;
 	const std::string Name = "QuestSystemTest";
-	EventSystem::FunctionHandle handle;
+	FunctionHandle handle;
 };
