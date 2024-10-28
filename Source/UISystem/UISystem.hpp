@@ -13,14 +13,11 @@ public:
 	// Sets the UI resolution
 	void setUIResolution(float width, float height);
 
-	// Converts UI World coordinates to Viewport coordinates
-	sf::Vector2f screenToViewport(const sf::Vector2f& uiWorldPos) const;
+	// Converts UI coordinates to Viewport coordinates
+	sf::Vector2f uiScreenToViewport(const sf::Vector2f& uiWorldPos) const;
 
 	// Converts Viewport coordinates to UI World coordinates
-	sf::Vector2f viewportToScreen(const sf::Vector2f& viewportPos) const;
-
-	// Renders the UI elements onto the given window
-	void render(sf::RenderWindow& window);
+	sf::Vector2f viewportToUIScreen(const sf::Vector2f& viewportPos) const;
 
 private:
 	// VARIABLES
@@ -32,9 +29,6 @@ private:
 
 	// Fixed UI World resolution for scaling
 	sf::Vector2f uiResolution;
-
-	// Black bars for centering UI
-	sf::RectangleShape blackBars;
 
 	//METHODS
 	// Calculates the scale factor for conversion between Viewport and UI World coordinates

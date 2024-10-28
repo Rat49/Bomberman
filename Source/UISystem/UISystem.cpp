@@ -13,8 +13,6 @@ void UISystem::setViewportSize(float width, float height)
 	viewportWidth = width;
 	viewportHeight = height;
 	updateViewportSettings();
-	// Pre-calculate the scale here
-	scale = calculateScaleFactor();
 }
 
 // Sets the UI resolution
@@ -35,8 +33,8 @@ float UISystem::calculateScaleFactor() const
 	return std::min(scaleX, scaleY);
 }
 
-// Converts UI World coordinates to Viewport coordinates
-sf::Vector2f UISystem::screenToViewport(const sf::Vector2f& uiWorldPos) const
+// Converts UI coordinates to Viewport coordinates
+sf::Vector2f UISystem::uiScreenToViewport(const sf::Vector2f& uiWorldPos) const
 {
 	// Calculate offsets to center the UI in the viewport
 	sf::Vector2f offset(
@@ -45,11 +43,11 @@ sf::Vector2f UISystem::screenToViewport(const sf::Vector2f& uiWorldPos) const
 	);
 
 	// Apply scaling and offset to convert UI world position to viewport coordinates
-	return sf::Vector2f(uiWorldPos.x * scale + offset.x, uiWorldPos.y * scale + offset.y);
+	return sf::Vector2f(uiWorldPos.x * calculateScaleFactor() + offset.x, uiWorldPos.y * calculateScaleFactor() + offset.y);
 }
 
 // Converts Viewport coordinates to UI World coordinates
-sf::Vector2f UISystem::viewportToScreen(const sf::Vector2f& viewportPos) const
+sf::Vector2f UISystem::viewportToUIScreen(const sf::Vector2f& viewportPos) const
 {
 	// Calculate offsets to reverse the centering effect in the viewport
 	sf::Vector2f offset(
@@ -69,20 +67,5 @@ void UISystem::updateViewportSettings()
 
 	// Calculate offsets based on the difference between viewport dimensions and UI resolution
 	// float offsetX = (viewportWidth - uiResolution.x * scale) / 2; // I don't use this anywhere for now
-	float offsetY = (viewportHeight - uiResolution.y * scale) / 2;
-
-	// Set the size for the top and bottom black bars
-	blackBars.setSize(sf::Vector2f(viewportWidth, offsetY));
-	// Set the fill color of the black bars to black
-	blackBars.setFillColor(sf::Color::Black);
-}
-
-// Renders the UI elements onto the given window
-void UISystem::render(sf::RenderWindow& window) 
-{
-	// Display UI elements when I have them
-	
-	// Just for test
-	window.clear(sf::Color::Black);
-
+	//float offsetY = (viewportHeight - uiResolution.y * scale) / 2;
 }
