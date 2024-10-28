@@ -17,11 +17,6 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    QuestManager qm = QuestManager("../../Data/Config/questSystem.ini");
-    qm.startQuest(0);
-    qm.emitMyEvent(EventType::PlaceBombs);
-    qm.emitMyEvent(EventType::DestroyBlocks);
-
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);

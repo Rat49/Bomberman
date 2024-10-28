@@ -52,8 +52,8 @@ void Quest::instantiateCurrentObjective()
 	const std::string& questObjectivePrefix = QUEST_OBJECTIVE + questInfo.getId() + std::to_string(currObjectiveCount);
 
 	if (Modules::Config->isSectionPresent(fileName, questObjectivePrefix)) {
-		int32_t description = Modules::Config->getValue(fileName, questObjectivePrefix, DESCRIPTION).getInt32();
-		int32_t requiredCount = Modules::Config->getValue(fileName, questObjectivePrefix, REQUIRED_COUNT).getInt32();
+		//int32_t description = Modules::Config->getValue(fileName, questObjectivePrefix, DESCRIPTION).getInt32();
+		//int32_t requiredCount = Modules::Config->getValue(fileName, questObjectivePrefix, REQUIRED_COUNT).getInt32();
 
 		this->eventFinished = Modules::Events->registerEvent();
 
