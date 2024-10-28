@@ -1,8 +1,9 @@
 #include "UISystem/UISystem.hpp"
 
 // Constructor: initializes the UISystem with viewport dimensions
-UISystem::UISystem(float viewportWidth, float viewportHeight) : viewportWidth(viewportWidth), viewportHeight(viewportHeight) 
+UISystem::UISystem() 
 {
+	setViewportSize(1280.0f, 720.0f);
 	updateViewportSettings();
 }
 
@@ -11,6 +12,15 @@ void UISystem::setViewportSize(float width, float height)
 {
 	viewportWidth = width;
 	viewportHeight = height;
+	updateViewportSettings();
+	// Pre-calculate the scale here
+	scale = calculateScaleFactor();
+}
+
+// Sets the UI resolution
+void UISystem::setUIResolution(float width, float height)
+{
+	uiResolution = sf::Vector2f(width, height);
 	updateViewportSettings();
 }
 
@@ -26,11 +36,8 @@ float UISystem::calculateScaleFactor() const
 }
 
 // Converts UI World coordinates to Viewport coordinates
-sf::Vector2f UISystem::toViewportCoordinates(const sf::Vector2f& uiWorldPos) const 
+sf::Vector2f UISystem::screenToViewport(const sf::Vector2f& uiWorldPos) const
 {
-	// Calculate the scale factor
-	float scale = calculateScaleFactor();
-
 	// Calculate offsets to center the UI in the viewport
 	sf::Vector2f offset(
 		(viewportWidth - uiResolution.x * scale) / 2,
@@ -42,11 +49,8 @@ sf::Vector2f UISystem::toViewportCoordinates(const sf::Vector2f& uiWorldPos) con
 }
 
 // Converts Viewport coordinates to UI World coordinates
-sf::Vector2f UISystem::toUIWorldCoordinates(const sf::Vector2f& viewportPos) const 
+sf::Vector2f UISystem::viewportToScreen(const sf::Vector2f& viewportPos) const
 {
-	// Calculate the scale factor
-	float scale = calculateScaleFactor();
-
 	// Calculate offsets to reverse the centering effect in the viewport
 	sf::Vector2f offset(
 		(viewportWidth - uiResolution.x * scale) / 2,
@@ -61,7 +65,7 @@ sf::Vector2f UISystem::toUIWorldCoordinates(const sf::Vector2f& viewportPos) con
 void UISystem::updateViewportSettings() 
 {
 	// Calculate the scaling factor to center the UI within the viewport
-	float scale = calculateScaleFactor();
+	scale = calculateScaleFactor();
 
 	// Calculate offsets based on the difference between viewport dimensions and UI resolution
 	// float offsetX = (viewportWidth - uiResolution.x * scale) / 2; // I don't use this anywhere for now

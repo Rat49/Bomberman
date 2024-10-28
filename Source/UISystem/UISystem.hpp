@@ -5,17 +5,19 @@
 class UISystem
 {
 public:
-	// Constructor: initializes the UISystem with viewport dimensions
-	UISystem(float viewportWidth, float viewportHeight);
+	UISystem();
 
 	// Updates the viewport size to handle dynamic resizing
 	void setViewportSize(float width, float height);
 
+	// Sets the UI resolution
+	void setUIResolution(float width, float height);
+
 	// Converts UI World coordinates to Viewport coordinates
-	sf::Vector2f toViewportCoordinates(const sf::Vector2f& uiWorldPos) const;
+	sf::Vector2f screenToViewport(const sf::Vector2f& uiWorldPos) const;
 
 	// Converts Viewport coordinates to UI World coordinates
-	sf::Vector2f toUIWorldCoordinates(const sf::Vector2f& viewportPos) const;
+	sf::Vector2f viewportToScreen(const sf::Vector2f& viewportPos) const;
 
 	// Renders the UI elements onto the given window
 	void render(sf::RenderWindow& window);
@@ -23,10 +25,13 @@ public:
 private:
 	// VARIABLES
 	// Current dimensions of the viewport
-	float viewportWidth, viewportHeight;
+	float viewportWidth;
+	float viewportHeight;
+	// Store the scale factor
+	float scale;
 
 	// Fixed UI World resolution for scaling
-	const sf::Vector2f uiResolution = { 1280.f, 720.f };
+	sf::Vector2f uiResolution;
 
 	// Black bars for centering UI
 	sf::RectangleShape blackBars;
