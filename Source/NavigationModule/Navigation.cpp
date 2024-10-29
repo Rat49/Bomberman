@@ -9,6 +9,19 @@ NavigationModule::NavigationModule(std::vector<std::vector<bool>>& grid/*, some 
 	algorithm = std::make_unique<AStar>(grid);
 }
 
+bool NavigationModule::initialize()
+{
+	return true;
+}
+
+void NavigationModule::update(float, sf::Window*)
+{
+}
+
+void NavigationModule::terminate()
+{
+}
+
 //called to parse our game into a grid
 void NavigationModule::parseGrid(/*some representation of our game environment*/) {
 

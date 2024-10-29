@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "ConfigParser.hpp"
 #include "ConfigFile.hpp"
+#include "BaseModule/BaseModule.hpp"
 
 class ConfigSystem {
 public:

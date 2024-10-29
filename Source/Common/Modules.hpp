@@ -1,5 +1,7 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include <SFML/Graphics.hpp>
 
 #ifndef FINAL
 class TestModule;
@@ -13,6 +15,7 @@ class NavigationModule;
 class SoundSystem;
 class InputModule;
 class SpriteModule;
+class BaseModule;
 
 
 /*
@@ -22,6 +25,10 @@ struct Modules
 {
 	static void initialize();
 	static void terminate();
+
+	static bool initializeAll();
+	static void updateAll(float deltaTime, sf::Window* window);
+	static void terminateAll();
 
 #ifndef FINAL
 	static std::unique_ptr<TestModule> Tests;
@@ -35,4 +42,7 @@ struct Modules
 	static std::unique_ptr<SoundSystem> Sounds;
 	static std::unique_ptr<InputModule> Input;
 	static std::unique_ptr<SpriteModule> Sprite;
+
+private:
+	static std::vector<std::unique_ptr<BaseModule>> modules;
 };

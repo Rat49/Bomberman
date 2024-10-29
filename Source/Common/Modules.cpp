@@ -8,7 +8,7 @@
 #include "SoundSystem/SoundSystem.hpp"
 #include "InputModule/InputModule.hpp"
 #include "SpriteModule/SpriteModule.hpp"
-
+#include "BaseModule/BaseModule.hpp"
 
 
 #ifndef FINAL
@@ -24,6 +24,13 @@ std::unique_ptr<SoundSystem> Modules::Sounds;
 std::unique_ptr<InputModule> Modules::Input;
 std::unique_ptr<SpriteModule> Modules::Sprite;
 
+std::vector<std::unique_ptr<BaseModule>> Modules::modules = {
+	std::make_unique<NavigationModule>()//,
+	/*std::make_unique<EventSystem>(),
+	std::make_unique<SoundSystem>(),
+	std::make_unique<InputModule>(),
+	std::make_unique<SpriteModule>()*/
+};
 
 void Modules::initialize()
 {
@@ -58,4 +65,29 @@ void Modules::terminate()
 	Modules::Tests.release();
 	Modules::Logs.release();
 #endif
+}
+
+bool Modules::initializeAll()
+{
+
+	for (auto& module : modules) {
+		if (!module->initialize()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void Modules::updateAll(float deltaTime, sf::Window* window)
+{
+	for (auto& module : modules) {
+		module->update(deltaTime, window);
+	}
+}
+
+void Modules::terminateAll()
+{
+	for (auto& module : modules) {
+		module->terminate();
+	}
 }

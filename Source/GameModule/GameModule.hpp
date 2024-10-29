@@ -6,5 +6,5 @@
 class GameModule
 {
 public:
-    void run();
+	void run();
 };
