@@ -7,39 +7,31 @@
 class AssetManager
 {
 public:
-	AssetManager(const std::string& settingsPath);
+	AssetManager();
 
-	bool SetRootFolder(const std::string& rootFolderPath);
+	bool initialize(const std::string& rootFolderPath);
 
-	void LoadAllAssets();
+	bool loadSound(const RelativeAssetPath& soundPath);
 
-	bool LoadSound(const std::string& soundName, const std::string& soundPath);
+	bool loadTexture(const RelativeAssetPath& texturePath);
 
-	bool LoadSound(const std::string& soundPath);
+	bool loadFont(const RelativeAssetPath& fontPath);
 
-	bool LoadTexture(const std::string& textureName, const std::string& texturePath);
+	sf::SoundBuffer* getSound(const RelativeAssetPath& assetName);
 
-	bool LoadTexture(const std::string& texturePath);
+	sf::Texture* getTexture(const RelativeAssetPath& assetName);
 
-	bool LoadFont(const std::string& fontName, const std::string& fontPath);
-
-	bool LoadFont(const std::string& fontPath);
-
-	sf::SoundBuffer* GetSound(const AssetName& assetName);
-
-	sf::Texture* GetTexture(const AssetName& assetName);
-
-	sf::Font* GetFont(const AssetName& assetName);
+	sf::Font* getFont(const RelativeAssetPath& assetName);
 
 private:
 	std::string rootFolder;
 
-	std::string settings;
+	std::map<RelativeAssetPath, sf::SoundBuffer> sounds;
 
-	std::map<AssetName, sf::SoundBuffer> sounds;
+	std::map<RelativeAssetPath, sf::Texture> textures;
 
-	std::map<AssetName, sf::Texture> textures;
+	std::map<RelativeAssetPath, sf::Font> fonts;
 
-	std::map<AssetName, sf::Font> fonts;
+	std::string AssetManager::getFullPath(const std::string& relativePath) const;
 };
 

@@ -42,7 +42,7 @@ void Modules::initialize()
 	Modules::Sounds = std::make_unique<SoundSystem>();
 	Modules::Input = std::make_unique<InputModule>();
 	Modules::Sprite = std::make_unique<SpriteModule>();
-	Modules::Assets = std::make_unique<AssetManager>("../../Data/Config/assetmngr_config.ini");
+	Modules::Assets = std::make_unique<AssetManager>();
 }
 
 void Modules::terminate()

@@ -1,12 +1,12 @@
 #include "StringUtils.hpp"
 
-std::vector<std::string> StringUtils::explode(const std::string& textToExplode, char delim)
+size_t StringUtils::tokenize(const std::string& source, char delim, std::vector<std::string>& tokens)
 {
-	std::vector<std::string> result;
-	std::istringstream iss(textToExplode);
-	for (std::string token; std::getline(iss, token, delim); )
+	std::istringstream iss(source);
+	std::string token;
+	while (std::getline(iss, token, delim))
 	{
-		result.push_back(std::move(token));
+		tokens.push_back(std::move(token));
 	}
-	return result;
+	return tokens.size();
 }

@@ -6,6 +6,6 @@
 class StringUtils
 {
 public:
-	static std::vector<std::string> explode(const std::string& textToExplode, char delim);
+	static size_t tokenize(const std::string& source, char delim, std::vector<std::string>& tokens);
 };
 

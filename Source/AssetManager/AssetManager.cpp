@@ -6,160 +6,85 @@
 #include "ConfigSystem/ConfigSection.hpp"
 #include <filesystem>
 
-AssetManager::AssetManager(const std::string& settingsPath)
+AssetManager::AssetManager()
+{
+	rootFolder = "";
+}
+
+bool AssetManager::initialize(const std::string& settingsPath)
 {
 	Modules::Config->addFile(settingsPath);
 	const ConfigFile& assetManagerSettings = Modules::Config->getFile(settingsPath);
-	if (assetManagerSettings.isSectionPresent("RootFolder"))
-	{
-		rootFolder = assetManagerSettings.getSection("RootFolder").getValue("root").getString();
-	}
-	else {
-		rootFolder = "";
-	}
-	settings = std::string(settingsPath);
-}
-
-bool AssetManager::SetRootFolder(const std::string& rootFolderPath)
-{
-	if (rootFolder != "")
+	if (!assetManagerSettings.isSectionPresent("RootFolder"))
 	{
 		return false;
 	}
-	rootFolder = rootFolderPath;
+	rootFolder = assetManagerSettings.getSection("RootFolder").getValue("root").getString();
 	return true;
 }
 
-bool AssetManager::LoadSound(const std::string& soundName, const std::string& soundPath)
+bool AssetManager::loadSound(const RelativeAssetPath& relativeSoundPath)
 {
-	sf::SoundBuffer soundBuffer;
-	if (!soundBuffer.loadFromFile(rootFolder + soundPath))
+	auto it = sounds.find(relativeSoundPath);
+	if (it != sounds.end())
 	{
-		return false;
-	}
-	sounds.emplace(soundName, std::move(soundBuffer));
-	return true;
-}
-
-bool AssetManager::LoadSound(const std::string& soundPath)
-{
-	sf::SoundBuffer soundBuffer;
-	std::vector<std::string> tmp = StringUtils::explode(rootFolder + soundPath, '/');
-	std::string soundName        = StringUtils::explode(tmp[tmp.size() - 1], '.')[0];
-	if (soundBuffer.loadFromFile(rootFolder + soundPath))
-	{
-		sounds.emplace(soundName, soundBuffer);
+		LOG("Sound [$] already loaded", relativeSoundPath);
 		return true;
 	}
-	return false;
+
+	sf::SoundBuffer soundBuffer;
+	std::string fullPath = getFullPath(relativeSoundPath);
+
+	if (!soundBuffer.loadFromFile(fullPath))
+	{
+		return false;
+	}
+
+	sounds.emplace(relativeSoundPath, soundBuffer);
+	return true;
 }
 
-bool AssetManager::LoadTexture(const std::string& textureName, const std::string& texturePath)
+bool AssetManager::loadTexture(const RelativeAssetPath& relativeTexturePath)
 {
+	auto it = textures.find(relativeTexturePath);
+	if (it != textures.end())
+	{
+		LOG("Texture [$] already loaded", relativeTexturePath);
+		return true;
+	}
+
 	sf::Texture texture;
-	if (!texture.loadFromFile(rootFolder + texturePath))
+	std::string fullPath = getFullPath(relativeTexturePath);
+	if (!texture.loadFromFile(fullPath))
 	{
 		return false;
 	}
-	textures.emplace(textureName, std::move(texture));
+
+	textures.emplace(relativeTexturePath, std::move(texture));
 	return true;
 }
 
-bool AssetManager::LoadTexture(const std::string& texturePath)
+bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
 {
-	sf::Texture texture;
-	std::vector<std::string> tmp = StringUtils::explode(rootFolder + texturePath, '/');
-	std::string textureName      = StringUtils::explode(tmp[tmp.size() - 1], '.')[0];
-	if (!texture.loadFromFile(rootFolder + texturePath))
+	auto it = fonts.find(relativeFontPath);
+	if (it != fonts.end())
 	{
-		return false;
+		LOG("Font [$] already loaded", relativeFontPath);
+		return true;
 	}
-	textures.emplace(textureName, std::move(texture));
-	return true;
-}
 
-bool AssetManager::LoadFont(const std::string & fontName, const std::string & fontPath)
-{
 	sf::Font font;
-	if (!font.loadFromFile(rootFolder + fontPath))
+	std::string fullPath = getFullPath(relativeFontPath);
+	if (!font.loadFromFile(fullPath))
 	{
 		return false;
 	}
-	fonts.emplace(fontName, std::move(font));
+
+	fonts.emplace(relativeFontPath, std::move(font));
 	return true;
 }
 
-bool AssetManager::LoadFont(const std::string& fontPath)
-{
-	sf::Font font;
-	std::vector<std::string> tmp = StringUtils::explode(rootFolder + fontPath, '/');
-	std::string fontName         = StringUtils::explode(tmp[tmp.size() - 1], '.')[0];
-	if (!font.loadFromFile(rootFolder + fontPath))
-	{
-		return false;
-	}
-	fonts.emplace(fontName, std::move(font));
-	return true;
-}
-
-void AssetManager::LoadAllAssets()
-{
-	Modules::Config->addFile(rootFolder);
-	const ConfigFile& managerSettings = Modules::Config->getFile(settings);
-	const auto& sections = managerSettings.getAllSections();
-
-	for (const auto& section : sections)
-	{
-		if (!managerSettings.isSectionPresent(section)) break;
-		if (managerSettings.getSection(section).areValuesPresent({ "name", "type" }))
-		{
-			ConfigSection folderSection = managerSettings.getSection(section);
-			std::string folderName = folderSection.getValue("name").getString();
-			std::string folderAssetsType = folderSection.getValue("type").getString();
-			std::string folderPath = rootFolder + "/" + folderName;
-
-			if (folderAssetsType == "sound")
-			{
-				for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
-					if (entry.is_regular_file()) {
-						std::string soundPath = entry.path().string();
-						std::string soundName = entry.path().stem().string();
-						Modules::Assets->LoadSound(soundName, soundPath);
-					}
-				}
-			}
-			else if (folderAssetsType == "texture")
-			{
-				for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
-					if (entry.is_regular_file()) {
-						std::string texturePath = entry.path().string();
-						std::string textureName = entry.path().stem().string();
-						Modules::Assets->LoadTexture(textureName, texturePath);
-					}
-				}
-			}
-			else if (folderAssetsType == "font")
-			{
-				for (const auto& entry : std::filesystem::directory_iterator(folderPath)) {
-					if (entry.is_regular_file()) {
-						std::string fontPath = entry.path().string();
-						std::string fontName = entry.path().stem().string();
-						Modules::Assets->LoadFont(fontName, fontPath);
-					}
-				}
-			}
-			else {
-				LOG("Section [$] invalid type", section);
-			}
-		}
-		else
-		{
-			LOG("Section [$] is not proper folder", section);
-		}
-	}
-}
-
-sf::SoundBuffer* AssetManager::GetSound(const AssetName& assetName)
+sf::SoundBuffer* AssetManager::getSound(const RelativeAssetPath& assetName)
 {
 	auto it = sounds.find(assetName);
 	if (it == sounds.end())
@@ -169,8 +94,7 @@ sf::SoundBuffer* AssetManager::GetSound(const AssetName& assetName)
 	return &it->second;
 }
 
-
-sf::Texture* AssetManager::GetTexture(const AssetName& assetName)
+sf::Texture* AssetManager::getTexture(const RelativeAssetPath& assetName)
 {
 	auto it = textures.find(assetName);
 	if (it == textures.end())
@@ -180,7 +104,7 @@ sf::Texture* AssetManager::GetTexture(const AssetName& assetName)
 	return &it->second;
 }
 
-sf::Font* AssetManager::GetFont(const AssetName& assetName)
+sf::Font* AssetManager::getFont(const RelativeAssetPath& assetName)
 {
 	auto it = fonts.find(assetName);
 	if (it == fonts.end())
@@ -188,5 +112,15 @@ sf::Font* AssetManager::GetFont(const AssetName& assetName)
 		return nullptr;
 	}
 	return &it->second;
+}
+
+std::string AssetManager::getFullPath(const std::string& relativePath) const
+{
+	std::string path = relativePath;
+	const std::string prefix = "Game/";
+	if (relativePath.find(prefix) == 0) {
+		path = relativePath.substr(prefix.length());
+	}
+	return rootFolder + '/' + path;
 }
 
