@@ -44,7 +44,7 @@ sf::Vector2f UISystem::uiScreenToViewport(const sf::Vector2f& uiWorldPos) const
 sf::Vector2f UISystem::viewportToUIScreen(const sf::Vector2f& viewportPos) const
 {
 	// Reverse scale to retrieve the original UI coordinates
-	return sf::Vector2f(viewportPos.x / scale, viewportPos.y / scale);
+	return sf::Vector2f(viewportPos.x / calculateScaleFactor(), viewportPos.y / calculateScaleFactor());
 }
 
 // Adjusts viewport settings for centering and fitting UI elements
@@ -52,5 +52,4 @@ void UISystem::updateViewportSettings()
 {
 	// Calculate the scaling factor to center the UI within the viewport
 	scale = calculateScaleFactor();
-
 }
