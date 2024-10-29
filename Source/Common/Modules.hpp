@@ -13,6 +13,7 @@ class NavigationModule;
 class SoundSystem;
 class InputModule;
 class SpriteModule;
+class UISystem;
 
 
 /*
@@ -35,4 +36,5 @@ struct Modules
 	static std::unique_ptr<SoundSystem> Sounds;
 	static std::unique_ptr<InputModule> Input;
 	static std::unique_ptr<SpriteModule> Sprite;
+	static std::unique_ptr<UISystem> UI;
 };
