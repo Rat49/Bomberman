@@ -15,7 +15,6 @@ class InputModule;
 class SpriteModule;
 class UISystem;
 
-
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
 */

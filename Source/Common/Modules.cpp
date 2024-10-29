@@ -10,8 +10,6 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "UISystem/UISystem.hpp"
 
-
-
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
 std::unique_ptr<LogManager> Modules::Logs;
