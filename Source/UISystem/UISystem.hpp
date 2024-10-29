@@ -16,7 +16,7 @@ public:
 	// Converts UI coordinates to Viewport coordinates
 	sf::Vector2f uiScreenToViewport(const sf::Vector2f& uiWorldPos) const;
 
-	// Converts Viewport coordinates to UI World coordinates
+	// Converts Viewport coordinates to UI coordinates
 	sf::Vector2f viewportToUIScreen(const sf::Vector2f& viewportPos) const;
 
 private:
@@ -31,7 +31,7 @@ private:
 	sf::Vector2f uiResolution;
 
 	//METHODS
-	// Calculates the scale factor for conversion between Viewport and UI World coordinates
+	// Calculates the scale factor for conversion between Viewport and UI coordinates
 	float calculateScaleFactor() const;
 
 	// Adjusts viewport settings for centering and fitting UI elements
