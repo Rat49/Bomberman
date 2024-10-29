@@ -1,5 +1,5 @@
 #pragma once
-#include "QuestSystem/BaseObjective.hpp"
+#include "BaseObjective.hpp"
 
 class ReachNumberObjective : public BaseObjective {
 public:
