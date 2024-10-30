@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <vector>
-#include <SFML/Graphics.hpp>
 
 #ifndef FINAL
 class TestModule;
@@ -17,6 +16,10 @@ class InputModule;
 class SpriteModule;
 class UISystem;
 class BaseModule;
+
+namespace sf {
+	class Window;
+}
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
