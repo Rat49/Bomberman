@@ -8,6 +8,7 @@
 #include "SoundSystem/SoundSystem.hpp"
 #include "InputModule/InputModule.hpp"
 #include "SpriteModule/SpriteModule.hpp"
+#include "UISystem/UISystem.hpp"
 #include "AssetManager/AssetManager.hpp"
 
 
@@ -24,6 +25,7 @@ std::unique_ptr<NavigationModule> Modules::Navigation;
 std::unique_ptr<SoundSystem> Modules::Sounds;
 std::unique_ptr<InputModule> Modules::Input;
 std::unique_ptr<SpriteModule> Modules::Sprite;
+std::unique_ptr<UISystem> Modules::UI;
 std::unique_ptr<AssetManager> Modules::Assets;
 
 
@@ -42,6 +44,7 @@ void Modules::initialize()
 	Modules::Sounds = std::make_unique<SoundSystem>();
 	Modules::Input = std::make_unique<InputModule>();
 	Modules::Sprite = std::make_unique<SpriteModule>();
+	Modules::UI = std::make_unique<UISystem>();
 	Modules::Assets = std::make_unique<AssetManager>();
 }
 
@@ -55,6 +58,7 @@ void Modules::terminate()
 	Modules::Sounds.release();
 	Modules::Input.release();
 	Modules::Sprite.release();
+	Modules::UI.release();
 	Modules::Assets.release();
 
 
