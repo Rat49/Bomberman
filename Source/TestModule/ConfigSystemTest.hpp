@@ -1,6 +1,5 @@
 #pragma once
 #include "TestModule/TestBase.hpp"
-#include <SFML/Graphics.hpp>
 #include <iostream>
 
 class ConfigSystem;
