@@ -8,6 +8,8 @@ namespace sf
 }
 
 // Base abstract class for all UI elements
+// Coordinates are resolution-independent, referring to the top-left corner of each UI element.
+// Operates within a virtual range (e.g., 800x600), or normalized [0,1] coordinates to enable flexibility across resolutions.
 class UIElement
 {
 public:
