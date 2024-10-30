@@ -9,18 +9,16 @@ void UIScreen::addElement(std::shared_ptr<UIElement> element)
 // Remove a UI element
 void UIScreen::removeElement(const std::shared_ptr<UIElement>& element)
 {
-	elements.remove(element);
+	// Find the element
+	auto it = std::remove(elements.begin(), elements.end(), element);
+
+	// Erase it from the vector
+	elements.erase(it, elements.end());
 }
 
 // Draw all UI elements on the given target
 void UIScreen::draw(sf::RenderTarget& target)
 {
-	// Check for elements before drawing
-	if (elements.empty())
-	{
-		return;
-	}
-
 	// Draw each UI element on the given target
 	for (const auto& element : elements)
 	{

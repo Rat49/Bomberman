@@ -1,6 +1,11 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
+
+namespace sf
+{
+	class RenderTarget;
+}
 
 // Base abstract class for all UI elements
 class UIElement
@@ -12,7 +17,7 @@ public:
 	virtual void draw(sf::RenderTarget& target) = 0;
 
 	// Set/get methods for position
-	void setPosition(const sf::Vector2f& pos);
+	virtual void setPosition(const sf::Vector2f& pos);
 	sf::Vector2f getPosition() const;
 
 	// Set/get methods for size

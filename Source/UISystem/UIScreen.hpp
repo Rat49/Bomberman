@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UISystem/UIElement.hpp"
-#include <list>
+#include <vector>
 #include <memory>
 
 class UIScreen
@@ -17,6 +17,6 @@ public:
 	void draw(sf::RenderTarget& target);
 
 private:
-	// List to store UI elements
-	std::list<std::shared_ptr<UIElement>> elements;
+	// Vector to store UI elements
+	std::vector<std::shared_ptr<UIElement>> elements;
 };

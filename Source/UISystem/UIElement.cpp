@@ -13,9 +13,9 @@ sf::Vector2f UIElement::getPosition() const
 }
 
 // Set size
-void UIElement::setSize(const sf::Vector2f& size)
+void UIElement::setSize(const sf::Vector2f& newSize)
 {
-	this->size = size;
+	this->size = newSize;
 }
 
 // Return the current size of the UI element

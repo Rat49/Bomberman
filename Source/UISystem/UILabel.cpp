@@ -1,4 +1,5 @@
 #include "UISystem/UILabel.hpp"
+#include <SFML/Graphics/RenderTarget.hpp>
 
 // Constructor: initializes the UILabel with text, font, and character size
 UILabel::UILabel(const std::string& text, const sf::Font& font, unsigned int size)
@@ -29,5 +30,18 @@ std::string UILabel::getText() const
 // Sets the position of the label
 void UILabel::setPosition(const sf::Vector2f& pos)
 {
+	UIElement::setPosition(pos);
 	labelText.setPosition(pos);
+}
+
+// Set method to change the font of the label
+void UILabel::setFont(const sf::Font& font)
+{
+	labelText.setFont(font);
+}
+
+// Set method to change the character size of the label
+void UILabel::setCharacterSize(unsigned int newSize)
+{
+	labelText.setCharacterSize(newSize);
 }

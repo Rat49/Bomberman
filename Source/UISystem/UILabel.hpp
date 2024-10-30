@@ -1,8 +1,13 @@
 #pragma once
 
 #include "UISystem/UIElement.hpp"
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <string>
+
+namespace sf
+{
+	class Font;
+}
 
 // Derived class that implements a simple text display element
 class UILabel : public UIElement
@@ -21,7 +26,13 @@ public:
 	std::string getText() const;
 
 	// Sets the position of the label
-	void setPosition(const sf::Vector2f& pos);
+	void setPosition(const sf::Vector2f& pos) override;
+
+	// Set method to change the font of the label
+	void setFont(const sf::Font& font);
+
+	// Set method to change the character size of the label
+	void setCharacterSize(unsigned int size);
 
 private:
 	// SFML text object to hold and display the label's text
