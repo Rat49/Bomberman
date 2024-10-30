@@ -1,5 +1,8 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+
+namespace sf {
+	class Window;
+}
 
 class BaseModule {
 public:
