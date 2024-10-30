@@ -252,3 +252,18 @@ void InputModule::LoadInputSettings(const std::string& inputSettingPath)
 		}
 	}
 }
+
+// fill these methods 
+bool InputModule::initialize()
+{
+	return true;
+}
+
+void InputModule::update(float, sf::Window*)
+{
+	this->Update();
+}
+
+void InputModule::terminate()
+{
+}

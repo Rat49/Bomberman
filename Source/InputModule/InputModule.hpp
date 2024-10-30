@@ -7,8 +7,9 @@
 #include <SFML/Graphics.hpp>
 #include "InputTypes.hpp"
 #include "InputKeyBinder.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class InputModule
+class InputModule : public BaseModule
 {
 public:
 	InputModule();
@@ -36,6 +37,12 @@ public:
 	ActionID GetActionID(const std::string& actionName) const;
 
 	void LoadInputSettings(const std::string& inputSettingPath);
+
+	bool initialize() override;
+
+	void update(float deltaTime, sf::Window* window) override;
+
+	void terminate() override;
 
 private:
 	std::atomic<ActionID> actionID;

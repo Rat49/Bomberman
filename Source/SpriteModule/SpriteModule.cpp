@@ -25,3 +25,17 @@ void SpriteModule::update(float deltaTime)
 		pair.second->Update(deltaTime); 
 	}
 }
+
+// fill these methods 
+bool SpriteModule::initialize()
+{
+	return true;
+}
+
+void SpriteModule::update(float, sf::Window*)
+{
+}
+
+void SpriteModule::terminate()
+{
+}

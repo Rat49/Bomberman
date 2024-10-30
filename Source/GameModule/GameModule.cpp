@@ -15,6 +15,7 @@ void GameModule::run()
 #ifndef FINAL
 	Modules::Tests->run();
 #endif
+    Modules::initializeAll();
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
@@ -24,7 +25,6 @@ void GameModule::run()
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
 
-    Modules::initializeAll(); // <- 
 
     while (window.isOpen())
     {
@@ -45,8 +45,8 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
-        Modules::updateAll(deltaTime, &window); // <- 
-        Modules::Input->Update();
+        Modules::updateAll(deltaTime, &window);
+        // Modules::Input->Update();
 
         window.clear();
         window.draw(shape);

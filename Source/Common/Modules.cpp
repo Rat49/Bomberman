@@ -27,13 +27,7 @@ std::unique_ptr<InputModule> Modules::Input;
 std::unique_ptr<SpriteModule> Modules::Sprite;
 std::unique_ptr<UISystem> Modules::UI;
 
-std::vector<std::unique_ptr<BaseModule>> Modules::modules = {
-	std::make_unique<NavigationModule>()//,
-	/*std::make_unique<EventSystem>(),
-	std::make_unique<SoundSystem>(),
-	std::make_unique<InputModule>(),
-	std::make_unique<SpriteModule>()*/
-};
+std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
 void Modules::initialize()
 {
@@ -73,7 +67,11 @@ void Modules::terminate()
 
 bool Modules::initializeAll()
 {
-
+	modules.push_back(std::make_unique<NavigationModule>());
+	modules.push_back(std::make_unique<InputModule>());
+	modules.push_back(std::make_unique<SpriteModule>());
+	// add here modules that have or will have initialize / update / terminate method
+	 
 	for (auto& module : modules) {
 		if (!module->initialize()) {
 			return false;
@@ -94,4 +92,5 @@ void Modules::terminateAll()
 	for (auto& module : modules) {
 		module->terminate();
 	}
+	modules.clear();
 }
