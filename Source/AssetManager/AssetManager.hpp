@@ -17,20 +17,20 @@ public:
 
 	bool loadFont(const RelativeAssetPath& fontPath);
 
-	sf::SoundBuffer* getSound(const RelativeAssetPath& assetName);
+	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
-	sf::Texture* getTexture(const RelativeAssetPath& assetName);
+	std::shared_ptr<sf::Texture> getTexture(const RelativeAssetPath& assetName);
 
-	sf::Font* getFont(const RelativeAssetPath& assetName);
+	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
 private:
 	std::string rootFolder;
 
-	std::map<RelativeAssetPath, sf::SoundBuffer> sounds;
+	std::map<RelativeAssetPath, std::shared_ptr<sf::SoundBuffer>> sounds;
 
-	std::map<RelativeAssetPath, sf::Texture> textures;
+	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
-	std::map<RelativeAssetPath, sf::Font> fonts;
+	std::map<RelativeAssetPath, std::shared_ptr<sf::Font>> fonts;
 
 	std::string AssetManager::getFullPath(const std::string& relativePath) const;
 };

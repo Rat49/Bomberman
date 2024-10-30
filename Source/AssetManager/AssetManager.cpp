@@ -6,6 +6,12 @@
 #include "ConfigSystem/ConfigSection.hpp"
 #include <filesystem>
 
+namespace {
+	const std::string ABSOLUTE_ROOT_FOLDER = "RootFolder";
+	const std::string ROOT                 = "root";
+	const std::string RELATIVE_ROOT_FOLDER = "Game/";
+}
+
 AssetManager::AssetManager()
 {
 	rootFolder = "";
@@ -15,11 +21,11 @@ bool AssetManager::initialize(const std::string& settingsPath)
 {
 	Modules::Config->addFile(settingsPath);
 	const ConfigFile& assetManagerSettings = Modules::Config->getFile(settingsPath);
-	if (!assetManagerSettings.isSectionPresent("RootFolder"))
+	if (!assetManagerSettings.isSectionPresent(ABSOLUTE_ROOT_FOLDER))
 	{
 		return false;
 	}
-	rootFolder = assetManagerSettings.getSection("RootFolder").getValue("root").getString();
+	rootFolder = assetManagerSettings.getSection(ABSOLUTE_ROOT_FOLDER).getValue(ROOT).getString();
 	return true;
 }
 
@@ -32,15 +38,14 @@ bool AssetManager::loadSound(const RelativeAssetPath& relativeSoundPath)
 		return true;
 	}
 
-	sf::SoundBuffer soundBuffer;
+	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
 	std::string fullPath = getFullPath(relativeSoundPath);
-
-	if (!soundBuffer.loadFromFile(fullPath))
+	if (!soundBuffer->loadFromFile(fullPath))
 	{
 		return false;
 	}
 
-	sounds.emplace(relativeSoundPath, soundBuffer);
+	sounds.emplace(relativeSoundPath, std::move(soundBuffer));
 	return true;
 }
 
@@ -53,9 +58,9 @@ bool AssetManager::loadTexture(const RelativeAssetPath& relativeTexturePath)
 		return true;
 	}
 
-	sf::Texture texture;
+	auto texture = std::make_shared<sf::Texture>();
 	std::string fullPath = getFullPath(relativeTexturePath);
-	if (!texture.loadFromFile(fullPath))
+	if (!texture->loadFromFile(fullPath))
 	{
 		return false;
 	}
@@ -73,9 +78,9 @@ bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
 		return true;
 	}
 
-	sf::Font font;
+	auto font = std::make_shared<sf::Font>();
 	std::string fullPath = getFullPath(relativeFontPath);
-	if (!font.loadFromFile(fullPath))
+	if (!font->loadFromFile(fullPath))
 	{
 		return false;
 	}
@@ -84,43 +89,57 @@ bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
 	return true;
 }
 
-sf::SoundBuffer* AssetManager::getSound(const RelativeAssetPath& assetName)
+std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath& assetName)
 {
 	auto it = sounds.find(assetName);
 	if (it == sounds.end())
 	{
+		LOG("Sound [$] not loaded", assetName);
 		return nullptr;
 	}
-	return &it->second;
+	return it->second;
 }
 
-sf::Texture* AssetManager::getTexture(const RelativeAssetPath& assetName)
+std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& assetName)
 {
 	auto it = textures.find(assetName);
 	if (it == textures.end())
 	{
+		LOG("Texture [$] not loaded", assetName);
 		return nullptr;
 	}
-	return &it->second;
+	return it->second;
 }
 
-sf::Font* AssetManager::getFont(const RelativeAssetPath& assetName)
+std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetName)
 {
 	auto it = fonts.find(assetName);
 	if (it == fonts.end())
 	{
+		LOG("Font [$] not loaded", assetName);
 		return nullptr;
 	}
-	return &it->second;
+	return it->second;
 }
 
+/**
+ * @brief Returns absolute path.
+ *
+ * This function returns absolute path to the file.
+ *
+ * @param relativePath is the relative path to the file.
+ *
+ * @return The absolute path to the file, if the
+ * relative path is incorrect returns empty string.
+ **/
 std::string AssetManager::getFullPath(const std::string& relativePath) const
 {
 	std::string path = relativePath;
-	const std::string prefix = "Game/";
-	if (relativePath.find(prefix) == 0) {
-		path = relativePath.substr(prefix.length());
+	if (relativePath.find(RELATIVE_ROOT_FOLDER) != 0) {
+		LOG("Relative path [$] is invalid", relativePath);
+		return "";
 	}
+	path = relativePath.substr(RELATIVE_ROOT_FOLDER.length());
 	return rootFolder + '/' + path;
 }
 
