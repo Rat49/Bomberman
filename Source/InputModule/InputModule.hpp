@@ -14,8 +14,6 @@ class InputModule : public BaseModule
 public:
 	InputModule();
 
-	~InputModule();
-
 	ActionID BindAction(const std::string& actionName, const Button& button);
 
 	ActionID BindAxis1D(const std::string& actionName, const Axis1D& axis1D);
@@ -32,13 +30,9 @@ public:
 
 	sf::Vector2f GetAxis2D(ActionID ID) const;
 
-	void Update();
-
 	ActionID GetActionID(const std::string& actionName) const;
 
 	void LoadInputSettings(const std::string& inputSettingPath);
-
-	bool initialize() override;
 
 	void update(float deltaTime, sf::Window* window) override;
 

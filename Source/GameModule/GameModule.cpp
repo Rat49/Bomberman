@@ -5,6 +5,7 @@
 #include "EventSystem/EventSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
+#include "Common/Logs.hpp"
 
 
 using Time = std::chrono::high_resolution_clock;
@@ -12,10 +13,13 @@ using Duration = std::chrono::duration<float, std::micro>;
 
 void GameModule::run()
 {
+	if (!Modules::initialize()) {
+		LOG("Failed to initialize modules!");
+		return;
+	}
 #ifndef FINAL
 	Modules::Tests->run();
 #endif
-    Modules::initializeAll();
 
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
     sf::CircleShape shape(100.f);
@@ -45,13 +49,12 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
-        Modules::updateAll(deltaTime, &window);
-        // Modules::Input->Update();
+        Modules::update(deltaTime, &window);
 
         window.clear();
         window.draw(shape);
         window.display();
     }
 
-    Modules::terminateAll();
+    Modules::terminate();
 }

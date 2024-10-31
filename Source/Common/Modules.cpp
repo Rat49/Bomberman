@@ -29,7 +29,7 @@ std::unique_ptr<UISystem> Modules::UI;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
-void Modules::initialize()
+bool Modules::initialize()
 {
 #ifndef FINAL
 	Modules::Logs = std::make_unique<LogManager>();
@@ -45,6 +45,18 @@ void Modules::initialize()
 	Modules::Input = std::make_unique<InputModule>();
 	Modules::Sprite = std::make_unique<SpriteModule>();
 	Modules::UI = std::make_unique<UISystem>();
+
+	modules.push_back(std::make_unique<NavigationModule>());
+	modules.push_back(std::make_unique<InputModule>());
+	modules.push_back(std::make_unique<SpriteModule>());
+	// add here modules that have or will have initialize / update / terminate method
+
+	for (auto& module : modules) {
+		if (!module->initialize()) {
+			return false;
+		}
+	}
+	return true;
 }
 
 void Modules::terminate()
@@ -63,34 +75,16 @@ void Modules::terminate()
 	Modules::Tests.release();
 	Modules::Logs.release();
 #endif
-}
 
-bool Modules::initializeAll()
-{
-	modules.push_back(std::make_unique<NavigationModule>());
-	modules.push_back(std::make_unique<InputModule>());
-	modules.push_back(std::make_unique<SpriteModule>());
-	// add here modules that have or will have initialize / update / terminate method
-	 
-	for (auto& module : modules) {
-		if (!module->initialize()) {
-			return false;
-		}
-	}
-	return true;
-}
-
-void Modules::updateAll(float deltaTime, sf::Window* window)
-{
-	for (auto& module : modules) {
-		module->update(deltaTime, window);
-	}
-}
-
-void Modules::terminateAll()
-{
 	for (auto& module : modules) {
 		module->terminate();
 	}
 	modules.clear();
+}
+
+void Modules::update(float deltaTime, sf::Window* window)
+{
+	for (auto& module : modules) {
+		module->update(deltaTime, window);
+	}
 }

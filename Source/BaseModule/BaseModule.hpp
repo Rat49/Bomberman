@@ -7,9 +7,9 @@ namespace sf {
 class BaseModule {
 public:
 
-	virtual bool initialize() = 0;
+	virtual bool initialize() { return true; }
 
 	virtual void terminate() = 0;
 
-	virtual void update(float deltaTime, sf::Window* window) = 0;
+	virtual void update(float, sf::Window*) {}
 };

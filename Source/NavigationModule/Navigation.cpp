@@ -9,16 +9,6 @@ NavigationModule::NavigationModule(std::vector<std::vector<bool>>& grid/*, some 
 	algorithm = std::make_unique<AStar>(grid);
 }
 
-// fill these methods 
-bool NavigationModule::initialize()
-{
-	return true;
-}
-
-void NavigationModule::update(float, sf::Window*)
-{
-}
-
 void NavigationModule::terminate()
 {
 }

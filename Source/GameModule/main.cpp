@@ -18,9 +18,7 @@ int WinMain(HINSTANCE /*hInstance*/, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdL
     }
 #endif
 
-    Modules::initialize();
     Modules::Game->run();
-    Modules::terminate();
 
     return 0;
 }

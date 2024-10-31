@@ -14,9 +14,6 @@ public:
 
 	AnimationId createAnimation(const std::string& configFilePath);
 	std::shared_ptr<Animation> getAnimation(AnimationId id) const;
-	void update(float deltaTime);
-
-	bool initialize() override;
 
 	void update(float deltaTime, sf::Window* window) override;
 

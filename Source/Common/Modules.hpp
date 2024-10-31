@@ -26,12 +26,9 @@ namespace sf {
 */
 struct Modules
 {
-	static void initialize();
+	static bool initialize();
 	static void terminate();
-
-	static bool initializeAll();
-	static void updateAll(float deltaTime, sf::Window* window);
-	static void terminateAll();
+	static void update(float deltaTime, sf::Window* window);
 
 #ifndef FINAL
 	static std::unique_ptr<TestModule> Tests;
