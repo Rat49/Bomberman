@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-class UIScreen
+class UIScreen : public UIElement
 {
 public:
 	// Add a UI element
@@ -15,7 +15,7 @@ public:
 	void removeElement(const std::shared_ptr<UIElement>& element);
 
 	// Draw all UI elements on the given target
-	void draw(sf::RenderTarget& target);
+	void draw(sf::RenderTarget& target)const override;
 
 	// Set the view for the UI screen
 	void setView(const sf::View& view);

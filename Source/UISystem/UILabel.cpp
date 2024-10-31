@@ -10,7 +10,7 @@ UILabel::UILabel(const std::string& text, const sf::Font& font, unsigned int siz
 }
 
 // Render the label on the screen
-void UILabel::draw(sf::RenderTarget& target)
+void UILabel::draw(sf::RenderTarget& target) const
 {
 	target.draw(labelText);
 }
@@ -30,8 +30,12 @@ std::string UILabel::getText() const
 // Sets the position of the label
 void UILabel::setPosition(const sf::Vector2f& pos)
 {
-	UIElement::setPosition(pos);
 	labelText.setPosition(pos);
+}
+
+sf::Vector2f UILabel::getPosition() const 
+{
+	return labelText.getPosition();
 }
 
 // Set method to change the font of the label

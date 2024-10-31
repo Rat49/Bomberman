@@ -17,7 +17,7 @@ void UIScreen::removeElement(const std::shared_ptr<UIElement>& element)
 }
 
 // Draw all UI elements on the given target
-void UIScreen::draw(sf::RenderTarget& target)
+void UIScreen::draw(sf::RenderTarget& target) const
 {
 	// Check if a custom view is set and apply it
 	if (viewSet)
