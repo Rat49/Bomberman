@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UISystem/UIElement.hpp"
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <vector>
 #include <memory>
 
@@ -16,7 +17,19 @@ public:
 	// Draw all UI elements on the given target
 	void draw(sf::RenderTarget& target);
 
+	// Set the view for the UI screen
+	void setView(const sf::View& view);
+
+	// Clear all UI elements from the screen
+	void clearElements();
+
 private:
 	// Vector to store UI elements
 	std::vector<std::shared_ptr<UIElement>> elements;
+
+	// Optional view for handling UI viewport settings
+	sf::View view;
+
+	// Flag to check if view is set
+	bool viewSet = false;
 };
