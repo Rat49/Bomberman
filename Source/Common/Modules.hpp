@@ -15,6 +15,8 @@ class SoundSystem;
 class InputModule;
 class SpriteModule;
 class UISystem;
+class AssetManager;
+
 class BaseModule;
 
 namespace sf {
@@ -43,6 +45,7 @@ struct Modules
 	static std::unique_ptr<InputModule> Input;
 	static std::unique_ptr<SpriteModule> Sprite;
 	static std::unique_ptr<UISystem> UI;
+	static std::unique_ptr<AssetManager> Assets;
 
 private:
 	static std::vector<std::unique_ptr<BaseModule>> modules;
