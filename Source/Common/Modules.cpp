@@ -7,6 +7,7 @@
 #include "NavigationModule/Navigation.hpp"
 #include "SoundSystem/SoundSystem.hpp"
 #include "InputModule/InputModule.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
@@ -19,6 +20,7 @@ std::unique_ptr<ConfigSystem> Modules::Config;
 std::unique_ptr<NavigationModule> Modules::Navigation;
 std::unique_ptr<SoundSystem> Modules::Sounds;
 std::unique_ptr<InputModule> Modules::Input;
+std::unique_ptr<PhysicsModule> Modules::Physics;
 
 void Modules::initialize()
 {
@@ -34,6 +36,7 @@ void Modules::initialize()
 	Modules::Config = std::make_unique<ConfigSystem>();
 	Modules::Sounds = std::make_unique<SoundSystem>();
 	Modules::Input = std::make_unique<InputModule>();
+	Modules::Physics = std::make_unique<PhysicsModule>();
 }
 
 void Modules::terminate()
@@ -45,6 +48,7 @@ void Modules::terminate()
 	Modules::Config.release();
 	Modules::Sounds.release();
 	Modules::Input.release();
+	Modules::Physics.release();
 
 #ifndef FINAL
 	Modules::Tests.release();
