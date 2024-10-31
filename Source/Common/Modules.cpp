@@ -9,6 +9,9 @@
 #include "InputModule/InputModule.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include "UISystem/UISystem.hpp"
+#include "AssetManager/AssetManager.hpp"
+
+
 
 #ifndef FINAL
 std::unique_ptr<TestModule> Modules::Tests;
@@ -23,6 +26,7 @@ std::unique_ptr<SoundSystem> Modules::Sounds;
 std::unique_ptr<InputModule> Modules::Input;
 std::unique_ptr<SpriteModule> Modules::Sprite;
 std::unique_ptr<UISystem> Modules::UI;
+std::unique_ptr<AssetManager> Modules::Assets;
 
 
 void Modules::initialize()
@@ -41,6 +45,7 @@ void Modules::initialize()
 	Modules::Input = std::make_unique<InputModule>();
 	Modules::Sprite = std::make_unique<SpriteModule>();
 	Modules::UI = std::make_unique<UISystem>();
+	Modules::Assets = std::make_unique<AssetManager>();
 }
 
 void Modules::terminate()
@@ -54,6 +59,8 @@ void Modules::terminate()
 	Modules::Input.release();
 	Modules::Sprite.release();
 	Modules::UI.release();
+	Modules::Assets.release();
+
 
 #ifndef FINAL
 	Modules::Tests.release();

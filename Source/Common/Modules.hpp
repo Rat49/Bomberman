@@ -14,6 +14,8 @@ class SoundSystem;
 class InputModule;
 class SpriteModule;
 class UISystem;
+class AssetManager;
+
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -36,4 +38,5 @@ struct Modules
 	static std::unique_ptr<InputModule> Input;
 	static std::unique_ptr<SpriteModule> Sprite;
 	static std::unique_ptr<UISystem> UI;
+	static std::unique_ptr<AssetManager> Assets;
 };
