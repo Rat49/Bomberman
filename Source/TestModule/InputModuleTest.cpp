@@ -29,28 +29,20 @@ void InputModuleTest::setup()
 {
 	LOG("InputModuleTest: setup()");
 
-	Button buttonA              = { sf::Keyboard::A };
-	ActionID buttonActionID     = Modules::Input->BindAction("Button test", buttonA);
+	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+
+
+	ActionID buttonActionID     = Modules::Input->GetActionID("PlantBomb");
 	FunctionHandle buttonHandle = Modules::Input->RegisterEvent(buttonActionID, std::bind(&InputModuleTest::buttonTest, this, std::placeholders::_1));
 
 	bindedFunctions++;
 
-	Axis1D axis1D;
-	axis1D.negativeAxis.Key     = sf::Keyboard::Q;
-	axis1D.positiveAxis.Key     = sf::Keyboard::W;
-	ActionID axis1DActionID     = Modules::Input->BindAxis1D("Axis1D test", axis1D);
+	ActionID axis1DActionID     = Modules::Input->GetActionID("MoveLeftRight");
 	FunctionHandle axis1DHandle = Modules::Input->RegisterEvent(axis1DActionID, std::bind(&InputModuleTest::axis1DTest, this, std::placeholders::_1));
 
 	bindedFunctions++;
 
-	Button up                   = { sf::Keyboard::Up };
-	Button down                 = { sf::Keyboard::Down };
-	Button left                 = { sf::Keyboard::Left };
-	Button right                = { sf::Keyboard::Right };
-	Axis2D axis2D;
-	axis2D.Horizontal           = { left, right };
-	axis2D.Vertical             = { down, up };
-	ActionID axis2DActionID     = Modules::Input->BindAxis2D("Axis2D test", axis2D);
+	ActionID axis2DActionID     = Modules::Input->GetActionID("PlayerMovement");
 	FunctionHandle axis2DHandle = Modules::Input->RegisterEvent(axis2DActionID, std::bind(&InputModuleTest::axis2DTest, this, std::placeholders::_1));
 
 	bindedFunctions++;

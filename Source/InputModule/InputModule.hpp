@@ -6,6 +6,7 @@
 #include <atomic>
 #include <SFML/Graphics.hpp>
 #include "InputTypes.hpp"
+#include "InputKeyBinder.hpp"
 
 class InputModule
 {
@@ -32,11 +33,17 @@ public:
 
 	void Update();
 
+	ActionID GetActionID(const std::string& actionName) const;
+
+	void LoadInputSettings(const std::string& inputSettingPath);
+
 private:
 	std::atomic<ActionID> actionID;
 
 	std::map<ActionID, ActionData> actions;
 
 	std::map<ActionID, std::vector<FunctionHandle>> events;
+
+	InputKeyBinder inputBinder;
 };
 

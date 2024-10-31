@@ -12,6 +12,9 @@ class ConfigSystem;
 class NavigationModule;
 class SoundSystem;
 class InputModule;
+class SpriteModule;
+class UISystem;
+class AssetManager;
 class PhysicsModule;
 
 /*
@@ -33,5 +36,8 @@ struct Modules
 	static std::unique_ptr<NavigationModule> Navigation;
 	static std::unique_ptr<SoundSystem> Sounds;
 	static std::unique_ptr<InputModule> Input;
+	static std::unique_ptr<SpriteModule> Sprite;
+	static std::unique_ptr<UISystem> UI;
+	static std::unique_ptr<AssetManager> Assets;
 	static std::unique_ptr<PhysicsModule> Physics;
 };
