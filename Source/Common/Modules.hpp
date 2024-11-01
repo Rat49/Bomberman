@@ -16,6 +16,7 @@ class InputModule;
 class SpriteModule;
 class UISystem;
 class AssetManager;
+class PhysicsModule;
 
 class BaseModule;
 
@@ -46,6 +47,7 @@ struct Modules
 	static SpriteModule* Sprite;
 	static UISystem* UI;
 	static AssetManager* Assets;
+	static PhysicsModule* Physics;
 
 private:
 	static std::vector<std::unique_ptr<BaseModule>> modules;

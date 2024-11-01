@@ -17,4 +17,5 @@ private:
 	const std::string Name = "CollisionModuleTest";
 	std::unique_ptr<MockActor> actor1;
 	std::unique_ptr<MockActor> actor2;
+
 };

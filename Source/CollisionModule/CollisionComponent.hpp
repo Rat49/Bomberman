@@ -5,11 +5,14 @@
 class CollisionComponent : public CollisionRectangle {
 
 public:
-	CollisionComponent() :CollisionRectangle() {};
-	CollisionComponent(const sf::Vector2f& position, const sf::Vector2f& size) :CollisionRectangle(position, size){};
-
+	CollisionComponent();
+	CollisionComponent(const sf::Vector2f& position, const sf::Vector2f& size);
+	
+	~CollisionComponent();
 	//event handlers
     void BeginOverlapHandler(void*) override;
 
 	void EndOverlapHandler(void*) override;
+private:
+	int id;
 };

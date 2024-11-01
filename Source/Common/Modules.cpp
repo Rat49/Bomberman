@@ -10,6 +10,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "UISystem/UISystem.hpp"
 #include "AssetManager/AssetManager.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include "BaseModule/BaseModule.hpp"
 
 
@@ -27,6 +28,7 @@ InputModule* Modules::Input = nullptr;
 SpriteModule* Modules::Sprite = nullptr;
 UISystem* Modules::UI = nullptr;
 AssetManager* Modules::Assets = nullptr;
+PhysicsModule* Modules::Physics = nullptr;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
@@ -48,6 +50,7 @@ bool Modules::initialize()
 	Modules::Sprite = dynamic_cast<SpriteModule*>(modules.emplace_back(std::make_unique<SpriteModule>()).get());
 	Modules::UI = dynamic_cast<UISystem*>(modules.emplace_back(std::make_unique<UISystem>()).get());
 	Modules::Assets = dynamic_cast<AssetManager*>(modules.emplace_back(std::make_unique<AssetManager>()).get());
+	Modules::Physics = dynamic_cast<PhysicsModule*>(modules.emplace_back(std::make_unique<PhysicsModule>()).get());
 
 	for (auto& module : modules) {
 		if (!module->initialize()) {

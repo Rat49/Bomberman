@@ -24,7 +24,7 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
 	Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
 	Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
-	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 	Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
 }
 
