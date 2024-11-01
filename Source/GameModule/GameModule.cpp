@@ -13,10 +13,6 @@ using Duration = std::chrono::duration<float, std::micro>;
 
 void GameModule::run()
 {
-	if (!Modules::initialize()) {
-		LOG("Failed to initialize modules!");
-		return;
-	}
 #ifndef FINAL
 	Modules::Tests->run();
 #endif
@@ -55,6 +51,8 @@ void GameModule::run()
         window.draw(shape);
         window.display();
     }
+}
 
-    Modules::terminate();
+void GameModule::terminate()
+{
 }

@@ -18,15 +18,15 @@ std::unique_ptr<TestModule> Modules::Tests;
 std::unique_ptr<LogManager> Modules::Logs;
 #endif
 
-std::unique_ptr<GameModule> Modules::Game;
-EventSystem* Modules::Events;
-ConfigSystem* Modules::Config;
-NavigationModule* Modules::Navigation;
-SoundSystem* Modules::Sounds;
-InputModule* Modules::Input;
-SpriteModule* Modules::Sprite;
-UISystem* Modules::UI;
-AssetManager* Modules::Assets;
+GameModule* Modules::Game = nullptr;
+EventSystem* Modules::Events = nullptr;
+ConfigSystem* Modules::Config = nullptr;
+NavigationModule* Modules::Navigation = nullptr;
+SoundSystem* Modules::Sounds = nullptr;
+InputModule* Modules::Input = nullptr;
+SpriteModule* Modules::Sprite = nullptr;
+UISystem* Modules::UI = nullptr;
+AssetManager* Modules::Assets = nullptr;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
@@ -37,7 +37,7 @@ bool Modules::initialize()
 	Modules::Tests = std::make_unique<TestModule>();
 #endif
 
-	Modules::Game = std::make_unique<GameModule>();
+	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
 	
 	// add your modules here
 	Modules::Events = dynamic_cast<EventSystem*>(modules.emplace_back(std::make_unique<EventSystem>()).get());
@@ -63,8 +63,6 @@ void Modules::terminate()
 		module->terminate();
 	}
 	modules.clear();
-
-	Modules::Game.release();
 
 #ifndef FINAL
 	Modules::Tests.release();

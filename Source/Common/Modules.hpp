@@ -37,7 +37,7 @@ struct Modules
 	static std::unique_ptr<LogManager> Logs;
 #endif
 
-	static std::unique_ptr<GameModule> Game;
+	static GameModule* Game;
 	static EventSystem* Events;
 	static ConfigSystem* Config;
 	static NavigationModule* Navigation;
