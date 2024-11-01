@@ -10,32 +10,19 @@ UILabel::UILabel(const std::string& text, const sf::Font& font, unsigned int siz
 }
 
 // Render the label on the screen
-void UILabel::draw(sf::RenderTarget& target) const
+void UILabel::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(labelText);
+	// Check visibility before drawing
+	if (isVisible())
+	{
+		target.draw(labelText, states);
+	}
 }
 
 // Set method to change the displayed text
 void UILabel::setText(const std::string& text)
 {
 	labelText.setString(text);
-}
-
-// Returns the current text
-std::string UILabel::getText() const
-{
-	return labelText.getString();
-}
-
-// Sets the position of the label
-void UILabel::setPosition(const sf::Vector2f& pos)
-{
-	labelText.setPosition(pos);
-}
-
-sf::Vector2f UILabel::getPosition() const 
-{
-	return labelText.getPosition();
 }
 
 // Set method to change the font of the label
@@ -48,4 +35,10 @@ void UILabel::setFont(const sf::Font& font)
 void UILabel::setCharacterSize(unsigned int newSize)
 {
 	labelText.setCharacterSize(newSize);
+}
+
+// Returns the current text
+std::string UILabel::getText() const
+{
+	return labelText.getString();
 }

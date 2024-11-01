@@ -1,31 +1,39 @@
 #pragma once
 
+#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 
 // Base abstract class for all UI elements
 // Coordinates are resolution-independent, referring to the top-left corner of each UI element.
 // Operates within a virtual range (e.g., 800x600), or normalized [0,1] coordinates to enable flexibility across resolutions.
-class UIElement : public sf::RenderTarget
+class UIElement : public sf::Drawable
 {
 public:
 	virtual ~UIElement() = default;
 
-	// A draw method that must be implemented in derived classes
-	virtual void draw(sf::RenderTarget& target) const = 0;
+	// Set and get methods for position
+	void setPosition(const sf::Vector2f& pos) { position = pos; }
+	sf::Vector2f getPosition() const { return position; }
 
-	// Set/get methods for position
-	virtual void setPosition(const sf::Vector2f& pos) = 0;
-	virtual sf::Vector2f getPosition() const = 0;
+	// Set and get methods for dimensions
+	void setSize(const sf::Vector2f& newSize) { size = newSize; }
+	sf::Vector2f getSize() const { return size; }
 
-	// Set/get methods for size
-	virtual void setSize(const sf::Vector2f& size) = 0;
-	virtual sf::Vector2f getElementSize() const = 0;
+	// Set and get methods for visibility
+	void setVisible(bool visibility) { visible = visibility; }
+	bool isVisible() const { return visible; }
 
 protected:
+	// Override the pure virtual draw method from sf::Drawable
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+
 	// Position of the UI element
 	sf::Vector2f position;
 
-	// Size of the UI element
+	// Dimensions of the UI element
 	sf::Vector2f size;
+
+	// Visibility of UI element
+	bool visible = true;
 };
