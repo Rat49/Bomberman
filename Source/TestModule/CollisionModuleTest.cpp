@@ -66,7 +66,7 @@ void CollisionModuleTest::update(float, sf::RenderWindow* window) {
 			LOG("No Collision");
 		}
 		*/
-		const CollisionComponent* intersected = Modules::Physics->CastARay(origin, directions[direction], distance, endPoint);
+		const CollisionComponent* intersected = Modules::Physics->rayCast(origin, directions[direction], distance, endPoint);
 		if (intersected) {
 			LOG("Collision");
 		}

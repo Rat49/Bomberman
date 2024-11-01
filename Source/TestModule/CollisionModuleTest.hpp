@@ -2,7 +2,6 @@
 
 #include "TestModule/TestBase.hpp"
 #include "MockActor.hpp"
-#include "CollisionModule/RayCast.hpp"
 #include <memory>
 
 class CollisionModuleTest : public TestBase
