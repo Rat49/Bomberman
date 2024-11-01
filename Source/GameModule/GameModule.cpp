@@ -5,7 +5,6 @@
 #include "EventSystem/EventSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
-#include "Common/Logs.hpp"
 
 
 using Time = std::chrono::high_resolution_clock;
