@@ -3,8 +3,9 @@
 #include <map>
 #include <vector>
 #include "AssetTypes.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class AssetManager
+class AssetManager : public BaseModule
 {
 public:
 	AssetManager();
@@ -22,6 +23,8 @@ public:
 	std::shared_ptr<sf::Texture> getTexture(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
+
+	void terminate() override;
 
 private:
 	std::string rootFolder;

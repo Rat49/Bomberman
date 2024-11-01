@@ -38,14 +38,14 @@ struct Modules
 #endif
 
 	static std::unique_ptr<GameModule> Game;
-	static std::unique_ptr<EventSystem> Events;
-	static std::unique_ptr<ConfigSystem> Config;
-	static std::unique_ptr<NavigationModule> Navigation;
-	static std::unique_ptr<SoundSystem> Sounds;
-	static std::unique_ptr<InputModule> Input;
-	static std::unique_ptr<SpriteModule> Sprite;
-	static std::unique_ptr<UISystem> UI;
-	static std::unique_ptr<AssetManager> Assets;
+	static EventSystem* Events;
+	static ConfigSystem* Config;
+	static NavigationModule* Navigation;
+	static SoundSystem* Sounds;
+	static InputModule* Input;
+	static SpriteModule* Sprite;
+	static UISystem* UI;
+	static AssetManager* Assets;
 
 private:
 	static std::vector<std::unique_ptr<BaseModule>> modules;

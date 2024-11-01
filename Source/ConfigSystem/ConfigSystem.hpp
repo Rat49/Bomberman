@@ -6,7 +6,8 @@
 #include "ConfigFile.hpp"
 #include "BaseModule/BaseModule.hpp"
 
-class ConfigSystem {
+class ConfigSystem : public BaseModule
+{
 public:
 
 	const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const;
@@ -26,6 +27,8 @@ public:
 	const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
 	void setValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value);
+
+	void terminate() override;
 
 private:
 	std::unordered_map<std::string, ConfigFile> configFiles;

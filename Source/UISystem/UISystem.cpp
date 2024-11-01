@@ -47,6 +47,10 @@ sf::Vector2f UISystem::viewportToUIScreen(const sf::Vector2f& viewportPos) const
 	return sf::Vector2f(viewportPos.x / scale, viewportPos.y / scale);
 }
 
+void UISystem::terminate()
+{
+}
+
 // Adjusts viewport settings for centering and fitting UI elements
 void UISystem::updateViewportSettings() 
 {
