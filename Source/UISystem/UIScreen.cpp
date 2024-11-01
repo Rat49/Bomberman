@@ -67,3 +67,15 @@ void UIScreen::clearElements()
 {
 	elements.clear();
 }
+
+void UIScreen::handleEvent(const sf::Event& event) 
+{
+	for (const auto& element : elements) 
+	{
+		// Checking if it is in element coordinates
+		if (element->isVisible() && element->containsPoint({ static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y) }))
+		{
+			element->handleEvent(event);
+		}
+	}
+}

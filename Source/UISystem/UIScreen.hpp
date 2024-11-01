@@ -21,6 +21,8 @@ public:
 	// Clear all UI elements from the screen
 	void clearElements();
 
+	void handleEvent(const sf::Event& event) override;
+
 protected:
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Window/Event.hpp>
+#include <functional>
 
 // Base abstract class for all UI elements
 // Coordinates are resolution-independent, referring to the top-left corner of each UI element.
@@ -24,6 +26,19 @@ public:
 	void setVisible(bool visibility) { visible = visibility; }
 	bool isVisible() const { return visible; }
 
+	// Functions for event registration
+	std::function<void()> onHover;
+	std::function<void()> onClick;
+
+	// Function for event management
+	virtual void handleEvent(const sf::Event& event) = 0;
+
+	// Checks if the coordinates are within the bounds of the element
+	bool containsPoint(const sf::Vector2f& point) const
+	{
+		return point.x >= position.x && point.x <= position.x + size.x && point.y >= position.y && point.y <= position.y + size.y;
+	}
+
 protected:
 	// Override the pure virtual draw method from sf::Drawable
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
@@ -36,4 +51,8 @@ protected:
 
 	// Visibility of UI element
 	bool visible = true;
+
+	// Monitoring of hover and pressed status
+	bool isHovered = false;
+	bool isPressed = false;
 };
