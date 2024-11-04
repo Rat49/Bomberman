@@ -10,22 +10,6 @@ InputModule::InputModule()
 	actionID = 0;
 }
 
-InputModule::~InputModule()
-{
-	for (auto it = actions.begin(); it != actions.end(); ++it)
-	{
-		if (it->second.eventID != -1)
-		{
-			LOG("Action $ with ID: $, event wasn't unregisterd, EventID: $ ", it->second.actionName, it->first, it->second.eventID);
-		}
-		
-		for (int i = 0; i < events[it->first].size(); ++i)
-		{
-			Modules::Events->unsubscribe(it->second.eventID, events[it->first][i]);
-		}
-	}
-}
-
 ActionID InputModule::BindAction(const std::string& actionName, const Button& button)
 {
 	ActionData newAction        = {};
@@ -144,42 +128,6 @@ bool InputModule::UnregisterEvent(ActionID ID, FunctionHandle functionHandle)
 	return true;
 }
 
-void InputModule::Update()
-{
-	for (auto& action : actions)
-	{
-		EActionType actionType = action.second.actionType;
-		EventID eventID        = action.second.eventID;
-		bool shouldEmit        = action.second.eventID != -1;
-		void* params           = nullptr;
-		switch (actionType)
-		{
-		case EActionType::ButtonAction:
-			action.second.State.buttonState = sf::Keyboard::isKeyPressed(action.second.Binding.button.Key);
-			shouldEmit                   = shouldEmit && action.second.State.buttonState;
-			params                       = &action.second.State.buttonState;
-			break;
-
-		case EActionType::Axis1DAction:
-			action.second.State.axis1DState = (sf::Keyboard::isKeyPressed(action.second.Binding.axis1D.negativeAxis.Key) ? -1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis1D.positiveAxis.Key) ? 1.0f : 0.0f);
-			shouldEmit                      = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis1DState));
-			params                          = &action.second.State.axis1DState;
-			break;
-
-		case EActionType::Axis2DAction:
-			action.second.State.axis2DState.x = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.negativeAxis.Key) ? -1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.positiveAxis.Key) ? 1.0f : 0.0f);
-			action.second.State.axis2DState.y = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.negativeAxis.Key) ? 1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.positiveAxis.Key) ? -1.0f : 0.0f);
-			shouldEmit                        = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis2DState));
-			params                            = &action.second.State.axis2DState;
-			break;
-
-		default:
-			break;
-	}
-		if (shouldEmit) Modules::Events->emit(eventID, params);
-	}
-}
-
 ActionID InputModule::GetActionID(const std::string& actionName) const
 {
 	for (const auto& action : actions)
@@ -249,6 +197,58 @@ void InputModule::LoadInputSettings(const std::string& inputSettingPath)
 		else
 		{
 			LOG("Input action invalid: $", section);
+		}
+	}
+}
+
+void InputModule::update(float, sf::Window*)
+{
+	for (auto& action : actions)
+	{
+		EActionType actionType = action.second.actionType;
+		EventID eventID = action.second.eventID;
+		bool shouldEmit = action.second.eventID != -1;
+		void* params = nullptr;
+		switch (actionType)
+		{
+		case EActionType::ButtonAction:
+			action.second.State.buttonState = sf::Keyboard::isKeyPressed(action.second.Binding.button.Key);
+			shouldEmit = shouldEmit && action.second.State.buttonState;
+			params = &action.second.State.buttonState;
+			break;
+
+		case EActionType::Axis1DAction:
+			action.second.State.axis1DState = (sf::Keyboard::isKeyPressed(action.second.Binding.axis1D.negativeAxis.Key) ? -1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis1D.positiveAxis.Key) ? 1.0f : 0.0f);
+			shouldEmit = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis1DState));
+			params = &action.second.State.axis1DState;
+			break;
+
+		case EActionType::Axis2DAction:
+			action.second.State.axis2DState.x = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.negativeAxis.Key) ? -1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Horizontal.positiveAxis.Key) ? 1.0f : 0.0f);
+			action.second.State.axis2DState.y = (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.negativeAxis.Key) ? 1.0f : 0.0f) + (sf::Keyboard::isKeyPressed(action.second.Binding.axis2D.Vertical.positiveAxis.Key) ? -1.0f : 0.0f);
+			shouldEmit = shouldEmit && (!FloatUtils::isAlmostZero(action.second.State.axis2DState));
+			params = &action.second.State.axis2DState;
+			break;
+
+		default:
+			break;
+		}
+		if (shouldEmit) Modules::Events->emit(eventID, params);
+	}
+}
+
+void InputModule::terminate()
+{
+	for (auto it = actions.begin(); it != actions.end(); ++it)
+	{
+		if (it->second.eventID != -1)
+		{
+			LOG("Action $ with ID: $, event wasn't unregisterd, EventID: $ ", it->second.actionName, it->first, it->second.eventID);
+		}
+
+		for (int i = 0; i < events[it->first].size(); ++i)
+		{
+			Modules::Events->unsubscribe(it->second.eventID, events[it->first][i]);
 		}
 	}
 }

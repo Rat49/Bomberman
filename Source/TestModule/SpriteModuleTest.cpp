@@ -30,7 +30,7 @@ void SpriteModuleTest::update(float deltaTime, sf::RenderWindow* window)
 {
 	window->setSize(sf::Vector2u(800, 600));
 
-	Modules::Sprite->update(deltaTime); //update animation
+	Modules::Sprite->update(deltaTime, window); //update animation
 
 	window->clear(sf::Color::Green);
 

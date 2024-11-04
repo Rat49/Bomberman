@@ -5,8 +5,9 @@
 #include <memory>
 #include <list>
 #include <string>
+#include "BaseModule/BaseModule.hpp"
 
-class SoundSystem
+class SoundSystem : public BaseModule
 {
 public:
 	// SOUNDS: used for small sounds (gun shots, foot steps, etc.)
@@ -40,6 +41,8 @@ public:
 	void pauseMusic();
 
 	bool isMusicPlaying() const;
+
+	void terminate() override;
 
 private:
 	//SOUNDS

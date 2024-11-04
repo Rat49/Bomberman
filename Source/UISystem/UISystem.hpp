@@ -1,9 +1,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
 
-class UISystem
+class UISystem : public BaseModule
 {
 public:
 	UISystem();
@@ -20,6 +21,7 @@ public:
 	// Converts Viewport coordinates to UI coordinates
 	sf::Vector2f viewportToUIScreen(const sf::Vector2f& viewportPos) const;
 
+	void terminate() override;
 	// Handling mouse events
 	void handleMouseEvent(const sf::Event& event);
 

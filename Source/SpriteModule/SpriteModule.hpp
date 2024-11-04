@@ -4,16 +4,20 @@
 #include <vector>
 #include "SpriteModule/Animation.hpp"
 #include <unordered_map>
+#include "BaseModule/BaseModule.hpp"
 
 using AnimationId = int32_t;
 
-class SpriteModule
+class SpriteModule : public BaseModule
 {
 public:
 
 	AnimationId createAnimation(const std::string& configFilePath);
 	std::shared_ptr<Animation> getAnimation(AnimationId id) const;
-	void update(float deltaTime);
+
+	void update(float deltaTime, sf::Window* window) override;
+
+	void terminate() override;
 
 private:
 

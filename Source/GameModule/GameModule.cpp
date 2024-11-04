@@ -24,6 +24,7 @@ void GameModule::run()
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
 
+
     while (window.isOpen())
     {
         // handling delta time
@@ -43,10 +44,14 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
-        Modules::Input->Update();
+        Modules::update(deltaTime, &window);
 
         window.clear();
         window.draw(shape);
         window.display();
     }
+}
+
+void GameModule::terminate()
+{
 }

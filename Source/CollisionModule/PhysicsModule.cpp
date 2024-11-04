@@ -79,3 +79,7 @@ bool PhysicsModule::rayIntersectsRectangle(const CollisionRectangle& rectangle,
 
 	return false;  // No intersection
 }
+
+void PhysicsModule::terminate()
+{
+}

@@ -50,3 +50,7 @@ void EventSystem::emit(EventID eventID, void* param)
 		}
 	}
 }
+
+void EventSystem::terminate()
+{
+}

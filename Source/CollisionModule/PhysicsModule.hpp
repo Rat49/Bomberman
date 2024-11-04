@@ -2,8 +2,10 @@
 #include <unordered_map>
 #include <memory>
 #include "CollisionModule/CollisionComponent.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class PhysicsModule {
+class PhysicsModule : public BaseModule
+{
 public:
 	int registerObject(const CollisionComponent* physicsObject);
 	void unRegisterObject(int id);
@@ -20,6 +22,8 @@ public:
 							const sf::Vector2f& direction,
 							float maxDistance, 
 							sf::Vector2f& endPoint);
+
+	void terminate() override;
 
 private:
 	static int ID;

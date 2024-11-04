@@ -5,8 +5,9 @@
 #include <vector>
 #include <atomic>
 #include "EventTypes.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class EventSystem
+class EventSystem : public BaseModule
 {
 public:
 	EventSystem() = default;
@@ -22,6 +23,8 @@ public:
 
 	// Emit an event to notify all subscribed callbacks
 	void emit(EventID eventID, void* param);
+
+	void terminate() override;
 
 private:
 	struct Subscriber 
