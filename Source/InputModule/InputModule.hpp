@@ -7,13 +7,12 @@
 #include <SFML/Graphics.hpp>
 #include "InputTypes.hpp"
 #include "InputKeyBinder.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class InputModule
+class InputModule : public BaseModule
 {
 public:
 	InputModule();
-
-	~InputModule();
 
 	ActionID BindAction(const std::string& actionName, const Button& button);
 
@@ -31,11 +30,13 @@ public:
 
 	sf::Vector2f GetAxis2D(ActionID ID) const;
 
-	void Update();
-
 	ActionID GetActionID(const std::string& actionName) const;
 
 	void LoadInputSettings(const std::string& inputSettingPath);
+
+	void update(float deltaTime, sf::Window* window) override;
+
+	void terminate() override;
 
 private:
 	std::atomic<ActionID> actionID;

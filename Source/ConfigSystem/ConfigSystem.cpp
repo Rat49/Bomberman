@@ -79,3 +79,7 @@ void ConfigSystem::setValue(const std::string& configFile, const std::string& se
 		it->second.addToSection(sectionName, valueName, value);
 	}
 }
+
+void ConfigSystem::terminate()
+{
+}

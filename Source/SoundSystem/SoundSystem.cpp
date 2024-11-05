@@ -252,3 +252,7 @@ bool SoundSystem::isMusicPlaying() const
 {
 	return currentMusic && currentMusic->getStatus() == sf::Music::Playing;
 }
+
+void SoundSystem::terminate()
+{
+}

@@ -122,6 +122,10 @@ std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetNa
 	return it->second;
 }
 
+void AssetManager::terminate()
+{
+}
+
 /**
  * @brief Returns absolute path.
  *

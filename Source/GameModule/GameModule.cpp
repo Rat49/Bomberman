@@ -16,13 +16,14 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(400, 400), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
+
 
     while (window.isOpen())
     {
@@ -43,10 +44,14 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
-        Modules::Input->Update();
+        Modules::update(deltaTime, &window);
 
         window.clear();
         window.draw(shape);
         window.display();
     }
+}
+
+void GameModule::terminate()
+{
 }

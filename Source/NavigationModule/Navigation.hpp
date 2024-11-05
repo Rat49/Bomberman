@@ -2,13 +2,14 @@
 
 
 #include "Algorithm.hpp"
+#include "BaseModule/BaseModule.hpp"
 #include <vector>
 #include <utility>
 #include <memory>
 
 class AStar;
 
-class NavigationModule {
+class NavigationModule : public BaseModule {
 
 public:
 	NavigationModule() = default;
@@ -19,6 +20,8 @@ public:
 
 	//mapped grid of players environment for now char of tiles
 	std::vector<std::vector<bool>> grid;
+
+	void terminate() override;
 private:
 
 	//called to parse our game into a grid

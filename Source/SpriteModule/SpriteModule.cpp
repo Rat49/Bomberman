@@ -18,10 +18,14 @@ std::shared_ptr<Animation> SpriteModule::getAnimation(AnimationId id) const
 	return animMap->second;
 }
 
-void SpriteModule::update(float deltaTime)
+void SpriteModule::update(float deltaTime, sf::Window*)
 {
 	for (auto& pair : m_animations)
 	{
 		pair.second->Update(deltaTime); 
 	}
+}
+
+void SpriteModule::terminate()
+{
 }
