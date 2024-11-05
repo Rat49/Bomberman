@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <vector>
 #include <memory>
 
@@ -22,10 +23,13 @@ public:
 	// Clear all UI elements from the screen
 	void clearElements();
 
-	void handleEvent(const sf::Event& event) override;
+	bool handleEvent(const sf::Event& event) override;
 
 	// Set the render window for event handling
 	void setWindow(sf::RenderWindow* renderWindow) { window = renderWindow; }
+
+	// A method that returns a reference to the requested font
+	static sf::Font& getFont(const std::string& fontName);
 
 protected:
 	// Override draw method to draw all UI elements on the given target
@@ -43,4 +47,7 @@ private:
 
 	// Flag to check if view is set
 	bool viewSet = false;
+
+	// Map that caches loaded fonts
+	static std::unordered_map<std::string, sf::Font> fonts;
 };

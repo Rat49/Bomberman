@@ -1,4 +1,5 @@
 #include "UISystem/UIScreen.hpp"
+#include "Common/Logs.hpp"
 
 // Add a UI element
 void UIScreen::addElement(const std::shared_ptr<UIElement> element)
@@ -68,17 +69,21 @@ void UIScreen::clearElements()
 	elements.clear();
 }
 
-void UIScreen::handleEvent(const sf::Event& event)
+bool UIScreen::handleEvent(const sf::Event& event)
 {
 	// If no window is set, exit the method
 	if (!window)
 	{
-		return;
+		return false;
 	}
 
-	for (const auto& element : elements) 
+	// A variable to track whether the event has been processed
+	bool eventHandled = false;
+
+	for (const auto& element : elements)
 	{
-		if (element->isVisible())
+		// Check if the element is visible and interactive
+		if (element->isVisible() && element->getIsInteractable())
 		{
 			// Convert mouse coordinates to virtual coordinates
 			sf::Vector2f virtualPos = window->mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, view);
@@ -86,10 +91,51 @@ void UIScreen::handleEvent(const sf::Event& event)
 			// Check if the virtual coordinates are within the element
 			if (element->containsPoint(virtualPos))
 			{
-				// Forwards the event to the first element on top of and stops further event forwarding
-				element->handleEvent(event);
+				// Pass the event to the element and save the result
+				eventHandled = element->handleEvent(event);
+
+				// If the event has been processed, stop further processing
+				if (eventHandled)
+				{
+					break;
+				}
+
 				break;
 			}
 		}
 	}
+	// Returns whether the event was processed
+	return eventHandled;
+}
+
+// Definition of a static folder to store fonts
+std::unordered_map<std::string, sf::Font> UIScreen::fonts;
+
+sf::Font& UIScreen::getFont(const std::string& fontName) {
+	// Checks if the font is already loaded and cached
+	auto it = fonts.find(fontName);
+	if (it != fonts.end())
+	{
+		// If found, returns the existing font
+		return it->second;
+	}
+
+	// If the font is not loaded, it tries to load it
+	sf::Font font;
+	if (!font.loadFromFile("Assets/Fonts/" + fontName + ".ttf"))
+	{
+		// Logs an error if the font cannot be loaded
+		LOG("Failed to load font: $" + fontName + ". Loading default font.\n");
+
+
+		// Loads the default font if the requested font is not found
+		if (!font.loadFromFile("Assets/Fonts/arial.ttf"))
+		{
+			LOG("Failed to load default font!\n");
+		}
+	}
+
+	// Adds the loaded font to the folder and returns it
+	fonts[fontName] = font;
+	return fonts[fontName];
 }

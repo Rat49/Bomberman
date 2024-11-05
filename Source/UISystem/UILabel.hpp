@@ -29,7 +29,7 @@ public:
 	std::string getText() const;
 
 	// Override the handleEvent from UIElement
-	void handleEvent(const sf::Event& event) override;
+	bool handleEvent(const sf::Event& event) override;
 
 protected:
 	// Render the label on the screen

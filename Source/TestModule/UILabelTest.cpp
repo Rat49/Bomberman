@@ -11,11 +11,7 @@ void UILabelTest::setup()
 {
 	LOG("UILabelTest: setup()");
 
-	sf::Font font;
-	if (!font.loadFromFile("Assets/Fonts/arial.ttf"))
-	{
-		LOG("Failed to load font!");
-	}
+	sf::Font& font = UIScreen::getFont("arial");
 
 	// Create a UILabel and set some basic text
 	label = std::make_unique<UILabel>("Test Label", font, 30);
