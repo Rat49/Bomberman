@@ -10,6 +10,7 @@
 #include "TestModule/SpriteModuleTest.hpp"
 #include "TestModule/CollisionModuleTest.hpp"
 #include "TestModule/AssetManagerTest.hpp"
+#include "TestModule/UILabelTest.hpp"
 
 #ifndef FINAL
 
@@ -26,6 +27,7 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
 	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 	Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
+	Modules::Tests->addTest(std::make_shared<UILabelTest>());
 }
 
 #endif

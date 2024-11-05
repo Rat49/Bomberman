@@ -2,6 +2,7 @@
 
 #include "UISystem/UIElement.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <vector>
 #include <memory>
@@ -23,6 +24,9 @@ public:
 
 	void handleEvent(const sf::Event& event) override;
 
+	// Set the render window for event handling
+	void setWindow(sf::RenderWindow* renderWindow) { window = renderWindow; }
+
 protected:
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -33,6 +37,9 @@ private:
 
 	// Optional view for handling UI viewport settings
 	sf::View view;
+
+	// Pointer to the render window
+	sf::RenderWindow* window = nullptr;
 
 	// Flag to check if view is set
 	bool viewSet = false;

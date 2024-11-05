@@ -68,14 +68,28 @@ void UIScreen::clearElements()
 	elements.clear();
 }
 
-void UIScreen::handleEvent(const sf::Event& event) 
+void UIScreen::handleEvent(const sf::Event& event)
 {
+	// If no window is set, exit the method
+	if (!window)
+	{
+		return;
+	}
+
 	for (const auto& element : elements) 
 	{
-		// Checking if it is in element coordinates
-		if (element->isVisible() && element->containsPoint({ static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y) }))
+		if (element->isVisible())
 		{
-			element->handleEvent(event);
+			// Convert mouse coordinates to virtual coordinates
+			sf::Vector2f virtualPos = window->mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, view);
+
+			// Check if the virtual coordinates are within the element
+			if (element->containsPoint(virtualPos))
+			{
+				// Forwards the event to the first element on top of and stops further event forwarding
+				element->handleEvent(event);
+				break;
+			}
 		}
 	}
 }

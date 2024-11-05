@@ -42,3 +42,29 @@ std::string UILabel::getText() const
 {
 	return labelText.getString();
 }
+
+// Override handleEvent from UIElement
+void UILabel::handleEvent(const sf::Event& event)
+{
+	if (event.type == sf::Event::MouseMoved)
+	{
+		float mouseX = static_cast<float>(event.mouseMove.x);
+		float mouseY = static_cast<float>(event.mouseMove.y);
+
+		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
+		if (isHovered && onHover)
+		{
+			// Call onHover if mouse is over the label
+			onHover();
+		}
+	}
+	else if (event.type == sf::Event::MouseButtonPressed && isHovered)
+	{
+		if (event.mouseButton.button == sf::Mouse::Left && onClick)
+		{
+			// Call onClick if label is pressed
+			onClick(); 
+		}
+	}
+}
+
