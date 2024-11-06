@@ -28,10 +28,12 @@ public:
 	// Set the render window for event handling
 	void setWindow(sf::RenderWindow* renderWindow) { window = renderWindow; }
 
+	// Get the render window
+	sf::RenderWindow* getWindow() const { return window; }
+
 	// A method that returns a reference to the requested font
 	static sf::Font& getFont(const std::string& fontName);
 
-protected:
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 

@@ -1,5 +1,4 @@
 #include "TestModule/UILabelTest.hpp"
-#include "UISystem/UIScreen.hpp"
 #include "Common/Logs.hpp"
 
 const std::string& UILabelTest::getName() const
@@ -29,6 +28,8 @@ void UILabelTest::setup()
 		{
 			LOG("UILabel was clicked!");
 		};
+
+	screen.addElement(label);
 }
 
 void UILabelTest::run()
@@ -46,10 +47,11 @@ void UILabelTest::run()
 
 void UILabelTest::update(float deltaTime, sf::RenderWindow* window)
 {
-	// Creating a UIScreen instance
-	UIScreen screen;
-	// Set the pointer to the window
-	screen.setWindow(window);
+	// Set the window for the screen instance if it's not set
+	if (window && !screen.getWindow())
+	{
+		screen.setWindow(window);
+	}
 
 	// Drawing simulation
 	if (window)
@@ -57,6 +59,14 @@ void UILabelTest::update(float deltaTime, sf::RenderWindow* window)
 		//label->draw()
 		deltaTime = 0.0f;
 		LOG("UILabelTest: Label drawn at position (100, 100)");
+
+		// Set background color to red
+		window->clear(sf::Color::Red);
+
+		// Draw all elements on the UIScreen
+		screen.draw(*window, sf::RenderStates::Default);
+
+		window->display();
 	}
 
 	// Mark the test as complete

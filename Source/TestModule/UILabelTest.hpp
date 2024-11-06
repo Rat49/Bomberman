@@ -4,6 +4,7 @@
 #include "UISystem/UILabel.hpp"
 #include <string>
 #include <memory>
+#include <UISystem/UIScreen.hpp>
 
 class UILabelTest : public TestBase
 {
@@ -15,7 +16,8 @@ public:
 	bool isComplete() const override;
 
 private:
-	std::unique_ptr<UILabel> label;
+	std::shared_ptr<UILabel> label;
 	bool completed = false;
 	std::string Name = "UILabelTest";
+	UIScreen screen;
 };
