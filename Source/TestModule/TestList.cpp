@@ -10,6 +10,7 @@
 #include "TestModule/SpriteModuleTest.hpp"
 #include "TestModule/CollisionModuleTest.hpp"
 #include "TestModule/AssetManagerTest.hpp"
+#include "TestModule/LevelHandlingModuleTest.hpp"
 
 #ifndef FINAL
 
@@ -24,8 +25,9 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
 	Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
 	Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
+	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 	Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
+	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
 }
 
 #endif
