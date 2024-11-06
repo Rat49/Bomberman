@@ -6,8 +6,6 @@
 #include <thread>
 #include <chrono>
 
-#include "AssetManager/PackageManager.hpp"
-
 const std::string& AssetManagerTest::getName() const
 {
 	return Name;
@@ -49,8 +47,6 @@ void AssetManagerTest::update(float, sf::RenderWindow* window)
 	window->display();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	
-	PackageManager::createPackageFile("../../Assets");
 }
 
 bool AssetManagerTest::isComplete() const
