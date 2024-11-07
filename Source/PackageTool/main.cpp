@@ -8,7 +8,7 @@ int main()
 	PackageTool p;
 	if (p.createPackageFile())
 	{
-		p.copyPackagetoFolders();
+		p.copyPackageToFolders();
 	}
 	std::cin.get();
 	return 1;

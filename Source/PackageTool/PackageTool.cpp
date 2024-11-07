@@ -126,7 +126,7 @@ bool PackageTool::createPackageFile()
 	return true;
 }
 
-void PackageTool::copyPackagetoFolders()
+void PackageTool::copyPackageToFolders()
 {
 	const auto& sections = Config->getFile(PACKAGE_INI).getAllSections();
 	for (auto const& section : sections)

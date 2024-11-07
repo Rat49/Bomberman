@@ -14,7 +14,7 @@ public:
 
 	bool createPackageFile();
 
-	void copyPackagetoFolders();
+	void copyPackageToFolders();
 
 private:
 	std::unique_ptr<LogManager> Logs;
