@@ -20,5 +20,7 @@ project "PackageTool"
         paths.source .. "/LogModule/**.cpp",
 		paths.common .. "/StringUtils.hpp",
 		paths.common .. "/StringUtils.cpp",
+		paths.source .. "/ConfigSystem/**.hpp",
+		paths.source .. "/ConfigSystem/**.cpp",
     }
 -----------------------------------------------------------------------------------------------------------------------

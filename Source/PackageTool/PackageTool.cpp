@@ -4,6 +4,8 @@
 #include <vector>
 #include <filesystem>
 #include "LogModule/LogManager.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
+#include "ConfigSystem/ConfigFile.hpp"
 
 namespace fs = std::filesystem;
 
@@ -12,16 +14,14 @@ namespace {
 	const std::string METADATA_OUTPUT_FILE = "bomberman.mtd";
 	const std::string RELATIVE_ROOT_FOLDER = "Game/";
 	const std::string CIPHER_KEY           = "VERYSECUREKEY";
-	const std::string ASSETS_PATH          = "../../../../Assets";
-	const std::string DEBUG_FOLDER_PATH    = "../../Debug/Bomberman";
-	const std::string RELEASE_FOLDER_PATH  = "../../Release/Bomberman";
-	const std::string FINAL_FOLDER_PATH    = "../../Final/Bomberman";
 	const std::string PACKAGE_FOLDER       = "Package";
+	const std::string PACKAGE_INI          = "../../../../Data/Config/pkgtool.ini";
 }
 
 PackageTool::PackageTool()
 {
 	Logs = std::make_unique<LogManager>();
+	Config = std::make_unique<ConfigSystem>();
 }
 
 bool PackageTool::addToPackage(const std::string& filePath, PkgAsset& outPkgAsset, std::ostream& outputFile)
@@ -64,7 +64,13 @@ bool PackageTool::createPackageFile()
 {
 	fs::create_directory(PACKAGE_FOLDER);
 
-	fs::path dirPath(ASSETS_PATH);
+	Config->addFile(PACKAGE_INI);
+	const ConfigFile& packageConfig = Config->getFile(PACKAGE_INI);
+	std::string assetsPath          = packageConfig.getSection("AssetsFolder").getValue("path").getString();
+	std::string debugPath           = packageConfig.getSection("DebugFolder").getValue("path").getString();
+	std::string releasePath         = packageConfig.getSection("ReleaseFolder").getValue("path").getString();
+	std::string finalPath           = packageConfig.getSection("FinalFolder").getValue("path").getString();
+	fs::path dirPath(assetsPath);
 	if (!fs::exists(dirPath))
 	{
 		Logs->Log("Folder [$] does not exist", dirPath);
@@ -109,7 +115,7 @@ bool PackageTool::createPackageFile()
 	packageFile.close();
 	metadataFile.close();
 
-	for (const auto& targetDir : { DEBUG_FOLDER_PATH, RELEASE_FOLDER_PATH, FINAL_FOLDER_PATH })
+	for (const auto& targetDir : { debugPath, releasePath, finalPath})
 	{
 		if (fs::exists(targetDir))
 		{
