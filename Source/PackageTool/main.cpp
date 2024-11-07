@@ -6,7 +6,10 @@
 int main() 
 {
 	PackageTool p;
-	p.createPackageFile();
+	if (p.createPackageFile())
+	{
+		p.copyPackagetoFolders();
+	}
 	std::cin.get();
 	return 1;
 }

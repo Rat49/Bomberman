@@ -9,19 +9,24 @@
 
 namespace fs = std::filesystem;
 
-namespace {
+namespace 
+{
 	const std::string BINARY_OUTPUT_FILE   = "bomberman.pkg";
 	const std::string METADATA_OUTPUT_FILE = "bomberman.mtd";
 	const std::string RELATIVE_ROOT_FOLDER = "Game/";
 	const std::string CIPHER_KEY           = "VERYSECUREKEY";
 	const std::string PACKAGE_FOLDER       = "Package";
 	const std::string PACKAGE_INI          = "../../../../Data/Config/pkgtool.ini";
+	const std::string ASSETS_FOLDER        = "AssetsFolder";
 }
 
 PackageTool::PackageTool()
 {
-	Logs = std::make_unique<LogManager>();
+	Logs   = std::make_unique<LogManager>();
 	Config = std::make_unique<ConfigSystem>();
+
+	Config->addFile(PACKAGE_INI);
+	packageConfig = Config->getFile(PACKAGE_INI);
 }
 
 bool PackageTool::addToPackage(const std::string& filePath, PkgAsset& outPkgAsset, std::ostream& outputFile)
@@ -64,12 +69,13 @@ bool PackageTool::createPackageFile()
 {
 	fs::create_directory(PACKAGE_FOLDER);
 
-	Config->addFile(PACKAGE_INI);
-	const ConfigFile& packageConfig = Config->getFile(PACKAGE_INI);
-	std::string assetsPath          = packageConfig.getSection("AssetsFolder").getValue("path").getString();
-	std::string debugPath           = packageConfig.getSection("DebugFolder").getValue("path").getString();
-	std::string releasePath         = packageConfig.getSection("ReleaseFolder").getValue("path").getString();
-	std::string finalPath           = packageConfig.getSection("FinalFolder").getValue("path").getString();
+	if(!packageConfig.isSectionPresent("AssetsFolder"))
+	{
+		Logs->Log("Assets directory path does not exist in pkgtool.ini file");
+		return false;
+	}
+
+	std::string assetsPath = packageConfig.getSection("AssetsFolder").getValue("path").getString();
 	fs::path dirPath(assetsPath);
 	if (!fs::exists(dirPath))
 	{
@@ -115,9 +121,29 @@ bool PackageTool::createPackageFile()
 	packageFile.close();
 	metadataFile.close();
 
-	for (const auto& targetDir : { debugPath, releasePath, finalPath})
+	Logs->Log("Package file created successfully!");
+
+	return true;
+}
+
+void PackageTool::copyPackagetoFolders()
+{
+	const auto& sections = Config->getFile(PACKAGE_INI).getAllSections();
+	for (auto const& section : sections)
 	{
-		if (fs::exists(targetDir))
+		if (section == ASSETS_FOLDER)
+		{
+			continue;
+		}
+
+		if (!packageConfig.getSection(section).areValuesPresent({ "path" }))
+		{
+			Logs->Log("Value path not present for [$]", section);
+			continue;
+		}
+
+		std::string targetDir = packageConfig.getSection(section).getValue("path").getString();
+		if (fs::exists(packageConfig.getSection(section).getValue("path").getString()))
 		{
 			fs::copy(PACKAGE_FOLDER, targetDir + '/' + PACKAGE_FOLDER, fs::copy_options::recursive | fs::copy_options::update_existing);
 		}
@@ -126,8 +152,4 @@ bool PackageTool::createPackageFile()
 			Logs->Log("Directory [$] does not exist", targetDir);
 		}
 	}
-
-	Logs->Log("Package file created successfully!");
-
-	return true;
 }
