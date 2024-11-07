@@ -5,12 +5,12 @@
 #include "State.hpp"
 #include "Transition.hpp"
 
-class AIModule;
+class AIController;
 
 // Finite State Machine class used to handle all transitions between states and update current state
 class FSM {
 public:
-	FSM(AIModule* owner) : owner(owner) {}
+	FSM(AIController* owner) : owner(owner) {}
 
 	// The first state
 	void SetInitialState(std::shared_ptr<State> state);
@@ -23,7 +23,7 @@ public:
 
 private:
 	// AI Controller
-	AIModule* owner;
+	AIController* owner;
 
 	// Current state
 	std::shared_ptr<State> currentState;

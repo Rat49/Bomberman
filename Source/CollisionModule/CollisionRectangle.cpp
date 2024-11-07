@@ -42,3 +42,11 @@ void CollisionRectangle::update(CollisionRectangle& other) {
 		EndOverlapHandler(&other);    // Trigger EndOverlap handler
 	}
 }
+
+// Returns a center of rectangle
+sf::Vector2f CollisionRectangle::getCenter() {
+	sf::Vector2f center = rectangle.getPosition();
+	center.x += rectangle.getSize().x/2;
+	center.y += rectangle.getSize().y/2;
+	return center;
+}

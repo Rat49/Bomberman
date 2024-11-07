@@ -20,7 +20,7 @@ const CollisionComponent* PhysicsModule::rayCast(const sf::Vector2f& origin,
 
 	const CollisionComponent* candidate = nullptr;
 	float minimumDistance = std::numeric_limits<float>::max();
-	sf::Vector2f minEndPoint;
+	sf::Vector2f minEndPoint(origin + direction*maxDistance);
 
 	//iterate over objects and find the nearest one that intersects with the ray
 	for (auto& iter : physicsObjects) {
@@ -47,6 +47,9 @@ bool PhysicsModule::rayIntersectsRectangle(const CollisionRectangle& rectangle,
 
 	sf::FloatRect bounds = rectangle.getRectangle().getGlobalBounds();
 
+	if (bounds.contains(origin)) {
+		return false;
+	}
 	sf::Vector2f temporary;
 	// Horizontal Ray
 	if (direction.x != 0) {

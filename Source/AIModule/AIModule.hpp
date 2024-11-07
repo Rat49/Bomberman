@@ -2,19 +2,30 @@
 
 #include <memory>
 #include "FSM.hpp" 
+#include <SFML/Graphics.hpp>
 
-// AIModule Class
-class AIModule {
+// AIController Class
+class AIController {
 public:
-	AIModule();
+	AIController();
 
 	// Called each frame to update the FSM
 	void Update();
 
 	// Example condition-checking methods, this is for advanced AI (if we go that route)
-	bool IsPlayerInRange() const;
-	bool IsBombNearby() const;
+	bool getIsPlayerInRange() const { return isPlayerInRange; }
+	bool isBombNearby() const;
 
-private:
+	// Getter for the parent
+	void* getParent() const { return parentComponent; }
+
+	// Setter for the parent
+	void setParent(void* parent) { this->parentComponent = parent; }
+
+	void setIsPlayerInRange(bool bIsPlayerInRange) { isPlayerInRange = bIsPlayerInRange; }
 	std::unique_ptr<FSM> fsm;
+private:
+	void* parentComponent;
+	bool isPlayerInRange;
+	
 };

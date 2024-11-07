@@ -1,23 +1,17 @@
 #include "AIModule.hpp"
+#include "Common/Modules.hpp"
+#include "TestModule/MockActor.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 
-AIModule::AIModule(){
-	// Initialize states
-
-	// Set initial state
-
-	// Add transitions
+AIController::AIController(){
+	fsm = std::make_unique<FSM>(this);
 }
 
-void AIModule::Update() {
+void AIController::Update() {
 	fsm->Update();
 }
 
-bool AIModule::IsPlayerInRange() const {
-	// Example implementation for checking player proximity
-	return true; 
-}
-
-bool AIModule::IsBombNearby() const {
+bool AIController::isBombNearby() const {
 	// Example implementation for checking bomb proximity
 	return false; 
 }
