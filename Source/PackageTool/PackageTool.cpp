@@ -149,7 +149,7 @@ void PackageTool::copyPackageToFolders()
 		}
 		else
 		{
-			Logs->Log("Directory [$] does not exist", targetDir);
+			Logs->Log("Directory [$] does not exist, .pkg file wont be copied there", targetDir);
 		}
 	}
 }
