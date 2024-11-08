@@ -10,3 +10,11 @@ size_t StringUtils::tokenize(const std::string& source, char delim, std::vector<
 	}
 	return tokens.size();
 }
+
+void StringUtils::cipherText(std::string& textToCipher, const std::string& key)
+{
+	for (int i = 0; i < textToCipher.size(); ++i)
+	{
+		textToCipher[i] = textToCipher[i] ^ key[i % (key.size())];
+	}
+}
