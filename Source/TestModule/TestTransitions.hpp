@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AIModule/Transition.hpp"
-#include "AIModule/AIModule.hpp"
+#include "AIModule/AIController.hpp"
 
 class IdleToChaseTransition : public Transition {
 public:

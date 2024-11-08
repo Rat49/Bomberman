@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CollisionModule/CollisionComponent.hpp"
-#include "AIModule/AIModule.hpp"
+#include "AIModule/AIController.hpp"
 #include <memory>
 
 class MockActor {

@@ -1,4 +1,4 @@
-#include "AIModule.hpp"
+#include "AIController.hpp"
 #include "Common/Modules.hpp"
 #include "TestModule/MockActor.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
