@@ -50,7 +50,7 @@ bool Level::loadLevel(const std::string& levelPath)
 		}
 
 		//add the completed row of tiles
-		m_tiles.push_back(tileRow);	 
+		m_tiles.push_back(tileRow);
 		++rowIndex;
 	}
 
@@ -65,15 +65,53 @@ bool Level::loadTexture(const std::string& texturePath)
 	return m_atlasTexture->loadFromFile(texturePath);
 }
 
+
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	for (const auto& row : m_tiles) 
+	for (const auto& row : m_tiles)
 	{
-		for (const auto& tile : row) 
+		for (const auto& tile : row)
 		{
 			//draw Tile sprites with positions
 			target.draw(tile, states);
 		}
 	}
-
 }
+
+TileType Level::getTileType(int32_t x, int32_t y)
+{
+	if (y < m_tiles.size() && x < m_tiles[0].size())
+	{
+		return m_tiles[y][x].getType();
+	}
+
+	//wall as default
+	return TileType::Wall;
+}
+
+void Level::destroyTile(int32_t x, int32_t y)
+{
+	if (y < m_tiles.size() && x < m_tiles[0].size())
+	{
+		Tile& tile = m_tiles[y][x];
+		if (tile.getType() == TileType::Destroyable_Wall)
+		{
+			//set ground tile on that position
+			tile = Tile(22, m_levelData.getTileWidth(), m_levelData.getTileHeight(), m_atlasTexture, x, y);
+		}
+	}
+}
+
+bool Level::isTileWalkable(int32_t x, int32_t y)
+{
+	if (y < m_tiles.size() && x < m_tiles[0].size())
+	{
+		return  m_tiles[y][x].getType() == TileType::Ground;
+	}
+	return false;
+}
+
+
+
+
+

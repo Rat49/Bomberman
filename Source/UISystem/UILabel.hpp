@@ -28,6 +28,9 @@ public:
 	// Returns the current text
 	std::string getText() const;
 
+	// Override the handleEvent from UIElement
+	bool handleEvent(const sf::Event& event) override;
+
 protected:
 	// Render the label on the screen
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
