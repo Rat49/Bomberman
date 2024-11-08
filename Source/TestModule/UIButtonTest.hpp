@@ -2,6 +2,7 @@
 
 #include "TestModule/TestBase.hpp"
 #include "UISystem/UIButton.hpp"
+#include "UISystem/UILabel.hpp"
 #include <string>
 #include <memory>
 #include <UISystem/UIScreen.hpp>
@@ -17,6 +18,16 @@ public:
 
 private:
 	std::shared_ptr<UIButton> button;
+	std::shared_ptr<UIButton> button2;
+	std::shared_ptr<UIButton> button3;
+	std::shared_ptr<UIButton> button4;
+
+	std::shared_ptr<UILabel> label1;
+	std::shared_ptr<UILabel> label2;
+	std::shared_ptr<UILabel> label3;
+	std::shared_ptr<UILabel> label4;
+
+	std::shared_ptr<UIScreen> screen1;
 	bool completed = false;
 	std::string Name = "UIButtonTest";
 	UIScreen screen;

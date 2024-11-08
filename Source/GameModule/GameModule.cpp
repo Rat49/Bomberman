@@ -33,13 +33,13 @@ void GameModule::run()
         prevTime = currentTime;
 
         sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-        }
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+		}
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);

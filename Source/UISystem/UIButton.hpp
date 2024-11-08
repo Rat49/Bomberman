@@ -20,8 +20,17 @@ public:
 	void setCharacterSize(unsigned int characterSize);
 	void setSize(const sf::Vector2f& btnSize);
 
+	void setSizeFromText();
+
+	// Set different colors for different states of the button
+	void setDefaultColor(const sf::Color& color);
+	void setHoverColor(const sf::Color& color);
+	void setPressedColor(const sf::Color& color);
+
 	// Returns the current text of the button
 	std::string getText() const;
+
+	sf::Vector2f UIButton::getSize() const { return buttonBackground.getSize(); }
 
 	// Override the draw method to render the button
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -37,4 +46,9 @@ private:
 
 	// Flag indicating if the button is interactable
 	bool isInteractable = true;
+
+	// Colors for different button states
+	sf::Color defaultColor = sf::Color::Green;
+	sf::Color hoverColor = sf::Color::Cyan;
+	sf::Color pressedColor = sf::Color::Blue;
 };
