@@ -37,8 +37,11 @@ public:
 	// Setter for Rectangle Properties
 	void setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size);
 
-	// setting a fill color of a rectangle
+	// Setting a fill color of a rectangle
 	void setColor(const sf::Color& color);
+
+	// Returns a center of rectangle
+	sf::Vector2f getCenter();
 protected:
 	// Function to check if this rectangle overlaps with another
 	const bool isOverlapping(CollisionRectangle& other);
