@@ -7,6 +7,8 @@ UILabel::UILabel(const std::string& text, const sf::Font& font, unsigned int siz
 	labelText.setFont(font);
 	labelText.setString(text);
 	labelText.setCharacterSize(size);
+
+	setIsInteractable(false);
 }
 
 // Render the label on the screen
@@ -42,3 +44,29 @@ std::string UILabel::getText() const
 {
 	return labelText.getString();
 }
+
+// Override handleEvent from UIElement
+bool UILabel::handleEvent(const sf::Event& event)
+{
+	if (!getIsInteractable())
+	{
+		return false;
+	}
+
+	// This code will not be executed further if the element is not interactable
+	if (event.type == sf::Event::MouseMoved)
+	{
+		float mouseX = static_cast<float>(event.mouseMove.x);
+		float mouseY = static_cast<float>(event.mouseMove.y);
+
+		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
+		if (isHovered && onHover)
+		{
+			// Call onHover if mouse is over the label
+			onHover();
+		}
+	}
+	// Returns false to allow other elements to process the event
+	return false;
+}
+
