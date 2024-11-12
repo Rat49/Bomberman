@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 
 Level::Level(const std::string levelConfigPath)
@@ -65,9 +66,54 @@ bool Level::loadTexture(const std::string& texturePath)
 	return m_atlasTexture->loadFromFile(texturePath);
 }
 
+void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
+{
+
+	if (m_view.getSize().x == 0 || m_view.getSize().y == 0)
+	{
+	
+		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
+	}
+
+	float levelPixelWidth = static_cast<float>(m_tiles[0].size() * m_levelData.getTileWidth());
+	float levelPixelHeight = static_cast<float>(m_tiles.size() * m_levelData.getTileHeight());
+
+
+	sf::Vector2f viewCenter = offset;
+
+
+	float minX = m_view.getSize().x / 2.f;
+	float maxX = std::max(levelPixelWidth - m_view.getSize().x / 2.f, minX);
+	float minY = m_view.getSize().y / 2.f;
+	float maxY = std::max(levelPixelHeight - m_view.getSize().y / 2.f, minY);
+
+	viewCenter.x = std::clamp(viewCenter.x, minX, maxX);
+	viewCenter.y = std::clamp(viewCenter.y, minY, maxY);
+
+	m_view.setCenter(viewCenter); 
+
+
+	if (levelPixelWidth > window.getSize().x || levelPixelHeight > window.getSize().y)
+	{
+		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
+	}
+	else
+	{
+		m_view.setSize(levelPixelWidth, levelPixelHeight); 
+	}
+
+	
+}
+const sf::View& Level::getView() const {
+	return m_view;
+}
+
+
 
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	target.setView(m_view);
+
 	for (const auto& row : m_tiles)
 	{
 		for (const auto& tile : row)
@@ -85,8 +131,8 @@ TileType Level::getTileType(int32_t x, int32_t y)
 		return m_tiles[y][x].getType();
 	}
 
-	//wall as default
-	return TileType::Wall;
+	//default
+	return TileType::Unknown;
 }
 
 void Level::destroyTile(int32_t x, int32_t y)

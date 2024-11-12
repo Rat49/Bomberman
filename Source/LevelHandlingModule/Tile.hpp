@@ -33,9 +33,6 @@ public:
 	const int32_t getId() const { return m_id; }
 	const sf::Vector2f getPosition() const { return m_position; }
 
-private:
-
-	
 
 };
 

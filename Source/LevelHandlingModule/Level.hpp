@@ -1,7 +1,6 @@
 #pragma once
 
-#include "SFML/Graphics/Drawable.hpp"
-#include <SFML/Graphics/RenderStates.hpp>
+#include "SFML/Graphics.hpp"
 #include "LevelData.hpp"
 #include "Tile.hpp"
 #include <vector>
@@ -9,6 +8,8 @@
 class Level : public sf::Drawable
 {
 private:
+
+	sf::View m_view;
 
 	std::vector<std::vector<Tile>> m_tiles;
 	LevelData m_levelData;
@@ -31,6 +32,10 @@ public:
 	//check if tile is walkable
 	bool isTileWalkable(int32_t x, int32_t  y);
 
+	//level view config
+	void setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window);
+	const sf::View& getView() const;
+
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.
@@ -38,6 +43,8 @@ private:
 
 	//loads the atlas texture containing the tile sprites.
 	bool loadTexture(const std::string& texturePath);
+
+	
 };
 
 

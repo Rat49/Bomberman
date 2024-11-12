@@ -61,11 +61,14 @@ void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 	if (!Modules::Level->isLevelLoaded(m_firstLevel))
 		return;
 
-	window->setSize(sf::Vector2u(800, 600));
 	window->clear();
+	
 
-	//draw loaded level based on id 
+	sf::Vector2f playerPosition(500, 500.f);  
+	const auto& level = Modules::Level->getLevel(m_firstLevel);
+	level->setViewOffset(playerPosition, *window);  
 	Modules::Level->drawLevel(*window, m_firstLevel);
+
 
 	window->display();
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
