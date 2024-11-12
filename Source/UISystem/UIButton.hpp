@@ -20,6 +20,8 @@ public:
 	void setCharacterSize(unsigned int characterSize);
 	void setSize(const sf::Vector2f& btnSize);
 
+	void setPosition(const sf::Vector2f& pos) override;
+
 	void setSizeFromText();
 
 	// Set different colors for different states of the button
@@ -35,9 +37,10 @@ public:
 	// Override the draw method to render the button
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-private:
 	// SFML objects to represent the button's background and text
 	sf::RectangleShape buttonBackground;
+
+private:
 	sf::Text buttonText;
 
 	// Additional states to handle button interaction (hovered and pressed)

@@ -18,7 +18,7 @@ public:
 	virtual ~UIElement() = default;
 
 	// Set and get methods for position
-	void setPosition(const sf::Vector2f& pos) { position = pos; }
+	virtual void setPosition(const sf::Vector2f& pos) { position = pos; }
 	sf::Vector2f getPosition() const { return position; }
 
 	// Set and get methods for dimensions

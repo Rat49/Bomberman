@@ -132,6 +132,13 @@ void UIButton::setSizeFromText()
 	LOG("Button size set from text: (" + std::to_string(buttonBackground.getSize().x) + ", " + std::to_string(buttonBackground.getSize().y) + ")");
 }
 
+void UIButton::setPosition(const sf::Vector2f& pos)
+{
+	UIElement::setPosition(pos);
+
+	buttonBackground.setPosition(pos);
+}
+
 // Set default button color
 void UIButton::setDefaultColor(const sf::Color& color)
 {

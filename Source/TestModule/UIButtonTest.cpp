@@ -31,7 +31,7 @@ void UIButtonTest::setup()
 
 	button2 = std::make_shared<UIButton>("Button 2", font, 20);
 	// Button 2 overlaps Button 3
-	button2->setPosition(sf::Vector2f(120.0f, 90.0f));
+	button2->setPosition(sf::Vector2f(100.0f, 100.0f));
 	button2->setSizeFromText();
 
 	// Set different colors for different states of the button
@@ -42,7 +42,7 @@ void UIButtonTest::setup()
 
 	// Button 3 overlaps Button 2
 	button3 = std::make_shared<UIButton>("Button 3", font, 20);
-	button3->setPosition(sf::Vector2f(130.0f, 100.0f));
+	button3->setPosition(sf::Vector2f(120.0f, 120.0f));
 	button3->setSizeFromText();
 
 	// Set different colors for different states of the button
@@ -65,22 +65,22 @@ void UIButtonTest::setup()
 	// Creating and placing labels
 	// Label 1 is independent
 	label1 = std::make_shared<UILabel>("Label 1", font, 20);
-	label1->setPosition(sf::Vector2f(300.0f, 300.0f)); 
+	label1->setPosition(sf::Vector2f(300.0f, 0.0f)); 
 	screen1->addElement(label1);
 
 	// Label 2 overlaps with Label 3
 	label2 = std::make_shared<UILabel>("Label 2", font, 20);
-	label2->setPosition(sf::Vector2f(150.0f, 150.0f));
+	label2->setPosition(sf::Vector2f(150.0f, 300.0f));
 	screen1->addElement(label2);
 
 	// Label 3 overlaps with Label 2
 	label3 = std::make_shared<UILabel>("Label 3", font, 20);
-	label3->setPosition(sf::Vector2f(130.0f, 150.0f));
+	label3->setPosition(sf::Vector2f(160.0f, 310.0f));
 	screen1->addElement(label3);
 
 	// Label 4 overlaps Button 4
 	label4 = std::make_shared<UILabel>("Label 4", font, 20);
-	label4->setPosition(sf::Vector2f(200.0f, 200.0f));
+	label4->setPosition(sf::Vector2f(210.0f, 210.0f));
 	screen1->addElement(label4);
 
 	// Set onHover event
