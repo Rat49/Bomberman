@@ -17,13 +17,10 @@ public:
 
 private:
 	//mainly used for debugging
-	void navigate(sf::Vector2i& playerPosition, sf::Vector2i& enemyPosition);
+	void navigate(sf::Vector2i& playerPosition, std::vector<sf::Vector2i>& enemyPositions);
 
 	//prints out a colored char from a grid
 	void color(int i, int j);
-
-	//moves an enemy in a random direction that isn't occupied by the player
-	void moveEnemy(sf::Vector2i& enemyPosition, const sf::Vector2i& playerPosition, bool updateEnemy);
 
 	//checks if tile is occupied and colors it if it is
 	const bool checkOcuppied(const sf::Vector2i& playerPosition,
