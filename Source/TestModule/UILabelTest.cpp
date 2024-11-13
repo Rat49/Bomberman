@@ -23,12 +23,6 @@ void UILabelTest::setup()
 			LOG("UILabel is hovered!");
 		};
 
-	// Set onClick event
-	label->onClick = []()
-		{
-			LOG("UILabel was clicked!");
-		};
-
 	screen.addElement(label);
 }
 
@@ -56,7 +50,6 @@ void UILabelTest::update(float deltaTime, sf::RenderWindow* window)
 	// Drawing simulation
 	if (window)
 	{
-		//label->draw()
 		deltaTime = 0.0f;
 		LOG("UILabelTest: Label drawn at position (100, 100)");
 

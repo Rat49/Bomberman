@@ -18,57 +18,32 @@ const std::string& LevelHandlingModuleTest::getName() const
 
 void LevelHandlingModuleTest::setup()
 {
-	//load individual levels one by one
+	//load levels
 	m_firstLevel = Modules::Level->loadLevel(LEVEL1_CONFIG_PATH);
 	m_secondLevel = Modules::Level->loadLevel(LEVEL2_CONFIG_PATH);
 
-	/*
-	*load multiple levels at once using vector of config paths
-	
-	std::vector<std::string> configPaths = { LEVEL1_CONFIG_PATH, LEVEL2_CONFIG_PATH };
-	auto levelIds = Modules::Level->loadLevels(configPaths);
 
-	/*/
-
+	//chose current game level
+	Modules::Level->setCurrentLevel(m_firstLevel);
 }
 
 void LevelHandlingModuleTest::run()
 {
-	LOG("Run LevelHandlingModuleTest");
-
-	//Test if tile is walkable (ground)
-	if (Modules::Level->isWalkable(m_firstLevel, 1, 4))
-		LOG("Walkable");
-
-
-	/*Test the tile type value based on coordinates */
-	if (TileType::Ground == Modules::Level->getTileType(m_firstLevel, 4, 2))
-	{
-		LOG(" TILE TYPE IS : GROUND");
-	}
-	else if (TileType::Wall == Modules::Level->getTileType(m_firstLevel, 4, 2))
-	{
-		LOG(" TILE TYPE IS : WALL");
-	}
-	else
-	{
-		LOG(" TILE TYPE IS : DESTROYABLE WALL");
-	}
+	LOG("Run Level Handling Module Test");
 }
 
-void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
+void LevelHandlingModuleTest::update(float deltaTime, sf::RenderWindow* window)
 {
-	if (!Modules::Level->isLevelLoaded(m_firstLevel))
-		return;
-
 	window->clear();
-	
 
-	sf::Vector2f playerPosition(500, 500.f);  
-	const auto& level = Modules::Level->getLevel(m_firstLevel);
-	level->setViewOffset(playerPosition, *window);  
-	Modules::Level->drawLevel(*window, m_firstLevel);
+	//test level view based on player position
+	sf::Vector2f playerPosition(300.f, 300.f);  
 
+	//set Level view
+	Modules::Level->setLevelViewOffset(playerPosition, *window);
+
+	//draw level
+	Modules::Level->update(deltaTime, window);
 
 	window->display();
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));

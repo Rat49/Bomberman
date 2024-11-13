@@ -9,12 +9,6 @@ using LevelId = int32_t;
 
 class LevelHandlingModule : public BaseModule
 {
-private:
-
-	//vector to store loaded levels
-	std::vector<std::shared_ptr<Level>> m_levels;
-	LevelId m_currentLevel;
-
 public:
 
 	//load level using config file
@@ -23,25 +17,29 @@ public:
 	//load multiple levels using config file vector 
 	std::vector<LevelId> loadLevels(const std::vector<std::string>& configPaths);
 
-	//get loaded level using id 
-	std::shared_ptr<Level> getLevel(LevelId levelId) const;
-
-	//draw level on screen
-	void drawLevel(sf::RenderWindow& window, LevelId levelId) const;
+	//set level 
+	void setCurrentLevel(LevelId levelId);
 
 	//check if level is loaded 
 	bool isLevelLoaded(LevelId levelId) const;
 
-	//destroy tile if it's destroyable wall
-	void destroyTileFromLevel(LevelId levelId, int32_t x, int32_t y); 
+	//set offset based on player position
+	void setLevelViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window);
 
-	//check if tile isWalkable
-	bool isWalkable(LevelId levelId, int32_t x, int32_t y);
-
-	//get type of tile using level id and tile coordinates 
-	TileType getTileType(LevelId levelId, int32_t x, int32_t y);
+	//draw level on window
+	void update(float, sf::Window* window) override;
 
 	//remove levels from data member
 	void terminate() override;
+
+private:
+
+	//vector to store loaded levels
+	std::vector<std::shared_ptr<Level>> m_levels;
+
+	//id of current level
+	LevelId m_currentLevel;
+
+
 };
 

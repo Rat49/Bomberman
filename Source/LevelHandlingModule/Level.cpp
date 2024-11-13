@@ -6,21 +6,31 @@
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <Common/Logs.hpp>
 
 
 Level::Level(const std::string levelConfigPath)
 {
 	//load level configuration data
 	if (!m_levelData.loadLevelData(levelConfigPath))
+	{
+		LOG("Failed to load level data from: " + levelConfigPath);
 		return;
+	}
 
 	//load the atlas texture using the path from level data
 	if (!loadTexture(m_levelData.getAtlasPath()))
+	{ 
+		LOG("Failed to load texture from : " + m_levelData.getAtlasPath());
 		return;
+	}
 
 	//initialize level tiles based on tile IDs
 	if (!loadLevel(m_levelData.getLevelPath()))
+	{
+		LOG("Failed to load level from : " + m_levelData.getLevelPath());
 		return;
+	}
 }
 
 bool Level::loadLevel(const std::string& levelPath)
@@ -28,7 +38,10 @@ bool Level::loadLevel(const std::string& levelPath)
 	//open level file for reading
 	std::ifstream file(levelPath);
 	if (!file)
+	{ 
+		LOG("Failed to load level config file from : " + levelPath);
 		return false;
+	}
 
 	//read each line of file
 	int32_t rowIndex = 0;
@@ -43,10 +56,27 @@ bool Level::loadLevel(const std::string& levelPath)
 		//read row value
 		while (std::getline(sStream, value, ','))
 		{
+			//set value to int
 			int32_t tempId = std::stoi(value);
 
-			//add a new Tile object to the current row
-			tileRow.emplace_back(tempId, m_levelData.getTileWidth(), m_levelData.getTileHeight(), m_atlasTexture, columnIndex, rowIndex);
+			//calculate rect of tile
+			int32_t numTilesPerRow = m_atlasTexture->getSize().x / m_levelData.getTileWidth();
+			int32_t tileIndexX = (tempId % numTilesPerRow) * m_levelData.getTileWidth();
+			int32_t tileIndexY = (tempId / numTilesPerRow) * m_levelData.getTileHeight();
+			sf::IntRect textureRect(tileIndexX, tileIndexY, m_levelData.getTileWidth(), m_levelData.getTileHeight());
+
+			//calculate position of tile
+			sf::Vector2f position(static_cast<float>(columnIndex * m_levelData.getTileWidth()), static_cast<float>(rowIndex * m_levelData.getTileHeight()));
+
+			Tile tile;
+			if (!tile.initialize(tempId, textureRect, position, m_atlasTexture))
+			{ 
+				LOG("Failed to initialize tile with index : " + rowIndex, columnIndex);
+				return false;
+			}
+			
+			//add tile
+			tileRow.push_back(tile);
 			++columnIndex;
 		}
 
@@ -68,47 +98,44 @@ bool Level::loadTexture(const std::string& texturePath)
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
-
+	//set it to the window size
 	if (m_view.getSize().x == 0 || m_view.getSize().y == 0)
 	{
-	
 		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
 	}
 
+	//calculate the total level width and height in pixels
 	float levelPixelWidth = static_cast<float>(m_tiles[0].size() * m_levelData.getTileWidth());
 	float levelPixelHeight = static_cast<float>(m_tiles.size() * m_levelData.getTileHeight());
 
-
+	//initialize view center to the target offset position
 	sf::Vector2f viewCenter = offset;
 
-
+	//define minimum and maximum bounds
 	float minX = m_view.getSize().x / 2.f;
 	float maxX = std::max(levelPixelWidth - m_view.getSize().x / 2.f, minX);
 	float minY = m_view.getSize().y / 2.f;
 	float maxY = std::max(levelPixelHeight - m_view.getSize().y / 2.f, minY);
 
+	//clamp the view center coordinates to ensure they remain within level bounds
 	viewCenter.x = std::clamp(viewCenter.x, minX, maxX);
 	viewCenter.y = std::clamp(viewCenter.y, minY, maxY);
 
+	//set view center
 	m_view.setCenter(viewCenter); 
 
-
+	//adjust the view size
 	if (levelPixelWidth > window.getSize().x || levelPixelHeight > window.getSize().y)
 	{
+		//level is larger than the window
 		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
 	}
 	else
 	{
+		//level is smaller than the window
 		m_view.setSize(levelPixelWidth, levelPixelHeight); 
 	}
-
-	
 }
-const sf::View& Level::getView() const {
-	return m_view;
-}
-
-
 
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -123,41 +150,3 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		}
 	}
 }
-
-TileType Level::getTileType(int32_t x, int32_t y)
-{
-	if (y < m_tiles.size() && x < m_tiles[0].size())
-	{
-		return m_tiles[y][x].getType();
-	}
-
-	//default
-	return TileType::Unknown;
-}
-
-void Level::destroyTile(int32_t x, int32_t y)
-{
-	if (y < m_tiles.size() && x < m_tiles[0].size())
-	{
-		Tile& tile = m_tiles[y][x];
-		if (tile.getType() == TileType::Destroyable_Wall)
-		{
-			//set ground tile on that position
-			tile = Tile(22, m_levelData.getTileWidth(), m_levelData.getTileHeight(), m_atlasTexture, x, y);
-		}
-	}
-}
-
-bool Level::isTileWalkable(int32_t x, int32_t y)
-{
-	if (y < m_tiles.size() && x < m_tiles[0].size())
-	{
-		return  m_tiles[y][x].getType() == TileType::Ground;
-	}
-	return false;
-}
-
-
-
-
-

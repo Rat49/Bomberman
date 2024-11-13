@@ -25,6 +25,8 @@ public:
 	// Set method to change the character size of the label
 	void setCharacterSize(unsigned int size);
 
+	void setPosition(const sf::Vector2f& pos) override;
+
 	// Returns the current text
 	std::string getText() const;
 

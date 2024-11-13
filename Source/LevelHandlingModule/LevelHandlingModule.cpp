@@ -30,21 +30,16 @@ std::vector<LevelId> LevelHandlingModule::loadLevels(const std::vector<std::stri
 	return tmpLevelIds;
 }
 
-std::shared_ptr<Level> LevelHandlingModule::getLevel(LevelId levelId) const
+void LevelHandlingModule::setCurrentLevel(LevelId levelId)
 {
-	//return level based on id 
-	if (levelId < m_levels.size())
-		return m_levels[levelId];
-
-	return nullptr;
-}
-
-void LevelHandlingModule::drawLevel(sf::RenderWindow& window, LevelId levelId) const
-{
-	//draw level on window
+	//set loaded level as current 
 	if (isLevelLoaded(levelId))
 	{
-		m_levels[levelId]->draw(window, sf::RenderStates::Default);
+		m_currentLevel = levelId;
+	}
+	else 
+	{
+		LOG("Attempted to set a non-loaded level as current.");
 	}
 }
 
@@ -53,34 +48,23 @@ bool LevelHandlingModule::isLevelLoaded(LevelId levelId) const
 	return levelId < m_levels.size() && m_levels[levelId] != nullptr;
 }
 
-void LevelHandlingModule::destroyTileFromLevel(LevelId levelId, int32_t x, int32_t y)
+void LevelHandlingModule::setLevelViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
-	//destroy tile using coordinates
-	if (isLevelLoaded(levelId))
+	//set level view based on player position
+	if (isLevelLoaded(m_currentLevel))
 	{
-		m_levels[levelId]->destroyTile(x, y);
+		m_levels[m_currentLevel]->setViewOffset(offset, window);
 	}
 }
 
-bool LevelHandlingModule::isWalkable(LevelId levelId, const int32_t x, const int32_t y)
+void LevelHandlingModule::update(float, sf::Window* window)
 {
-	//return if it's ground
-	if (isLevelLoaded(levelId))
+	//draw level on window
+	if (isLevelLoaded(m_currentLevel))
 	{
-		return m_levels[levelId]->isTileWalkable(x, y);
+		auto* renderWindow = dynamic_cast<sf::RenderWindow*>(window);
+		m_levels[m_currentLevel]->draw(*renderWindow, sf::RenderStates::Default);
 	}
-	
-	return false;
-}
-
-TileType LevelHandlingModule::getTileType(LevelId levelId, int32_t x, int32_t y)
-{
-	if (isLevelLoaded(levelId))
-	{
-		return m_levels[levelId]->getTileType(x, y);
-	}
-
-	return TileType::Unknown;
 }
 
 void LevelHandlingModule::terminate()

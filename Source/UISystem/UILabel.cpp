@@ -21,6 +21,13 @@ void UILabel::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 }
 
+void UILabel::setPosition(const sf::Vector2f& pos)
+{
+	UIElement::setPosition(pos);
+
+	labelText.setPosition(pos);
+}
+
 // Set method to change the displayed text
 void UILabel::setText(const std::string& text)
 {
