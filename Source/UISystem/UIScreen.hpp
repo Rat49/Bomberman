@@ -2,7 +2,9 @@
 
 #include "UISystem/UIElement.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <vector>
 #include <memory>
 
@@ -21,7 +23,17 @@ public:
 	// Clear all UI elements from the screen
 	void clearElements();
 
-protected:
+	bool handleEvent(const sf::Event& event) override;
+
+	// Set the render window for event handling
+	void setWindow(sf::RenderWindow* renderWindow) { window = renderWindow; }
+
+	// Get the render window
+	sf::RenderWindow* getWindow() const { return window; }
+
+	// A method that returns a reference to the requested font
+	static sf::Font& getFont(const std::string& fontName);
+
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -32,6 +44,12 @@ private:
 	// Optional view for handling UI viewport settings
 	sf::View view;
 
+	// Pointer to the render window
+	sf::RenderWindow* window = nullptr;
+
 	// Flag to check if view is set
 	bool viewSet = false;
+
+	// Map that caches loaded fonts
+	static std::unordered_map<std::string, sf::Font> fonts;
 };

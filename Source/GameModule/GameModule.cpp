@@ -32,14 +32,14 @@ void GameModule::run()
         deltaTime = std::chrono::duration_cast<Duration>(currentTime - prevTime).count();
         prevTime = currentTime;
 
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
-        }
+        /*sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+		}*/
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);

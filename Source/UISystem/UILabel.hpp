@@ -25,8 +25,13 @@ public:
 	// Set method to change the character size of the label
 	void setCharacterSize(unsigned int size);
 
+	void setPosition(const sf::Vector2f& pos) override;
+
 	// Returns the current text
 	std::string getText() const;
+
+	// Override the handleEvent from UIElement
+	bool handleEvent(const sf::Event& event) override;
 
 protected:
 	// Render the label on the screen

@@ -75,4 +75,10 @@ project "Bomberman"
         paths.source .. "/**.hpp",
         paths.source .. "/**.cpp",
     }
+	
+	removefiles 
+	{
+		paths.source .. "/PackageTool/**.hpp",
+		paths.source .. "/PackageTool/**.cpp"
+	}
 -----------------------------------------------------------------------------------------------------------------------

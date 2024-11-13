@@ -63,3 +63,11 @@ void UISystem::updateViewportSettings()
 		scale = 0.01f;
 	}
 }
+
+void UISystem::handleMouseEvent(const sf::Event& event) 
+{
+	if (uiScreen)
+	{
+		uiScreen->handleEvent(event);
+	}
+}
