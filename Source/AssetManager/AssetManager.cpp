@@ -78,12 +78,26 @@ bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
 		return true;
 	}
 
-	auto font = std::make_shared<sf::Font>();
-	std::string fullPath = getFullPath(relativeFontPath);
-	if (!font->loadFromFile(fullPath))
-	{
-		return false;
-	}
+	//std::vector<unsigned char> fontData;
+	//if (!pr.loadFromPackage(relativeFontPath, fontData))
+	//{
+	//	LOG("Could not load data from pacakge");
+	//	return false;
+	//}
+	auto font = pr.loadFontFromPackage(relativeFontPath);
+	//auto font = std::make_shared<sf::Font>();
+	//if (!font->loadFromMemory(fontData.data(), fontData.size())) {
+	//	return false;
+	//}
+
+	//LOG("Data size $", fontData.size());
+
+	//auto font = std::make_shared<sf::Font>();
+	//std::string fullPath = getFullPath(relativeFontPath);
+	//if (!font->loadFromFile(fullPath))
+	//{
+	//	return false;
+	//}
 
 	fonts.emplace(relativeFontPath, std::move(font));
 	return true;

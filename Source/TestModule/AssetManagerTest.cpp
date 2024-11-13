@@ -5,6 +5,7 @@
 #include "Common/StringUtils.hpp"
 #include <thread>
 #include <chrono>
+#include "AssetManager/PackageReader.hpp"
 
 const std::string& AssetManagerTest::getName() const
 {
@@ -15,7 +16,7 @@ void AssetManagerTest::setup()
 {
 	LOG("AssetManagerTest: setup()");
 	Modules::Assets->initialize("../../Data/Config/assetmngr_config.ini");
-	Modules::Assets->loadFont("Game/Fonts/arialbd.ttf");
+	Modules::Assets->loadFont("Game/Fonts/arial.ttf");
 }
 
 void AssetManagerTest::run()
@@ -27,13 +28,20 @@ void AssetManagerTest::update(float, sf::RenderWindow* window)
 {
 	LOG("AssetManagerTest: update()");
 
-	std::shared_ptr<sf::Font> font = Modules::Assets->getFont("Game/Fonts/arialbd.ttf");
+	std::shared_ptr<sf::Font> font = Modules::Assets->getFont("Game/Fonts/arial.ttf");
+	sf::Font f;
 
+	// Load the font from a file
+	//if (!f.loadFromFile("C:/Users/lazar.jovicic/sfml-bomberman/.gen/bin/Debug/PackageTool/Package/bomberman.pkg")) {
+	//	LOG("NECE DA MOZEEE");
+	//	return; // Exit if the font could not be loaded
+	//}
+	
 	std::string message = "Loading font from asset manager...";
 	sf::Text text;
 	text.setFont(*font);
 	text.setString(message);
-	text.setCharacterSize(10);
+	text.setCharacterSize(30);
 	text.setFillColor(sf::Color::White);
 
 	sf::Vector2u windowSize  = window->getSize();
@@ -47,6 +55,7 @@ void AssetManagerTest::update(float, sf::RenderWindow* window)
 	window->display();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	
 }
 
 bool AssetManagerTest::isComplete() const

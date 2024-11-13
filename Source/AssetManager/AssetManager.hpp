@@ -4,6 +4,7 @@
 #include <vector>
 #include "AssetTypes.hpp"
 #include "BaseModule/BaseModule.hpp"
+#include "PackageReader.hpp"
 
 class AssetManager : public BaseModule
 {
@@ -34,6 +35,8 @@ private:
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Font>> fonts;
+
+	PackageReader pr;
 
 	std::string AssetManager::getFullPath(const std::string& relativePath) const;
 };
