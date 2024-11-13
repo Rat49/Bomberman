@@ -1,10 +1,13 @@
 #pragma once
+#include "BaseModule/BaseModule.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
 */
-class GameModule
+class GameModule : public BaseModule
 {
 public:
-    void run();
+	void run();
+
+	void terminate() override;
 };

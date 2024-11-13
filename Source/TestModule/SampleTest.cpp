@@ -19,7 +19,7 @@ void SampleTest::run()
 	LOG("SampleTest: run()");
 }
 
-void SampleTest::update(float deltaTime)
+void SampleTest::update(float deltaTime, sf::RenderWindow*)
 {
 	if (!isComplete())
 	{

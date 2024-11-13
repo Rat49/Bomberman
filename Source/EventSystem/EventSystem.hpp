@@ -4,30 +4,39 @@
 #include <map>
 #include <vector>
 #include <atomic>
+#include "EventTypes.hpp"
+#include "BaseModule/BaseModule.hpp"
 
-class EventSystem
+class EventSystem : public BaseModule
 {
 public:
 	EventSystem() = default;
 
-	using Callback = std::function<void()>;
-
 	// Function to register a new event and return its unique ID
-	int32_t registerEvent();
+	EventID registerEvent();
 
 	// Subscribe a callback to an event
-	void subscribe(int32_t eventID, Callback callback);
+	FunctionHandle subscribe(EventID eventID, Callback callback);
 
 	// UnSubscribe a callback from an event
-	void unsubscribe(int32_t eventID, Callback callback);
+	void unsubscribe(EventID eventID, FunctionHandle handle);
 
 	// Emit an event to notify all subscribed callbacks
-	void emit(int32_t eventID);
+	void emit(EventID eventID, void* param);
+
+	void terminate() override;
 
 private:
+	struct Subscriber 
+	{
+		FunctionHandle handle;
+		Callback callback;
+	};
+
 	// Map to hold event IDs and their associated callbacks
-	std::map<int32_t, std::vector<Callback>> subscribers;
+	std::map<EventID, std::vector<Subscriber>> subscribers;
 
 	// Atomic counter to generate unique event IDs
-	std::atomic<int32_t> nextEventID = 0 ;
+	std::atomic<EventID> nextEventID = 0;
+	std::atomic<FunctionHandle> nextHandleID = 0;
 };
