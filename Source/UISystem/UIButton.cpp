@@ -50,12 +50,10 @@ bool UIButton::handleEvent(const sf::Event& event)
 
 		// Check if the mouse is over the button
 		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
-		//LOG("Mouse moved. isHovered: " + std::string(isHovered ? "true" : "false"));
 
 		if (isHovered && !isPressed)
 		{
 			LOG("Hover callback called.");
-			// Call onHover callback
 			onHover();
 		}
 	}
@@ -65,10 +63,8 @@ bool UIButton::handleEvent(const sf::Event& event)
 		if (onClick)
 		{
 			LOG("Click callback called.");
-			// Call onClick callback
 			onClick();
 		}
-		//isPressed = false;
 	}
 	else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
 	{
@@ -80,12 +76,10 @@ bool UIButton::handleEvent(const sf::Event& event)
 
 		// Check if the mouse is over the button
 		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
-		//LOG("Mouse moved. isHovered: " + std::string(isHovered ? "true" : "false"));
 
 		if (isHovered && !isPressed)
 		{
 			LOG("Hover callback called.");
-			// Call onHover callback
 			onHover();
 		}
 	}
@@ -113,27 +107,6 @@ void UIButton::setCharacterSize(unsigned int characterSize)
 	buttonText.setCharacterSize(characterSize);
 }
 
-//void UIButton::setSizeFromText()
-//{
-//	sf::FloatRect bounds = buttonText.getLocalBounds();
-//	LOG("TEXT BUTTON size left: " + std::to_string(buttonText.getLocalBounds().left) +
-//		" , top: " + std::to_string(buttonText.getLocalBounds().top) +
-//		" , width: " + std::to_string(buttonText.getLocalBounds().width) +
-//		" , height: " + std::to_string(buttonText.getLocalBounds().height));
-//
-//	buttonBackground.setSize(sf::Vector2f(bounds.width + 20.f, bounds.height + 30.f));
-//	elementSize = sf::Vector2f(bounds.width + 20.f, bounds.height + 10.f);
-//
-//	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
-//	//LOG("ELEMENT size x: " + std::to_string(elementSize.getSize().x) + " , y: " + std::to_string(elementSize.getSize().y));
-//}
-
-void UIButton::resizeCharacterSize(float newCharacterSize) 
-{
-	currentCharacterSize = (unsigned int)(currentCharacterSize * newCharacterSize);
-	buttonText.setCharacterSize(currentCharacterSize);
-}
-
 void UIButton::setPosition(const sf::Vector2f& pos)
 {
 	UIElement::setPosition(pos);
@@ -142,9 +115,6 @@ void UIButton::setPosition(const sf::Vector2f& pos)
 	buttonText.setPosition(buttonBackground.getPosition().x + 10.f, buttonBackground.getPosition().y + 5.f);
 
 	sf::FloatRect hitbox = buttonBackground.getGlobalBounds();
-
-	LOG("BUTTON position x: " + std::to_string(buttonBackground.getPosition().x) + " , y: " + std::to_string(buttonBackground.getPosition().y));
-
 }
 
 void UIButton::setSize(const sf::Vector2f& newSize)

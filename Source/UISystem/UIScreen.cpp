@@ -37,7 +37,8 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	// Check if a custom view is set and apply it
 	if (viewSet)
 	{
-		target.setView(view);  // Set the custom view if available
+		// Set the custom view if available
+		target.setView(view);
 	}
 
 	// Draw each UI element on the given target
@@ -84,8 +85,6 @@ bool UIScreen::handleEvent(const sf::Event& event)
 	{
 		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
 
-		LOG("!!!!!!!!!! View size: width=" + std::to_string(view.getSize().x) + ", height=" + std::to_string(view.getSize().y));
-
 		updateUIElementPositions();
 	}
 
@@ -103,19 +102,8 @@ bool UIScreen::handleEvent(const sf::Event& event)
 			// Check if the virtual coordinates are within the element
 			if (element->containsPoint(virtualPos))
 			{
-				//if (event.type == sf::Event::MouseButtonPressed)
-				//{
-					// Pass the event to the element and save the result
-					eventHandled = element->handleEvent(event);
-				//}
-				//else if (event.type == sf::Event::MouseButtonReleased)
-				//{
-				//	eventHandled = element->handleEvent(event);
-				//}
-				//else if (event.type == sf::Event::MouseMoved)
-				//{
-				//	eventHandled = element->handleEvent(event);
-				//}
+				// Pass the event to the element and save the result
+				eventHandled = element->handleEvent(event);
 
 				// If the event has been processed, stop further processing
 				if (eventHandled)

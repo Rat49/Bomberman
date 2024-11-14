@@ -22,8 +22,6 @@ public:
 
 	void setPosition(const sf::Vector2f& pos) override;
 
-	//void setSizeFromText();
-
 	// Set different colors for different states of the button
 	void setDefaultColor(const sf::Color& color);
 	void setHoverColor(const sf::Color& color);
@@ -39,8 +37,6 @@ public:
 
 	// SFML objects to represent the button's background and text
 	sf::RectangleShape buttonBackground;
-
-	void resizeCharacterSize(float newCharacterSize);
 
 	// Functions for event registration
 	std::function<void()> onHover;

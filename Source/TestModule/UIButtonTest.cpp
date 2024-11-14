@@ -1,7 +1,8 @@
 #include "TestModule/UIButtonTest.hpp"
 #include "Common/Logs.hpp"
 
-// FOR TESTING: comment out the lines in the GameModule.cpp script from lines 35 to 41 and from lines 49 to 51
+// FOR TESTING: comment out the lines in the GameModule.cpp script from lines 35. to 41. and from lines 49. to 51.
+// FOR TESTING: Uncomment the lines in this class from 203 to 211. and line 205.
 
 const std::string& UIButtonTest::getName() const
 {
@@ -19,11 +20,6 @@ void UIButtonTest::setup()
 	// Create a UIButton and set some basic text
 	button = std::make_shared<UIButton>("Click Me 1", font, 20, sf::Vector2f(120.0f, 50.0f));
 	button->setPosition(sf::Vector2f(0.0f, 0.0f));
-	LOG("UIButtonTest.cpp: BUTTON size x: " + std::to_string(button->getSize().x) + " , y: " + std::to_string(button->getSize().y));
-
-
-	// Automatically set the size based on text
-	//button->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button->setDefaultColor(sf::Color::Green);
@@ -31,12 +27,9 @@ void UIButtonTest::setup()
 	button->setPressedColor(sf::Color::Blue);
 	screen1->addElement(button);
 
-	button2 = std::make_shared<UIButton>("Button 2", font, 20, sf::Vector2f(100.0f, 50.0f));
 	// Button 2 overlaps Button 3
+	button2 = std::make_shared<UIButton>("Button 2", font, 20, sf::Vector2f(100.0f, 50.0f));
 	button2->setPosition(sf::Vector2f(100.0f, 100.0f));
-	LOG("UIButtonTest.cpp: BUTTON position x: " + std::to_string(button2->getPosition().x) + " , y: " + std::to_string(button2->getPosition().y));
-
-	//button2->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button2->setDefaultColor(sf::Color::Green);
@@ -47,7 +40,6 @@ void UIButtonTest::setup()
 	// Button 3 overlaps Button 2
 	button3 = std::make_shared<UIButton>("Button 3", font, 20, sf::Vector2f(100.0f, 50.0f));
 	button3->setPosition(sf::Vector2f(120.0f, 120.0f));
-	//button3->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button3->setDefaultColor(sf::Color::Green);
@@ -58,7 +50,6 @@ void UIButtonTest::setup()
 	// Button 4 overlaps with Label 4
 	button4 = std::make_shared<UIButton>("Button 4", font, 20, sf::Vector2f(100.0f, 50.0f));
 	button4->setPosition(sf::Vector2f(200.0f, 200.0f));
-	//button4->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button4->setDefaultColor(sf::Color::Green);
@@ -158,9 +149,6 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		windowSize1 = screen1->getWindow()->getSize();
 	}
 
-	//if (windowSize1 != screen1->getWindow()->getSize())
-	//{ }
-
 	// Handle hover and click for the button
 	while (window->pollEvent(event))
 	{
@@ -196,7 +184,6 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		{
 			windowSize1 = screen1->getWindow()->getSize();
 
-			// button2->setPosition(sf::Vector2f(100.0f, 100.0f));
 			Modules::UI->setViewportSize((float)windowSize1.x, (float)windowSize1.y);
 
 			screen1->handleEvent(event);
@@ -204,15 +191,15 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 	}
 
 	// Drawing simulation
-	if (window)
-	{
-		window->clear(sf::Color::Red);
+	//if (window)
+	//{
+	//	window->clear(sf::Color::Red);
 
-		// Draw all elements on the UIScreen
-		screen1->draw(*window, sf::RenderStates::Default);
+	//	// Draw all elements on the UIScreen
+	//	screen1->draw(*window, sf::RenderStates::Default);
 
-		window->display();
-	}
+	//	window->display();
+	//}
 
 	// Mark the test as complete
 	//completed = true;
