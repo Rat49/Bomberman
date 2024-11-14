@@ -137,14 +137,19 @@ void UIScreen::updateUIElementPositions()
 	{
 		sf::Vector2f originalPos = element->getPosition();
 		sf::Vector2f viewportPos = Modules::UI->uiScreenToViewport(originalPos);
+
 		float scale = Modules::UI->getScale();
+
+		sf::Vector2f originalSize = element->getSize();
+		sf::Vector2f newSize = sf::Vector2f(originalSize.x * scale, originalSize.y * scale);
+
 
 		UIButton* button = dynamic_cast<UIButton*>(element.get());
 		if (button)
 		{
 			button->setPosition(viewportPos);
+			button->setSize(newSize);
 			button->resizeCharacterSize(scale);
-			button->setSizeFromText();
 		}
 		else
 		{

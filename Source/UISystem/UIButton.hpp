@@ -9,7 +9,7 @@
 class UIButton : public UIElement
 {
 public:
-	UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize);
+	UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& buttonSize);
 
 	// Override event handler for the button (mouse hover and click events)
 	bool handleEvent(const sf::Event& event) override;
@@ -22,7 +22,7 @@ public:
 
 	void setPosition(const sf::Vector2f& pos) override;
 
-	void setSizeFromText();
+	//void setSizeFromText();
 
 	// Set different colors for different states of the button
 	void setDefaultColor(const sf::Color& color);

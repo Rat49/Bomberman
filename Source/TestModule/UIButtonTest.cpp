@@ -17,11 +17,13 @@ void UIButtonTest::setup()
 	screen1 = std::make_shared<UIScreen>();
 
 	// Create a UIButton and set some basic text
-	button = std::make_shared<UIButton>("Click Me 1", font, 20);
+	button = std::make_shared<UIButton>("Click Me 1", font, 20, sf::Vector2f(120.0f, 50.0f));
 	button->setPosition(sf::Vector2f(0.0f, 0.0f));
+	LOG("UIButtonTest.cpp: BUTTON size x: " + std::to_string(button->getSize().x) + " , y: " + std::to_string(button->getSize().y));
+
 
 	// Automatically set the size based on text
-	button->setSizeFromText();
+	//button->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button->setDefaultColor(sf::Color::Green);
@@ -29,10 +31,12 @@ void UIButtonTest::setup()
 	button->setPressedColor(sf::Color::Blue);
 	screen1->addElement(button);
 
-	button2 = std::make_shared<UIButton>("Button 2", font, 20);
+	button2 = std::make_shared<UIButton>("Button 2", font, 20, sf::Vector2f(100.0f, 50.0f));
 	// Button 2 overlaps Button 3
 	button2->setPosition(sf::Vector2f(100.0f, 100.0f));
-	button2->setSizeFromText();
+	LOG("UIButtonTest.cpp: BUTTON position x: " + std::to_string(button2->getPosition().x) + " , y: " + std::to_string(button2->getPosition().y));
+
+	//button2->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button2->setDefaultColor(sf::Color::Green);
@@ -41,9 +45,9 @@ void UIButtonTest::setup()
 	screen1->addElement(button2);
 
 	// Button 3 overlaps Button 2
-	button3 = std::make_shared<UIButton>("Button 3", font, 20);
+	button3 = std::make_shared<UIButton>("Button 3", font, 20, sf::Vector2f(100.0f, 50.0f));
 	button3->setPosition(sf::Vector2f(120.0f, 120.0f));
-	button3->setSizeFromText();
+	//button3->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button3->setDefaultColor(sf::Color::Green);
@@ -52,9 +56,9 @@ void UIButtonTest::setup()
 	screen1->addElement(button3);
 
 	// Button 4 overlaps with Label 4
-	button4 = std::make_shared<UIButton>("Button 4", font, 20);
+	button4 = std::make_shared<UIButton>("Button 4", font, 20, sf::Vector2f(100.0f, 50.0f));
 	button4->setPosition(sf::Vector2f(200.0f, 200.0f));
-	button4->setSizeFromText();
+	//button4->setSizeFromText();
 
 	// Set different colors for different states of the button
 	button4->setDefaultColor(sf::Color::Green);

@@ -1,7 +1,7 @@
 #include "UISystem/UIButton.hpp"
 #include "Common/Logs.hpp"
 
-UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize)
+UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& buttonSize)
 {
 	// Set the text and font
 	buttonText.setString(text);
@@ -10,6 +10,8 @@ UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int c
 	currentCharacterSize = characterSize;
 
 	setIsInteractable(true);
+
+	setSize(buttonSize);
 
 	// Draw the button with a background color
 	if (isHovered)
@@ -111,20 +113,20 @@ void UIButton::setCharacterSize(unsigned int characterSize)
 	buttonText.setCharacterSize(characterSize);
 }
 
-void UIButton::setSizeFromText()
-{
-	sf::FloatRect bounds = buttonText.getLocalBounds();
-	LOG("TEXT BUTTON size left: " + std::to_string(buttonText.getLocalBounds().left) +
-		" , top: " + std::to_string(buttonText.getLocalBounds().top) +
-		" , width: " + std::to_string(buttonText.getLocalBounds().width) +
-		" , height: " + std::to_string(buttonText.getLocalBounds().height));
-
-	buttonBackground.setSize(sf::Vector2f(bounds.width + 20.f, bounds.height + 30.f));
-	elementSize = sf::Vector2f(bounds.width + 20.f, bounds.height + 10.f);
-
-	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
-	//LOG("ELEMENT size x: " + std::to_string(elementSize.getSize().x) + " , y: " + std::to_string(elementSize.getSize().y));
-}
+//void UIButton::setSizeFromText()
+//{
+//	sf::FloatRect bounds = buttonText.getLocalBounds();
+//	LOG("TEXT BUTTON size left: " + std::to_string(buttonText.getLocalBounds().left) +
+//		" , top: " + std::to_string(buttonText.getLocalBounds().top) +
+//		" , width: " + std::to_string(buttonText.getLocalBounds().width) +
+//		" , height: " + std::to_string(buttonText.getLocalBounds().height));
+//
+//	buttonBackground.setSize(sf::Vector2f(bounds.width + 20.f, bounds.height + 30.f));
+//	elementSize = sf::Vector2f(bounds.width + 20.f, bounds.height + 10.f);
+//
+//	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
+//	//LOG("ELEMENT size x: " + std::to_string(elementSize.getSize().x) + " , y: " + std::to_string(elementSize.getSize().y));
+//}
 
 void UIButton::resizeCharacterSize(float newCharacterSize) 
 {
@@ -141,7 +143,16 @@ void UIButton::setPosition(const sf::Vector2f& pos)
 
 	sf::FloatRect hitbox = buttonBackground.getGlobalBounds();
 
-	//setSizeFromText();
+	LOG("BUTTON position x: " + std::to_string(buttonBackground.getPosition().x) + " , y: " + std::to_string(buttonBackground.getPosition().y));
+
+}
+
+void UIButton::setSize(const sf::Vector2f& newSize)
+{
+	buttonBackground.setSize(newSize);
+	elementSize = newSize;
+
+	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
 }
 
 // Set default button color
