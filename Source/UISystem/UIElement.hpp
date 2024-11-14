@@ -5,6 +5,7 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Window/Event.hpp>
 #include <functional>
+#include "Common/Logs.hpp"
 
 // Base abstract class for all UI elements
 // Coordinates are resolution-independent, referring to the top-left corner of each UI element.
@@ -17,12 +18,13 @@ public:
 	virtual ~UIElement() = default;
 
 	// Set and get methods for position
-	void setPosition(const sf::Vector2f& pos) { position = pos; }
+	virtual void setPosition(const sf::Vector2f& pos) { position = pos; }
 	sf::Vector2f getPosition() const { return position; }
 
 	// Set and get methods for dimensions
-	void setSize(const sf::Vector2f& newSize) { size = newSize; }
-	sf::Vector2f getSize() const { return size; }
+	void setSize(const sf::Vector2f& newSize) { elementSize = newSize; }
+
+	sf::Vector2f getSize() const { return elementSize; }
 
 	// Set and get methods for visibility
 	void setVisible(bool visibility) { visible = visibility; }
@@ -38,7 +40,16 @@ public:
 	// Checks if the coordinates are within the bounds of the element
 	bool containsPoint(const sf::Vector2f& point) const
 	{
-		return point.x >= position.x && point.x <= position.x + size.x && point.y >= position.y && point.y <= position.y + size.y;
+		LOG("Checking containsPoint. Point: (" + std::to_string(point.x) + ", " + std::to_string(point.y) + ")");
+		LOG("Button position: (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ")");
+		LOG("Button size: (" + std::to_string(elementSize.x) + ", " + std::to_string(elementSize.y) + ")");
+
+		if (elementSize.x == 0.f || elementSize.y == 0.f)
+		{
+			LOG("Warning: element size is zero!");
+		}
+
+		return point.x >= position.x && point.x <= position.x + elementSize.x && point.y >= position.y && point.y <= position.y + elementSize.y;
 	}
 
 	// Returns the current interactability status of the UI element
@@ -55,7 +66,7 @@ protected:
 	sf::Vector2f position;
 
 	// Dimensions of the UI element
-	sf::Vector2f size;
+	sf::Vector2f elementSize;
 
 	// Visibility of UI element
 	bool visible = true;

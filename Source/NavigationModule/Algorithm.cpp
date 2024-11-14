@@ -13,7 +13,6 @@ struct vector_hash {
 
 //returns vector of possible actions from a current position
 void Algorithm::returnActions(const sf::Vector2i& currentPosition,
-							const sf::Vector2i& playerPosition,
 							std::vector<sf::Vector2i>& actions) {
 	actions.clear();
 	std::vector<sf::Vector2i> directions = { {-1, 0},//up
@@ -27,8 +26,7 @@ void Algorithm::returnActions(const sf::Vector2i& currentPosition,
 		tmpPosition.x += iter.x;
 		tmpPosition.y += iter.y;
 
-		if (grid[tmpPosition.x][tmpPosition.y] != 1 &&
-			tmpPosition != playerPosition) {
+		if (grid[tmpPosition.x][tmpPosition.y] != 1) {
 			actions.push_back(tmpPosition);
 		}
 
@@ -36,41 +34,46 @@ void Algorithm::returnActions(const sf::Vector2i& currentPosition,
 	}
 }
 
+//returns position ai should move to to get closer to player
+void Algorithm::moveTo(const sf::Vector2i& currentPosition, sf::Vector2i& moveToPosition) {
+	std::vector<sf::Vector2i> actions;
+
+	returnActions(currentPosition, actions);
+	int closest = INT_MAX;
+	for (auto& action : actions) {
+		if (closest >= gridRelative[action.x][action.y]) {
+			closest = gridRelative[action.x][action.y];
+			moveToPosition = action;
+		}
+	}
+}
+
 //finds best path via path length and heuristic
 //only works as a bfs for now
-void AStar::navigate(const sf::Vector2i& startingPosition,
-	const sf::Vector2i& endPosition,
-	sf::Vector2i& moveTo) {
+void AStar::navigate(const sf::Vector2i& startingPosition) {
+	gridRelative = std::vector<std::vector<int>>(grid.size(), std::vector<int>(grid[0].size(), INT_MAX));
 	//set of all visited positions
 	std::unordered_set<sf::Vector2i, vector_hash> visited;
 
-	//queue for bfs that stores position, path length and a first action to that position
-	std::queue<std::tuple<sf::Vector2i, int, sf::Vector2i>> bfs;
+	//queue for bfs that stores position, path length
+	std::queue<std::tuple<sf::Vector2i, int>> bfs;
 	bfs.push({ startingPosition, //player starting position
-				0 ,  //player hasn't moved yet
-				{0,0} }); // there is no direction yet
+				0 //player hasn't moved yet
+		});
 
 	std::vector<sf::Vector2i> legalActions;
 	while (!bfs.empty()) {
-		auto [position, pathLength, direction] = bfs.front();
+		auto [position, pathLength] = bfs.front();
 		bfs.pop();
 
 		//if position wasn't visited before traverse it
 		if (visited.find(position) == visited.end()) {
 			visited.insert(position);
-			returnActions(position, startingPosition, legalActions);
+			returnActions(position, legalActions);
 
-			for (auto& iter : legalActions) {
-				if (pathLength == 0) {
-					direction.x = iter.x - position.x;
-					direction.y = iter.y - position.y;
-				}
-				if (iter == endPosition) {
-					moveTo = direction;
-					return;
-				}
-				bfs.push({ iter,pathLength + 1,direction });
-			}
+			gridRelative[position.x][position.y] = pathLength;
+			for (auto& iter : legalActions) 
+				bfs.push({ iter,pathLength + 1 });
 		}
 	}
 }
