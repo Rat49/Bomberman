@@ -18,16 +18,15 @@ public:
 	virtual ~UIElement() = default;
 
 	// Set and get methods for position
-	virtual void setPosition(const sf::Vector2f& pos) { position = pos; }
+	virtual void setPosition(const sf::Vector2f& pos);
 	sf::Vector2f getPosition() const { return position; }
 
 	// Set and get methods for dimensions
-	void setSize(const sf::Vector2f& newSize) { elementSize = newSize; }
-
+	void setSize(const sf::Vector2f& newSize);
 	sf::Vector2f getSize() const { return elementSize; }
 
 	// Set and get methods for visibility
-	void setVisible(bool visibility) { visible = visibility; }
+	void setVisible(bool visibility);
 	bool isVisible() const { return visible; }
 
 	// Functions for event registration
@@ -38,16 +37,13 @@ public:
 	virtual bool handleEvent(const sf::Event& event) = 0;
 
 	// Checks if the coordinates are within the bounds of the element
-	bool containsPoint(const sf::Vector2f& point) const
-	{
-		return point.x >= position.x && point.x <= position.x + elementSize.x && point.y >= position.y && point.y <= position.y + elementSize.y;
-	}
-
+	bool containsPoint(const sf::Vector2f& point) const;
+	
 	// Returns the current interactability status of the UI element
 	bool getIsInteractable() const { return isInteractable; }
 
 	// Sets the interactability status of the UI element.
-	void setIsInteractable(bool interactable) { isInteractable = interactable; }
+	void setIsInteractable(bool interactable);
 
 protected:
 	// Override the pure virtual draw method from sf::Drawable
