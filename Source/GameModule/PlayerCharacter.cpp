@@ -55,6 +55,8 @@ void PlayerCharacter::updateAnimation(int32_t id)
 	{
 		animation->setPosition(x, y);
 		if (currentAnimation != id) {
+			Modules::Sprite->getAnimation(currentAnimation)->Stop();
+
 			animation->Play();
 			currentAnimation = id;
 		}
