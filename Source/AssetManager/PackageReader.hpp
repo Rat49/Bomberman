@@ -2,26 +2,18 @@
 #include <map>
 #include <string>
 #include <SFML/System/FileInputStream.hpp>
+#include "PackageReaderTypes.hpp"
 #include "AssetTypes.hpp"
-
-struct AssetMetadata
-{
-	std::string assetName;
-	std::streamoff offset;
-	std::streamoff size;
-};
 
 class PackageReader
 {
 public:
-	PackageReader();
 
-	//bool loadFromPackage(RelativeAssetPath RelativeAssetPath, std::vector<unsigned char>& outputData);
+	static bool loadFromPackage(RelativeAssetPath RelativeAssetPath, std::vector<char>& outputData);
 
-	std::shared_ptr<sf::Font> loadFontFromPackage(const RelativeAssetPath fontFile);
+	static bool loadMetadata();
 	
 private:
-	std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
-	bool loadMetadata();
+	static std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
 };
 

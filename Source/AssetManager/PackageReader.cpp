@@ -7,16 +7,13 @@
 #include "Common/StringUtils.hpp"
 #include <filesystem>
 
+std::map<std::string, AssetMetadata> PackageReader::assetsMetadata;
+
 namespace
 {
 	const std::string METADATA_FILE = "Package/bomberman.mtd";
 	const std::string PACKAGE_FILE = "Package/bomberman.pkg";
 	const std::string CIPHER_KEY    = "VERYSECUREKEY";
-}
-
-PackageReader::PackageReader()
-{
-	loadMetadata();
 }
 
 bool PackageReader::loadMetadata()
@@ -52,47 +49,21 @@ bool PackageReader::loadMetadata()
 	return true;
 }
 
-//bool PackageReader::loadFromPackage(RelativeAssetPath relativeAssetPath, std::vector<unsigned char>& outputData) 
-//{
-//	std::ifstream packageFile( PACKAGE_FILE, std::ifstream::binary | std::ios::beg);
-//	if (!packageFile)
-//	{
-//		LOG("Could not read file [$]", PACKAGE_FILE);
-//		return false;
-//	}
-//
-//	//packageFile.seekg(assetsMetadata[relativeAssetPath].offset);
-//	LOG("TELLG $", packageFile.tellg());
-//	//outputData.resize(assetsMetadata[relativeAssetPath].size );
-//	//auto start = &*outputData.begin();
-//	//packageFile.read(outputData.data(), assetsMetadata[relativeAssetPath].size);
-//	outputData.assign(std::istreambuf_iterator<char>(packageFile), std::istreambuf_iterator<char>());
-//	LOG("OUTPUT SIZEEE $", outputData.size());
-//	packageFile.close();
-//	return true;
-//}
-
-std::shared_ptr<sf::Font> PackageReader::loadFontFromPackage(const RelativeAssetPath fontFile) {
-	sf::Font font;
+bool PackageReader::loadFromPackage(RelativeAssetPath relativeAssetPath, std::vector<char>& outputData) 
+{
 	std::ifstream packageFile(PACKAGE_FILE, std::ios::binary);
 	if (!packageFile) {
 		LOG("Could not read file [$]", PACKAGE_FILE);
-		return nullptr;
+		return false;
 	}
-
-	packageFile.seekg(assetsMetadata[fontFile].offset);
-	std::vector<char> fontData(assetsMetadata[fontFile].size);
-
-	if (!packageFile.read(fontData.data(), fontData.size())) {
+	
+	packageFile.seekg(assetsMetadata[relativeAssetPath].offset);
+	outputData.resize(assetsMetadata[relativeAssetPath].size);
+	
+	if (!packageFile.read(outputData.data(), outputData.size())) {
 		std::cerr << "Failed to read font data from package!" << std::endl;
-		return nullptr;
+		return false;
 	}
 
-	// Load font from memory
-	if (!font.loadFromMemory(fontData.data(), fontData.size())) {
-		std::cerr << "Failed to load font from memory!" << std::endl;
-		return nullptr;
-	}
-	packageFile.close();
-	return std::make_shared<sf::Font>(font);
+	return true;
 }

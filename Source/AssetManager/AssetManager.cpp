@@ -4,17 +4,22 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "Common/Logs.hpp"
 #include "ConfigSystem/ConfigSection.hpp"
+#include "PackageReader.hpp"
 #include <filesystem>
 
-namespace {
+namespace 
+{
 	const std::string ABSOLUTE_ROOT_FOLDER = "RootFolder";
 	const std::string ROOT                 = "root";
+	const std::string USE_PACKAGE          = "UsePackage";
+	const std::string VALUE                = "value";
 	const std::string RELATIVE_ROOT_FOLDER = "Game/";
 }
 
 AssetManager::AssetManager()
 {
 	rootFolder = "";
+	usePackage = false;
 }
 
 bool AssetManager::initialize(const std::string& settingsPath)
@@ -26,118 +31,129 @@ bool AssetManager::initialize(const std::string& settingsPath)
 		return false;
 	}
 	rootFolder = assetManagerSettings.getSection(ABSOLUTE_ROOT_FOLDER).getValue(ROOT).getString();
-	return true;
-}
+	usePackage = assetManagerSettings.getSection(USE_PACKAGE).getValue(VALUE).getBool();
 
-bool AssetManager::loadSound(const RelativeAssetPath& relativeSoundPath)
-{
-	auto it = sounds.find(relativeSoundPath);
-	if (it != sounds.end())
+	if (usePackage && !PackageReader::loadMetadata())
 	{
-		LOG("Sound [$] already loaded", relativeSoundPath);
-		return true;
-	}
-
-	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
-	std::string fullPath = getFullPath(relativeSoundPath);
-	if (!soundBuffer->loadFromFile(fullPath))
-	{
+		LOG("Could not load .package metadata");
 		return false;
 	}
 
-	sounds.emplace(relativeSoundPath, std::move(soundBuffer));
-	return true;
-}
-
-bool AssetManager::loadTexture(const RelativeAssetPath& relativeTexturePath)
-{
-	auto it = textures.find(relativeTexturePath);
-	if (it != textures.end())
-	{
-		LOG("Texture [$] already loaded", relativeTexturePath);
-		return true;
-	}
-
-	auto texture = std::make_shared<sf::Texture>();
-	std::string fullPath = getFullPath(relativeTexturePath);
-	if (!texture->loadFromFile(fullPath))
-	{
-		return false;
-	}
-
-	textures.emplace(relativeTexturePath, std::move(texture));
-	return true;
-}
-
-bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
-{
-	auto it = fonts.find(relativeFontPath);
-	if (it != fonts.end())
-	{
-		LOG("Font [$] already loaded", relativeFontPath);
-		return true;
-	}
-
-	//std::vector<unsigned char> fontData;
-	//if (!pr.loadFromPackage(relativeFontPath, fontData))
-	//{
-	//	LOG("Could not load data from pacakge");
-	//	return false;
-	//}
-	auto font = pr.loadFontFromPackage(relativeFontPath);
-	//auto font = std::make_shared<sf::Font>();
-	//if (!font->loadFromMemory(fontData.data(), fontData.size())) {
-	//	return false;
-	//}
-
-	//LOG("Data size $", fontData.size());
-
-	//auto font = std::make_shared<sf::Font>();
-	//std::string fullPath = getFullPath(relativeFontPath);
-	//if (!font->loadFromFile(fullPath))
-	//{
-	//	return false;
-	//}
-
-	fonts.emplace(relativeFontPath, std::move(font));
 	return true;
 }
 
 std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath& assetName)
 {
 	auto it = sounds.find(assetName);
-	if (it == sounds.end())
+	if (it != sounds.end())
 	{
-		LOG("Sound [$] not loaded", assetName);
-		return nullptr;
+		return it->second;
 	}
-	return it->second;
+
+	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
+	std::vector<char> soundData;
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!soundBuffer->loadFromFile(fullPath))
+		{
+			LOG("Could not load sound from file");
+			return false;
+		}
+		sounds.emplace(assetName, std::move(soundBuffer));
+	}
+	else
+	{
+		if (!PackageReader::loadFromPackage(assetName, soundData))
+		{
+			LOG("Could not load sound data from pacakge");
+			return nullptr;
+		}
+
+		if (!soundBuffer->loadFromMemory(soundData.data(), soundData.size())) {
+			LOG("Could not load sound from memory");
+			return nullptr;
+		}
+		sounds.emplace(assetName, std::move(soundBuffer));
+	}
+
+	return sounds[assetName];
 }
 
 std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& assetName)
 {
 	auto it = textures.find(assetName);
-	if (it == textures.end())
+	if (it != textures.end())
 	{
-		LOG("Texture [$] not loaded", assetName);
-		return nullptr;
+		return it->second;
 	}
-	return it->second;
+	
+	auto texture = std::make_shared<sf::Texture>();
+	std::vector<char> textureData;
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!texture->loadFromFile(fullPath))
+		{
+			LOG("Could not load texture from file: [$]", assetName);
+			return nullptr;
+		}
+		textures.emplace(assetName, std::move(texture));
+	}
+	else
+	{
+		if (!PackageReader::loadFromPackage(assetName, textureData))
+		{
+			LOG("Could not load texture data from pacakge");
+			return nullptr;
+		}
+
+		if (!texture->loadFromMemory(textureData.data(), textureData.size())) {
+			LOG("Could not load texture from memory: [$]", assetName);
+			return nullptr;
+		}
+		textures.emplace(assetName, std::move(texture));
+	}
+
+	return textures[assetName];
 }
 
 std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetName)
 {
 	auto it = fonts.find(assetName);
-	if (it == fonts.end())
+	if (it != fonts.end())
 	{
-		LOG("Font [$] not loaded", assetName);
-		return nullptr;
-	}
-	return it->second;
-}
+		return it->second.first;
+	} 
 
-void AssetManager::terminate()
-{
+	auto font = std::make_shared<sf::Font>();
+	std::vector<char> fontData;
+	if(!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!font->loadFromFile(fullPath))
+		{
+			LOG("Could not load font from file: [$]", assetName);
+			return nullptr;
+		}
+		fonts.emplace(assetName, std::make_pair(std::move(font), std::move(fontData)));
+	}
+	else
+	{
+		if (!PackageReader::loadFromPackage(assetName, fontData))
+		{
+			LOG("Could not load  font data from pacakge");
+			return nullptr;
+		}
+
+		if (!font->loadFromMemory(fontData.data(), fontData.size())) {
+			LOG("Could not load font from memory: [$]", assetName);
+			return nullptr;
+		}
+		fonts.emplace(assetName, std::make_pair(std::move(font), std::move(fontData)));
+	}
+
+	return fonts[assetName].first;
 }
 
 /**
@@ -161,3 +177,6 @@ std::string AssetManager::getFullPath(const std::string& relativePath) const
 	return rootFolder + '/' + path;
 }
 
+void AssetManager::terminate()
+{
+}

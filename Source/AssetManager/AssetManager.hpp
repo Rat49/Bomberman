@@ -4,7 +4,6 @@
 #include <vector>
 #include "AssetTypes.hpp"
 #include "BaseModule/BaseModule.hpp"
-#include "PackageReader.hpp"
 
 class AssetManager : public BaseModule
 {
@@ -12,12 +11,6 @@ public:
 	AssetManager();
 
 	bool initialize(const std::string& rootFolderPath);
-
-	bool loadSound(const RelativeAssetPath& soundPath);
-
-	bool loadTexture(const RelativeAssetPath& texturePath);
-
-	bool loadFont(const RelativeAssetPath& fontPath);
 
 	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
@@ -30,13 +23,13 @@ public:
 private:
 	std::string rootFolder;
 
+	bool usePackage;
+
 	std::map<RelativeAssetPath, std::shared_ptr<sf::SoundBuffer>> sounds;
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
-	std::map<RelativeAssetPath, std::shared_ptr<sf::Font>> fonts;
-
-	PackageReader pr;
+	std::map<RelativeAssetPath, std::pair<std::shared_ptr<sf::Font>, std::vector<char>>> fonts;
 
 	std::string AssetManager::getFullPath(const std::string& relativePath) const;
 };
