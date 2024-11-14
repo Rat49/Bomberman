@@ -17,7 +17,7 @@ void UIButtonTest::setup()
 	screen1 = std::make_shared<UIScreen>();
 
 	// Create a UIButton and set some basic text
-	button = std::make_shared<UIButton>("Click Me 1", font, 30);
+	button = std::make_shared<UIButton>("Click Me 1", font, 20);
 	button->setPosition(sf::Vector2f(0.0f, 0.0f));
 
 	// Automatically set the size based on text
@@ -124,8 +124,6 @@ void UIButtonTest::setup()
 		{
 			LOG("UIButton was clicked!");
 		};
-
-	//screen.addElement(button);
 }
 
 void UIButtonTest::run()
@@ -139,20 +137,25 @@ void UIButtonTest::run()
 	{
 		LOG("UIButtonTest: Text set failed");
 	}
+
 }
 
 void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 {
 	(void)deltaTime;
 
-	// Set the window for the screen instance if it's not set
-	//if (window && !screen.getWindow())
-	//{
-	//	screen.setWindow(window);
-	//}
-
 	// Handle events
 	sf::Event event;
+
+	// Set the window for the screen instance if it's not set
+	if (window && !screen1->getWindow())
+	{
+		screen1->setWindow(window);
+		windowSize1 = screen1->getWindow()->getSize();
+	}
+
+	//if (windowSize1 != screen1->getWindow()->getSize())
+	//{ }
 
 	// Handle hover and click for the button
 	while (window->pollEvent(event))
@@ -163,7 +166,7 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		}
 		else if (event.type == sf::Event::MouseButtonPressed)
 		{
-			LOG("MouseButtonPressed event detected");
+			//LOG("MouseButtonPressed event detected");
 			button->handleEvent(event);
 			button2->handleEvent(event);
 			button3->handleEvent(event);
@@ -171,7 +174,7 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		}
 		else if (event.type == sf::Event::MouseButtonReleased)
 		{
-			LOG("MouseButtonReleased event detected");
+			//LOG("MouseButtonReleased event detected");
 			button->handleEvent(event);
 			button2->handleEvent(event);
 			button3->handleEvent(event);
@@ -179,11 +182,20 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		}
 		else if (event.type == sf::Event::MouseMoved)
 		{
-			LOG("MouseMoved event detected");
+			//LOG("MouseMoved event detected");
 			button->handleEvent(event);
 			button2->handleEvent(event);
 			button3->handleEvent(event);
 			button4->handleEvent(event);
+		}
+		else if (event.type == sf::Event::Resized)
+		{
+			windowSize1 = screen1->getWindow()->getSize();
+
+			// button2->setPosition(sf::Vector2f(100.0f, 100.0f));
+			Modules::UI->setViewportSize((float)windowSize1.x, (float)windowSize1.y);
+
+			screen1->handleEvent(event);
 		}
 	}
 
@@ -193,7 +205,6 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		window->clear(sf::Color::Red);
 
 		// Draw all elements on the UIScreen
-		//screen.draw(*window, sf::RenderStates::Default);
 		screen1->draw(*window, sf::RenderStates::Default);
 
 		window->display();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UISystem/UIElement.hpp"
+#include "UISystem/UISystem.hpp"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -34,6 +35,8 @@ public:
 	// A method that returns a reference to the requested font
 	static sf::Font& getFont(const std::string& fontName);
 
+	void updateUIElementPositions();
+
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -52,4 +55,6 @@ private:
 
 	// Map that caches loaded fonts
 	static std::unordered_map<std::string, sf::Font> fonts;
+
+	UISystem* uiSystem;
 };

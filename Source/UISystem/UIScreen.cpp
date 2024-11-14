@@ -1,5 +1,8 @@
 #include "UISystem/UIScreen.hpp"
+#include "UISystem/UISystem.hpp"
+#include "UISystem/UIButton.hpp"
 #include "Common/Logs.hpp"
+
 
 // Add a UI element
 void UIScreen::addElement(const std::shared_ptr<UIElement> element)
@@ -77,6 +80,15 @@ bool UIScreen::handleEvent(const sf::Event& event)
 		return false;
 	}
 
+	if (event.type == sf::Event::Resized)
+	{
+		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
+
+		LOG("!!!!!!!!!! View size: width=" + std::to_string(view.getSize().x) + ", height=" + std::to_string(view.getSize().y));
+
+		updateUIElementPositions();
+	}
+
 	// A variable to track whether the event has been processed
 	bool eventHandled = false;
 
@@ -91,8 +103,19 @@ bool UIScreen::handleEvent(const sf::Event& event)
 			// Check if the virtual coordinates are within the element
 			if (element->containsPoint(virtualPos))
 			{
-				// Pass the event to the element and save the result
-				eventHandled = element->handleEvent(event);
+				//if (event.type == sf::Event::MouseButtonPressed)
+				//{
+					// Pass the event to the element and save the result
+					eventHandled = element->handleEvent(event);
+				//}
+				//else if (event.type == sf::Event::MouseButtonReleased)
+				//{
+				//	eventHandled = element->handleEvent(event);
+				//}
+				//else if (event.type == sf::Event::MouseMoved)
+				//{
+				//	eventHandled = element->handleEvent(event);
+				//}
 
 				// If the event has been processed, stop further processing
 				if (eventHandled)
@@ -106,6 +129,28 @@ bool UIScreen::handleEvent(const sf::Event& event)
 	}
 	// Returns whether the event was processed
 	return eventHandled;
+}
+
+void UIScreen::updateUIElementPositions()
+{
+	for (auto& element : elements)
+	{
+		sf::Vector2f originalPos = element->getPosition();
+		sf::Vector2f viewportPos = Modules::UI->uiScreenToViewport(originalPos);
+		float scale = Modules::UI->getScale();
+
+		UIButton* button = dynamic_cast<UIButton*>(element.get());
+		if (button)
+		{
+			button->setPosition(viewportPos);
+			button->resizeCharacterSize(scale);
+			button->setSizeFromText();
+		}
+		else
+		{
+			element->setPosition(viewportPos);
+		}
+	}
 }
 
 // Definition of a static folder to store fonts

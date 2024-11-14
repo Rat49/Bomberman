@@ -16,7 +16,7 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    sf::RenderWindow window(sf::VideoMode(400, 400), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 

@@ -40,15 +40,6 @@ public:
 	// Checks if the coordinates are within the bounds of the element
 	bool containsPoint(const sf::Vector2f& point) const
 	{
-		LOG("Checking containsPoint. Point: (" + std::to_string(point.x) + ", " + std::to_string(point.y) + ")");
-		LOG("Button position: (" + std::to_string(position.x) + ", " + std::to_string(position.y) + ")");
-		LOG("Button size: (" + std::to_string(elementSize.x) + ", " + std::to_string(elementSize.y) + ")");
-
-		if (elementSize.x == 0.f || elementSize.y == 0.f)
-		{
-			LOG("Warning: element size is zero!");
-		}
-
 		return point.x >= position.x && point.x <= position.x + elementSize.x && point.y >= position.y && point.y <= position.y + elementSize.y;
 	}
 

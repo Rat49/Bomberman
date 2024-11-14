@@ -1,9 +1,10 @@
 #include "UISystem/UISystem.hpp"
+#include "UISystem/UIScreen.hpp"
 
 // Constructor: initializes the UISystem with viewport dimensions
-UISystem::UISystem() 
+UISystem::UISystem()
 {
-	setViewportSize(1280.0f, 720.0f);
+	setViewportSize(800.0f, 600.0f);
 	updateViewportSettings();
 }
 
@@ -13,13 +14,14 @@ void UISystem::setViewportSize(float width, float height)
 	viewportWidth = width;
 	viewportHeight = height;
 	updateViewportSettings();
+	setUIResolution(width, height);
 }
 
 // Sets the UI resolution
 void UISystem::setUIResolution(float width, float height)
 {
 	uiResolution = sf::Vector2f(width, height);
-	updateViewportSettings();
+	//updateViewportSettings();
 }
 
 // Calculates the scale factor for conversion between Viewport and UI World coordinates

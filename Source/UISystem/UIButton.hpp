@@ -40,6 +40,8 @@ public:
 	// SFML objects to represent the button's background and text
 	sf::RectangleShape buttonBackground;
 
+	void resizeCharacterSize(float newCharacterSize);
+
 private:
 	sf::Text buttonText;
 
@@ -54,4 +56,6 @@ private:
 	sf::Color defaultColor = sf::Color::Green;
 	sf::Color hoverColor = sf::Color::Cyan;
 	sf::Color pressedColor = sf::Color::Blue;
+
+	unsigned int currentCharacterSize;
 };
