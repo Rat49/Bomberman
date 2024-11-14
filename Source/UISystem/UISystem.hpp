@@ -30,22 +30,12 @@ public:
 	// Adjusts viewport settings for centering and fitting UI elements
 	void updateViewportSettings();
 
-	float getScale() const { return scale; }
+	sf::Vector2f getScale() const { return scale; }
 
 private:
-	// VARIABLES
-	// Current dimensions of the viewport
-	float viewportWidth;
-	float viewportHeight;
-	// Store the scale factor
-	float scale;
+	sf::Vector2f viewportSize;
+	sf::Vector2f uiResolution;
+	sf::Vector2f scale;
 
 	std::shared_ptr<UIScreen> uiScreen;
-
-	// Fixed UI World resolution for scaling
-	sf::Vector2f uiResolution;
-
-	//METHODS
-	// Calculates the scale factor for conversion between Viewport and UI coordinates
-	float calculateScaleFactor() const;
 };

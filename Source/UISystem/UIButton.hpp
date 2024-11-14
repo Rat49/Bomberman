@@ -42,15 +42,16 @@ public:
 
 	void resizeCharacterSize(float newCharacterSize);
 
+	// Functions for event registration
+	std::function<void()> onHover;
+	std::function<void()> onClick;
+
 private:
 	sf::Text buttonText;
 
 	// Additional states to handle button interaction (hovered and pressed)
 	bool isHovered = false;
 	bool isPressed = false;
-
-	// Flag indicating if the button is interactable
-	bool isInteractable = true;
 
 	// Colors for different button states
 	sf::Color defaultColor = sf::Color::Green;

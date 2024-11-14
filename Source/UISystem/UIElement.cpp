@@ -8,8 +8,11 @@ void UIElement::setSize(const sf::Vector2f &newSize) {
   elementSize = newSize;
 }
 
-void UIElement::setVisible(bool visibility) {
-  visible = visibility;
+void UIElement::setVisible(bool visibility) { visible = visibility; }
+
+void UIElement::handleResize(const sf::Vector2f& scale) {
+  position = sf::Vector2f(position.x * scale.x, position.y * scale.y);
+  elementSize = sf::Vector2f(elementSize.x * scale.x, elementSize.y * scale.y);
 }
 
 bool UIElement::containsPoint(const sf::Vector2f &point) const {

@@ -149,8 +149,8 @@ void UIButton::setPosition(const sf::Vector2f& pos)
 
 void UIButton::setSize(const sf::Vector2f& newSize)
 {
+	UIElement::setSize(newSize);
 	buttonBackground.setSize(newSize);
-	elementSize = newSize;
 
 	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
 }

@@ -29,12 +29,10 @@ public:
 	void setVisible(bool visibility);
 	bool isVisible() const { return visible; }
 
-	// Functions for event registration
-	std::function<void()> onHover;
-	std::function<void()> onClick;
-
 	// Function for event management
 	virtual bool handleEvent(const sf::Event& event) = 0;
+
+	virtual void handleResize(const sf::Vector2f& scale);
 
 	// Checks if the coordinates are within the bounds of the element
 	bool containsPoint(const sf::Vector2f& point) const;
@@ -49,6 +47,7 @@ protected:
 	// Override the pure virtual draw method from sf::Drawable
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
 
+private:
 	// Position of the UI element
 	sf::Vector2f position;
 
@@ -57,10 +56,6 @@ protected:
 
 	// Visibility of UI element
 	bool visible = true;
-
-	// Monitoring of hover and pressed status
-	bool isHovered = false;
-	bool isPressed = false;
 
 	// Flag indicating whether the UI element can respond to user interactions
 	bool isInteractable;
