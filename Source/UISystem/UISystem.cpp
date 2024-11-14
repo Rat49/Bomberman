@@ -21,7 +21,6 @@ void UISystem::setViewportSize(float width, float height)
 void UISystem::setUIResolution(float width, float height)
 {
 	uiResolution = sf::Vector2f(width, height);
-	//updateViewportSettings();
 }
 
 // Converts UI coordinates to Viewport coordinates
@@ -50,10 +49,3 @@ void UISystem::updateViewportSettings()
 	scale.y = viewportSize.y / uiResolution.y;
 }
 
-void UISystem::handleMouseEvent(const sf::Event& event) 
-{
-	if (uiScreen)
-	{
-		uiScreen->handleEvent(event);
-	}
-}

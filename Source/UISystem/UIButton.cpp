@@ -7,7 +7,6 @@ UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int c
 	buttonText.setString(text);
 	buttonText.setFont(font);
 	buttonText.setCharacterSize(characterSize);
-	currentCharacterSize = characterSize;
 
 	setIsInteractable(true);
 

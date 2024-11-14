@@ -53,6 +53,4 @@ private:
 	sf::Color defaultColor = sf::Color::Green;
 	sf::Color hoverColor = sf::Color::Cyan;
 	sf::Color pressedColor = sf::Color::Blue;
-
-	unsigned int currentCharacterSize;
 };

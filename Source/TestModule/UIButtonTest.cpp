@@ -2,7 +2,7 @@
 #include "Common/Logs.hpp"
 
 // FOR TESTING: comment out the lines in the GameModule.cpp script from lines 35. to 41. and from lines 49. to 51.
-// FOR TESTING: Uncomment the lines in this class from 203 to 211. and line 205.
+// FOR TESTING: Uncomment the lines in this class from 191. to 199. and line 202.
 
 const std::string& UIButtonTest::getName() const
 {
@@ -146,7 +146,6 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 	if (window && !screen1->getWindow())
 	{
 		screen1->setWindow(window);
-		windowSize1 = screen1->getWindow()->getSize();
 	}
 
 	// Handle hover and click for the button
@@ -182,9 +181,7 @@ void UIButtonTest::update(float deltaTime, sf::RenderWindow* window)
 		}
 		else if (event.type == sf::Event::Resized)
 		{
-			windowSize1 = screen1->getWindow()->getSize();
-
-			Modules::UI->setViewportSize((float)windowSize1.x, (float)windowSize1.y);
+			Modules::UI->setViewportSize((float)(screen1->getWindow()->getSize().x), (float)(screen1->getWindow()->getSize().y));
 
 			screen1->handleEvent(event);
 		}

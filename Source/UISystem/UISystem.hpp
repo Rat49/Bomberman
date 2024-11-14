@@ -36,6 +36,4 @@ private:
 	sf::Vector2f viewportSize;
 	sf::Vector2f uiResolution;
 	sf::Vector2f scale;
-
-	std::shared_ptr<UIScreen> uiScreen;
 };

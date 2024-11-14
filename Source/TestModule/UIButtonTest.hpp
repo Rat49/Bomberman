@@ -6,7 +6,6 @@
 #include <string>
 #include <memory>
 #include <UISystem/UIScreen.hpp>
-#include <SFML/Graphics.hpp>
 
 class UIButtonTest : public TestBase
 {
@@ -32,6 +31,4 @@ private:
 	bool completed = false;
 	std::string Name = "UIButtonTest";
 	UIScreen screen;
-
-	sf::Vector2u windowSize1;
 };
