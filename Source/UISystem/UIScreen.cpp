@@ -1,5 +1,8 @@
 #include "UISystem/UIScreen.hpp"
+#include "UISystem/UISystem.hpp"
+#include "UISystem/UIButton.hpp"
 #include "Common/Logs.hpp"
+
 
 // Add a UI element
 void UIScreen::addElement(const std::shared_ptr<UIElement> element)
@@ -34,7 +37,8 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	// Check if a custom view is set and apply it
 	if (viewSet)
 	{
-		target.setView(view);  // Set the custom view if available
+		// Set the custom view if available
+		target.setView(view);
 	}
 
 	// Draw each UI element on the given target
@@ -77,6 +81,13 @@ bool UIScreen::handleEvent(const sf::Event& event)
 		return false;
 	}
 
+	if (event.type == sf::Event::Resized)
+	{
+		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
+
+		updateUIElementPositions();
+	}
+
 	// A variable to track whether the event has been processed
 	bool eventHandled = false;
 
@@ -106,6 +117,15 @@ bool UIScreen::handleEvent(const sf::Event& event)
 	}
 	// Returns whether the event was processed
 	return eventHandled;
+}
+
+void UIScreen::updateUIElementPositions()
+{
+	const auto scale = Modules::UI->getScale();
+	for (auto& element : elements)
+	{
+		element->handleResize(scale);
+	}
 }
 
 // Definition of a static folder to store fonts

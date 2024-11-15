@@ -16,7 +16,7 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    sf::RenderWindow window(sf::VideoMode(400, 400), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Bomberman");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -32,23 +32,23 @@ void GameModule::run()
         deltaTime = std::chrono::duration_cast<Duration>(currentTime - prevTime).count();
         prevTime = currentTime;
 
-        /*sf::Event event;
+        sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 			}
-		}*/
+		}
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
         Modules::update(deltaTime, &window);
 
-        /*window.clear();
-        window.draw(shape);
-        window.display();*/
+		window.clear();
+		window.draw(shape);
+		window.display();
     }
 }
 

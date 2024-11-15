@@ -1,25 +1,16 @@
 #include "UISystem/UIButton.hpp"
 #include "Common/Logs.hpp"
 
-UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize)
+UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& buttonSize)
 {
 	// Set the text and font
 	buttonText.setString(text);
 	buttonText.setFont(font);
 	buttonText.setCharacterSize(characterSize);
 
-	//buttonBackground.setPosition(sf::Vector2f(200.0f, 200.0f));
-
-	// Automatically set the size based on text
-	//setSizeFromText();
-
-	// Set the size of the button based on text size
-	//buttonBackground.setSize(sf::Vector2f(buttonText.getLocalBounds().width + 20.f, buttonText.getLocalBounds().height + 10.f));
-
-	// Center the text inside the button
-	//buttonText.setPosition(buttonBackground.getPosition().x + 10.f, buttonBackground.getPosition().y + 5.f);
-
 	setIsInteractable(true);
+
+	setSize(buttonSize);
 
 	// Draw the button with a background color
 	if (isHovered)
@@ -58,12 +49,10 @@ bool UIButton::handleEvent(const sf::Event& event)
 
 		// Check if the mouse is over the button
 		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
-		LOG("Mouse moved. isHovered: " + std::string(isHovered ? "true" : "false"));
 
 		if (isHovered && !isPressed)
 		{
 			LOG("Hover callback called.");
-			// Call onHover callback
 			onHover();
 		}
 	}
@@ -73,10 +62,8 @@ bool UIButton::handleEvent(const sf::Event& event)
 		if (onClick)
 		{
 			LOG("Click callback called.");
-			// Call onClick callback
 			onClick();
 		}
-		//isPressed = false;
 	}
 	else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
 	{
@@ -88,12 +75,10 @@ bool UIButton::handleEvent(const sf::Event& event)
 
 		// Check if the mouse is over the button
 		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
-		LOG("Mouse moved. isHovered: " + std::string(isHovered ? "true" : "false"));
 
 		if (isHovered && !isPressed)
 		{
 			LOG("Hover callback called.");
-			// Call onHover callback
 			onHover();
 		}
 	}
@@ -121,22 +106,22 @@ void UIButton::setCharacterSize(unsigned int characterSize)
 	buttonText.setCharacterSize(characterSize);
 }
 
-void UIButton::setSizeFromText()
-{
-	sf::FloatRect bounds = buttonText.getLocalBounds();
-
-	buttonBackground.setSize(sf::Vector2f(bounds.width + 20.f, bounds.height + 30.f));
-	elementSize = sf::Vector2f(bounds.width + 20.f, bounds.height + 10.f);
-
-	buttonText.setPosition(buttonBackground.getPosition().x + 10.f, buttonBackground.getPosition().y + 5.f);
-	LOG("Button size set from text: (" + std::to_string(buttonBackground.getSize().x) + ", " + std::to_string(buttonBackground.getSize().y) + ")");
-}
-
 void UIButton::setPosition(const sf::Vector2f& pos)
 {
 	UIElement::setPosition(pos);
 
 	buttonBackground.setPosition(pos);
+	buttonText.setPosition(buttonBackground.getPosition().x + 10.f, buttonBackground.getPosition().y + 5.f);
+
+	sf::FloatRect hitbox = buttonBackground.getGlobalBounds();
+}
+
+void UIButton::setSize(const sf::Vector2f& newSize)
+{
+	UIElement::setSize(newSize);
+	buttonBackground.setSize(newSize);
+
+	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
 }
 
 // Set default button color
