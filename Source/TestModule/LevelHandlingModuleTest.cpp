@@ -38,12 +38,10 @@ void LevelHandlingModuleTest::run()
 void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 {
 	//test level view based on player position
-	sf::Vector2f playerPosition(300.f, 300.f);  
+	sf::Vector2f playerPosition(100.f, 100.f); 
 
 	//set Level view using an offset
 	Modules::Level->setLevelViewOffset(playerPosition, *window);
-
-	window->display();
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
