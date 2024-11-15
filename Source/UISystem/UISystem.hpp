@@ -2,7 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include "BaseModule/BaseModule.hpp"
-#include "UISystem/UIScreen.hpp"
+
+class UIScreen;
 
 class UISystem : public BaseModule
 {
@@ -22,26 +23,17 @@ public:
 	sf::Vector2f viewportToUIScreen(const sf::Vector2f& viewportPos) const;
 
 	void terminate() override;
+
 	// Handling mouse events
 	void handleMouseEvent(const sf::Event& event);
 
-private:
-	// VARIABLES
-	// Current dimensions of the viewport
-	float viewportWidth;
-	float viewportHeight;
-	// Store the scale factor
-	float scale;
-
-	std::shared_ptr<UIScreen> uiScreen;
-
-	// Fixed UI World resolution for scaling
-	sf::Vector2f uiResolution;
-
-	//METHODS
-	// Calculates the scale factor for conversion between Viewport and UI coordinates
-	float calculateScaleFactor() const;
-
 	// Adjusts viewport settings for centering and fitting UI elements
 	void updateViewportSettings();
+
+	sf::Vector2f getScale() const { return scale; }
+
+private:
+	sf::Vector2f viewportSize;
+	sf::Vector2f uiResolution;
+	sf::Vector2f scale;
 };

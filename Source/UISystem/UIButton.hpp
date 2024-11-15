@@ -9,7 +9,7 @@
 class UIButton : public UIElement
 {
 public:
-	UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize);
+	UIButton(const std::string& text, const sf::Font& font, unsigned int characterSize, const sf::Vector2f& buttonSize);
 
 	// Override event handler for the button (mouse hover and click events)
 	bool handleEvent(const sf::Event& event) override;
@@ -21,8 +21,6 @@ public:
 	void setSize(const sf::Vector2f& btnSize);
 
 	void setPosition(const sf::Vector2f& pos) override;
-
-	void setSizeFromText();
 
 	// Set different colors for different states of the button
 	void setDefaultColor(const sf::Color& color);
@@ -40,15 +38,16 @@ public:
 	// SFML objects to represent the button's background and text
 	sf::RectangleShape buttonBackground;
 
+	// Functions for event registration
+	std::function<void()> onHover;
+	std::function<void()> onClick;
+
 private:
 	sf::Text buttonText;
 
 	// Additional states to handle button interaction (hovered and pressed)
 	bool isHovered = false;
 	bool isPressed = false;
-
-	// Flag indicating if the button is interactable
-	bool isInteractable = true;
 
 	// Colors for different button states
 	sf::Color defaultColor = sf::Color::Green;
