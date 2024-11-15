@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "AssetTypes.hpp"
 #include "BaseModule/BaseModule.hpp"
 
@@ -18,6 +20,10 @@ public:
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
+	bool loadData(const RelativeAssetPath& assetName, const std::string& fileToOpen, std::vector<char>& outputData);
+
+	bool loadMetadata();
+
 	void terminate() override;
 
 private:
@@ -30,6 +36,8 @@ private:
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
 	std::map<RelativeAssetPath, std::pair<std::shared_ptr<sf::Font>, std::vector<char>>> fonts;
+
+	std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
 
 	std::string AssetManager::getFullPath(const std::string& relativePath) const;
 };

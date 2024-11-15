@@ -2,7 +2,6 @@
 #include "AssetManager/AssetManager.hpp"
 #include "Common/Modules.hpp"
 #include "Common/Logs.hpp"
-#include "Common/StringUtils.hpp"
 #include "SpriteModule/Sprite.hpp"
 #include <thread>
 #include <chrono>
