@@ -16,7 +16,7 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Bomberman");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -46,9 +46,9 @@ void GameModule::run()
 #endif
         Modules::update(deltaTime, &window);
 
-        window.clear();
-        window.draw(shape);
-        window.display();
+		window.clear();
+		window.draw(shape);
+		window.display();
     }
 }
 
