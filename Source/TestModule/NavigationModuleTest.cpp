@@ -41,19 +41,18 @@ void NavigationModuleTest::setup(){
 
 void NavigationModuleTest::run(){
 	sf::Vector2i playerPosition{ 1, 1 };
-	sf::Vector2i enemyPosition{ 4, 9 };
+	std::vector<sf::Vector2i> enemyPositions = { { 4, 9 },{ 7, 9 } };
 
-	navigate(playerPosition, enemyPosition);
+	navigate(playerPosition, enemyPositions);
 }
 
 //prints out the path finding process as well as execution time of every iteration
 //mainly used for debugging
-void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, sf::Vector2i& enemyPosition) {
+void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, std::vector<sf::Vector2i>& enemyPositions) {
 
 	sf::Vector2i moveTo;
-	bool updateEnemy = true;
 
-	while (playerPosition != enemyPosition) {
+	while (playerPosition != enemyPositions[1]) {
 		std::cout << CYAN << "LEGEND" << RESET << std::endl;
 		std::cout << GREEN << "P = Player" << RESET << std::endl;
 		std::cout << GREEN << "V = Visited" << RESET << std::endl;
@@ -62,7 +61,8 @@ void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, sf::Vector2i& 
 		std::cout << YELLOW << "O = Obstacle" << RESET << std::endl;
 		for (int i = 0; i < nav->grid.size(); i++) {
 			for (int j = 0; j < nav->grid[0].size(); j++) {
-				if(!checkOcuppied(playerPosition, enemyPosition, i, j))
+				if(!checkOcuppied(playerPosition, enemyPositions[0], i, j) &&
+					!checkOcuppied(playerPosition, enemyPositions[1], i, j))
 					color(i, j);
 			}
 			std::cout << std::endl;
@@ -70,19 +70,17 @@ void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, sf::Vector2i& 
 		//record the time it takes for function to exec
 		auto start = std::chrono::high_resolution_clock::now();
 
-		nav->algorithm->navigate(playerPosition, enemyPosition, moveTo);
+		nav->algorithm->navigate(playerPosition);
 
 		auto end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 		std::cout << "Execution time: " << duration.count() << " microseconds" << std::endl;
 
-		//Change player location
-		playerPosition.x += moveTo.x;
-		playerPosition.y += moveTo.y;
-		if (playerPosition == enemyPosition)
-			updateEnemy = false;
 		//change the enemy location
-		moveEnemy(enemyPosition, playerPosition, updateEnemy);
+		nav->algorithm->moveTo(enemyPositions[0], moveTo);
+		enemyPositions[0] = moveTo;
+		nav->algorithm->moveTo(enemyPositions[1], moveTo);
+		enemyPositions[1] = moveTo;
 
 		//sleep so we can see the output and clear it after
 		std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -115,26 +113,4 @@ const bool NavigationModuleTest::checkOcuppied(const sf::Vector2i& playerPositio
 		return true;
 	}
 	return false;
-}
-//moves an enemy in a random direction that isn't occupied by the player
-void NavigationModuleTest::moveEnemy(sf::Vector2i& enemyPosition, 
-	const sf::Vector2i& playerPosition,
-	bool updateEnemy) {
-
-	if (!updateEnemy)
-		return;
-	std::vector<sf::Vector2i> actions;
-
-	nav->algorithm->returnActions(enemyPosition,playerPosition, actions);
-
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dist(0, static_cast<int>(actions.size()));
-
-	int index = dist(gen);
-
-	if (index < actions.size()) {
-		auto action = actions[index];
-		enemyPosition = action;
-	}
 }

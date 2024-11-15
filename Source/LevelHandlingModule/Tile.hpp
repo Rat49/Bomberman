@@ -1,9 +1,7 @@
 #pragma once
 
-#include "SFML/Graphics/Sprite.hpp"
-#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics.hpp>
 #include <string>
-#include <memory>
 
 class Tile : public sf::Sprite
 {
@@ -20,7 +18,6 @@ public:
 private:
 
 	int32_t m_id;
+
 	sf::Vector2f m_position;
-
 };
-

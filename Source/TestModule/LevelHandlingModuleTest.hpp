@@ -13,7 +13,7 @@ public:
 
 	void run() override;
 
-	void update(float, sf::RenderWindow* window) override;
+	void update(float, sf::RenderWindow*) override;
 
 	bool isComplete() const override;
 

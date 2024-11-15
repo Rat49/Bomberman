@@ -10,27 +10,40 @@
 
 
 Level::Level(const std::string levelConfigPath)
+	:m_configPath(levelConfigPath)
+{}
+
+bool Level::initialize()
 {
 	//load level configuration data
-	if (!m_levelData.loadLevelData(levelConfigPath))
+	if (!m_levelData.loadLevelConfigData(m_configPath))
 	{
-		LOG("Failed to load level data from: " + levelConfigPath);
-		return;
+		LOG("Failed to load level data from: " + m_configPath);
+		return false;
+	}
+
+	//load tileSet configuration data (tileTypes)
+	if (!m_levelData.loadTilesetConfigData(m_levelData.getTilesetPath()))
+	{
+		LOG("Failed to load tileSet data from : " + m_levelData.getTilesetPath());
+		return false;
 	}
 
 	//load the atlas texture using the path from level data
 	if (!loadTexture(m_levelData.getAtlasPath()))
-	{ 
+	{
 		LOG("Failed to load texture from : " + m_levelData.getAtlasPath());
-		return;
+		return false;
 	}
 
 	//initialize level tiles based on tile IDs
 	if (!loadLevel(m_levelData.getLevelPath()))
 	{
 		LOG("Failed to load level from : " + m_levelData.getLevelPath());
-		return;
+		return false;
 	}
+
+	return true;
 }
 
 bool Level::loadLevel(const std::string& levelPath)
@@ -149,4 +162,26 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			target.draw(tile, states);
 		}
 	}
+}
+
+TileInfo Level::getTileInfos(int32_t x, int32_t y) const
+{
+	if (y >= 0 && y < m_tiles.size() && x >= 0 && x < m_tiles[0].size())
+	{
+		//get tile id based on x and y 
+		auto tileId = m_tiles[y][x].getId();
+
+		//get loaded tileSet infos
+		auto tilesetInfoMap = m_levelData.getTilesetInfo();
+		auto tileInfoIt = tilesetInfoMap.find(tileId);
+
+		//return the tile info
+		if (tileInfoIt != tilesetInfoMap.end())
+		{
+			LOG("Tile is : " + tileInfoIt->second);
+			return tileInfoIt->second;
+		}
+	}
+
+	return TileInfo();
 }

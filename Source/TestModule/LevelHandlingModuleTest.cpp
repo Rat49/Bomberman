@@ -30,22 +30,21 @@ void LevelHandlingModuleTest::setup()
 void LevelHandlingModuleTest::run()
 {
 	LOG("Run Level Handling Module Test");
+
+	//get information of tile based on x and y
+	Modules::Level->getTileInfo(0, 0);
 }
 
-void LevelHandlingModuleTest::update(float deltaTime, sf::RenderWindow* window)
+void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 {
-	window->clear();
-
 	//test level view based on player position
 	sf::Vector2f playerPosition(300.f, 300.f);  
 
-	//set Level view
+	//set Level view using an offset
 	Modules::Level->setLevelViewOffset(playerPosition, *window);
 
-	//draw level
-	Modules::Level->update(deltaTime, window);
-
 	window->display();
+
 	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 }
 

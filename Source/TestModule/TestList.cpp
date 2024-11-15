@@ -13,6 +13,7 @@
 #include "TestModule/UILabelTest.hpp"
 #include "TestModule/TestAI.hpp"
 #include "TestModule/UIButtonTest.hpp"
+#include "TestModule/PlayerTest.hpp"
 #include "TestModule/LevelHandlingModuleTest.hpp"
 
 #ifndef FINAL
@@ -32,7 +33,8 @@ void TestModule::CreateAllTests()
 	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 	//Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
 	//Modules::Tests->addTest(std::make_shared<UILabelTest>());
-	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
+	//Modules::Tests->addTest(std::make_shared<UIButtonTest>());
+	//Modules::Tests->addTest(std::make_shared<PlayerTest>());
 	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
 }
 
