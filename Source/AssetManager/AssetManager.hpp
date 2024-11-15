@@ -20,10 +20,6 @@ public:
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
-	bool loadData(const RelativeAssetPath& assetName, const std::string& fileToOpen, std::vector<char>& outputData);
-
-	bool loadMetadata();
-
 	void terminate() override;
 
 private:
@@ -40,5 +36,9 @@ private:
 	std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
 
 	std::string AssetManager::getFullPath(const std::string& relativePath) const;
+
+	bool loadData(const RelativeAssetPath& assetName, const std::string& fileToOpen, std::vector<char>& outputData);
+
+	bool loadMetadata();
 };
 
