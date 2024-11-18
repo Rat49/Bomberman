@@ -1,6 +1,7 @@
 #include "GameModule/Obstacle.hpp"
 #include <random>
-#include <unordered_set>
+#include <set>
+#include <utility>
 
 Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate) {}
 
@@ -28,7 +29,7 @@ std::vector<Obstacle> Obstacle::generateObstacles(int width, int height, int bre
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
 
-	std::unordered_set<std::pair<int, int>, std::hash<std::pair<int, int>>> usedPositions;
+	std::set<std::pair<int, int>> usedPositions;
 
 	// Add the starting position to the safety zone
 	int safetyRadius = 2;
