@@ -31,7 +31,7 @@ void TestModule::CreateAllTests()
 	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
 	//Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
 	//Modules::Tests->addTest(std::make_shared<UILabelTest>());
-	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
+	//Modules::Tests->addTest(std::make_shared<UIButtonTest>());
 }
 
 #endif

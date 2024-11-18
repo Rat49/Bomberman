@@ -27,7 +27,7 @@ void UIButtonTest::setup()
 	button->setDefaultColor(sf::Color::Green);
 	button->setHoverColor(sf::Color::Yellow);
 	button->setPressedColor(sf::Color::Blue);
-	screen1->addElement(button);
+	screen1->addElement("button", button);
 
 	button2 = std::make_shared<UIButton>("Button 2", font, 20);
 	// Button 2 overlaps Button 3
@@ -38,7 +38,7 @@ void UIButtonTest::setup()
 	button2->setDefaultColor(sf::Color::Green);
 	button2->setHoverColor(sf::Color::Yellow);
 	button2->setPressedColor(sf::Color::Blue);
-	screen1->addElement(button2);
+	screen1->addElement("button2", button2);
 
 	// Button 3 overlaps Button 2
 	button3 = std::make_shared<UIButton>("Button 3", font, 20);
@@ -49,7 +49,7 @@ void UIButtonTest::setup()
 	button3->setDefaultColor(sf::Color::Green);
 	button3->setHoverColor(sf::Color::Yellow);
 	button3->setPressedColor(sf::Color::Blue);
-	screen1->addElement(button3);
+	screen1->addElement("button3", button3);
 
 	// Button 4 overlaps with Label 4
 	button4 = std::make_shared<UIButton>("Button 4", font, 20);
@@ -60,28 +60,28 @@ void UIButtonTest::setup()
 	button4->setDefaultColor(sf::Color::Green);
 	button4->setHoverColor(sf::Color::Yellow);
 	button4->setPressedColor(sf::Color::Blue);
-	screen1->addElement(button4);
+	screen1->addElement("button4", button4);
 
 	// Creating and placing labels
 	// Label 1 is independent
 	label1 = std::make_shared<UILabel>("Label 1", font, 20);
 	label1->setPosition(sf::Vector2f(300.0f, 0.0f)); 
-	screen1->addElement(label1);
+	screen1->addElement("label1", label1);
 
 	// Label 2 overlaps with Label 3
 	label2 = std::make_shared<UILabel>("Label 2", font, 20);
 	label2->setPosition(sf::Vector2f(150.0f, 300.0f));
-	screen1->addElement(label2);
+	screen1->addElement("label2", label2);
 
 	// Label 3 overlaps with Label 2
 	label3 = std::make_shared<UILabel>("Label 3", font, 20);
 	label3->setPosition(sf::Vector2f(160.0f, 310.0f));
-	screen1->addElement(label3);
+	screen1->addElement("label3", label3);
 
 	// Label 4 overlaps Button 4
 	label4 = std::make_shared<UILabel>("Label 4", font, 20);
 	label4->setPosition(sf::Vector2f(210.0f, 210.0f));
-	screen1->addElement(label4);
+	screen1->addElement("label4", label4);
 
 	// Set onHover event
 	button->onHover = []()

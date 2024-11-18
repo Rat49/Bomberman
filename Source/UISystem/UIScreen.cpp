@@ -2,29 +2,32 @@
 #include "Common/Logs.hpp"
 
 // Add a UI element
-void UIScreen::addElement(const std::shared_ptr<UIElement> element)
+void UIScreen::addElement(const std::string& elementName, const std::shared_ptr<UIElement> element)
 {
 	// Check for null pointer
 	if (element)
 	{
-		elements.push_back(element);
+		elements[elementName] = element;
 	}
 }
 
-// Remove a UI element
-void UIScreen::removeElement(const std::shared_ptr<UIElement>& element)
+std::shared_ptr<UIElement> UIScreen::getElement(const std::string& elementName) const
 {
-	// Check for null pointer
-	if (element)
-	{
-		// Find the element
-		auto it = std::remove(elements.begin(), elements.end(), element);
+	auto it = elements.find(elementName);
+	if (it != elements.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
 
-		if (it != elements.end())
-		{
-			// Erase it from the vector
-			elements.erase(it, elements.end());
-		}
+// Remove a UI element
+void UIScreen::removeElement(const std::string& element)
+{
+	// Find the element
+	auto it = elements.find(element);
+	if (it != elements.end())
+	{
+		elements.erase(it);
 	}
 }
 
@@ -41,9 +44,9 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	for (const auto& element : elements)
 	{
 		// Check if the element is visible before drawing
-		if (element->isVisible())
+		if (element.second->isVisible())
 		{
-			target.draw(*element, states);
+			target.draw(*element.second, states);
 		}
 	}
 
@@ -83,16 +86,16 @@ bool UIScreen::handleEvent(const sf::Event& event)
 	for (const auto& element : elements)
 	{
 		// Check if the element is visible and interactive
-		if (element->isVisible() && element->getIsInteractable())
+		if (element.second->isVisible() && element.second->getIsInteractable())
 		{
 			// Convert mouse coordinates to virtual coordinates
 			sf::Vector2f virtualPos = window->mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, view);
 
 			// Check if the virtual coordinates are within the element
-			if (element->containsPoint(virtualPos))
+			if (element.second->containsPoint(virtualPos))
 			{
 				// Pass the event to the element and save the result
-				eventHandled = element->handleEvent(event);
+				eventHandled = element.second->handleEvent(event);
 
 				// If the event has been processed, stop further processing
 				if (eventHandled)
@@ -111,6 +114,7 @@ bool UIScreen::handleEvent(const sf::Event& event)
 // Definition of a static folder to store fonts
 std::unordered_map<std::string, sf::Font> UIScreen::fonts;
 
+// needs to be changed! (it also makes system to throw exception on closure, because of the way of storing fonts) 
 sf::Font& UIScreen::getFont(const std::string& fontName) {
 	// Checks if the font is already loaded and cached
 	auto it = fonts.find(fontName);

@@ -12,10 +12,13 @@ class UIScreen : public UIElement
 {
 public:
 	// Add a UI element
-	void addElement(const std::shared_ptr<UIElement> element);
+	void addElement(const std::string& elementName, const std::shared_ptr<UIElement> element);
+
+	// Get a UI element
+	std::shared_ptr<UIElement> getElement(const std::string& elementName) const;
 
 	// Remove a UI element
-	void removeElement(const std::shared_ptr<UIElement>& element);
+	void removeElement(const std::string& element);
 
 	// Set the view for the UI screen
 	void setView(const sf::View& view);
@@ -38,8 +41,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-	// Vector to store UI elements
-	std::vector<std::shared_ptr<UIElement>> elements;
+	// Map to store UI elements
+	std::unordered_map<std::string, std::shared_ptr<UIElement>> elements;
 
 	// Optional view for handling UI viewport settings
 	sf::View view;

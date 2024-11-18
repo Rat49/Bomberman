@@ -23,7 +23,7 @@ void UILabelTest::setup()
 			LOG("UILabel is hovered!");
 		};
 
-	screen.addElement(label);
+	screen.addElement("example", label);
 }
 
 void UILabelTest::run()
