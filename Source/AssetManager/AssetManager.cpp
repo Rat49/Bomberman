@@ -3,18 +3,24 @@
 #include "Common/StringUtils.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "Common/Logs.hpp"
-#include "ConfigSystem/ConfigSection.hpp"
-#include <filesystem>
+#include <fstream>
 
-namespace {
+namespace 
+{
 	const std::string ABSOLUTE_ROOT_FOLDER = "RootFolder";
 	const std::string ROOT                 = "root";
+	const std::string USE_PACKAGE          = "UsePackage";
+	const std::string VALUE                = "value";
 	const std::string RELATIVE_ROOT_FOLDER = "Game/";
+	const std::string METADATA_FILE        = "Package/bomberman.mtd";
+	const std::string PACKAGE_FILE         = "Package/bomberman.pkg";
+	const std::string CIPHER_KEY           = "VERYSECUREKEY";
 }
 
 AssetManager::AssetManager()
 {
 	rootFolder = "";
+	usePackage = false;
 }
 
 bool AssetManager::initialize(const std::string& settingsPath)
@@ -26,104 +32,195 @@ bool AssetManager::initialize(const std::string& settingsPath)
 		return false;
 	}
 	rootFolder = assetManagerSettings.getSection(ABSOLUTE_ROOT_FOLDER).getValue(ROOT).getString();
-	return true;
-}
 
-bool AssetManager::loadSound(const RelativeAssetPath& relativeSoundPath)
-{
-	auto it = sounds.find(relativeSoundPath);
-	if (it != sounds.end())
-	{
-		LOG("Sound [$] already loaded", relativeSoundPath);
-		return true;
-	}
+	#ifdef FINAL
+		usePackage = true;
+	#else
+		usePackage = assetManagerSettings.getSection(USE_PACKAGE).getValue(VALUE).getBool();
+	#endif
 
-	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
-	std::string fullPath = getFullPath(relativeSoundPath);
-	if (!soundBuffer->loadFromFile(fullPath))
+	if (usePackage && !loadMetadata())
 	{
+		LOG("Could not load .package metadata");
 		return false;
 	}
 
-	sounds.emplace(relativeSoundPath, std::move(soundBuffer));
-	return true;
-}
-
-bool AssetManager::loadTexture(const RelativeAssetPath& relativeTexturePath)
-{
-	auto it = textures.find(relativeTexturePath);
-	if (it != textures.end())
-	{
-		LOG("Texture [$] already loaded", relativeTexturePath);
-		return true;
-	}
-
-	auto texture = std::make_shared<sf::Texture>();
-	std::string fullPath = getFullPath(relativeTexturePath);
-	if (!texture->loadFromFile(fullPath))
-	{
-		return false;
-	}
-
-	textures.emplace(relativeTexturePath, std::move(texture));
-	return true;
-}
-
-bool AssetManager::loadFont(const RelativeAssetPath& relativeFontPath)
-{
-	auto it = fonts.find(relativeFontPath);
-	if (it != fonts.end())
-	{
-		LOG("Font [$] already loaded", relativeFontPath);
-		return true;
-	}
-
-	auto font = std::make_shared<sf::Font>();
-	std::string fullPath = getFullPath(relativeFontPath);
-	if (!font->loadFromFile(fullPath))
-	{
-		return false;
-	}
-
-	fonts.emplace(relativeFontPath, std::move(font));
 	return true;
 }
 
 std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath& assetName)
 {
 	auto it = sounds.find(assetName);
-	if (it == sounds.end())
+	if (it != sounds.end())
 	{
-		LOG("Sound [$] not loaded", assetName);
+		return it->second;
+	}
+
+	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
+	std::vector<char> soundData;
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!loadData(assetName, fullPath, soundData))
+		{
+			LOG("Could not load sound data from file: [$]", assetName);
+			return nullptr;
+		}
+	}
+	else
+	{
+		if (!loadData(assetName, PACKAGE_FILE, soundData))
+		{
+			LOG("Could not load sound data from pacakge");
+			return nullptr;
+		}
+	}
+
+	if (!soundBuffer->loadFromMemory(soundData.data(), soundData.size())) {
+		LOG("Could not load sound from memory");
 		return nullptr;
 	}
-	return it->second;
+
+	sounds.emplace(assetName, std::move(soundBuffer));
+
+	return sounds[assetName];
 }
 
 std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& assetName)
 {
 	auto it = textures.find(assetName);
-	if (it == textures.end())
+	if (it != textures.end())
 	{
-		LOG("Texture [$] not loaded", assetName);
+		return it->second;
+	}
+	
+	auto texture = std::make_shared<sf::Texture>();
+	std::vector<char> textureData;
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!loadData(assetName, fullPath, textureData))
+		{
+			LOG("Could not load texture data from file: [$]", assetName);
+			return nullptr;
+		}
+	}
+	else
+	{
+		if (!loadData(assetName, PACKAGE_FILE, textureData))
+		{
+			LOG("Could not load texture data from pacakge");
+			return nullptr;
+		}
+	}
+
+	if (!texture->loadFromMemory(textureData.data(), textureData.size())) {
+		LOG("Could not load texture from memory: [$]", assetName);
 		return nullptr;
 	}
-	return it->second;
+
+	textures.emplace(assetName, std::move(texture));
+
+	return textures[assetName];
 }
 
 std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetName)
 {
 	auto it = fonts.find(assetName);
-	if (it == fonts.end())
+	if (it != fonts.end())
 	{
-		LOG("Font [$] not loaded", assetName);
+		return it->second.first;
+	} 
+
+	auto font = std::make_shared<sf::Font>();
+	std::vector<char> fontData;
+	if(!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!loadData(assetName, fullPath, fontData))
+		{
+			LOG("Could not load font data from file: [$]", assetName);
+			return nullptr;
+		};
+	}
+	else
+	{
+		if (!loadData(assetName, PACKAGE_FILE, fontData))
+		{
+			LOG("Could not load font data from pacakge");
+			return nullptr;
+		}
+	}
+
+	if (!font->loadFromMemory(fontData.data(), fontData.size())) {
+		LOG("Could not load font from memory: [$]", assetName);
 		return nullptr;
 	}
-	return it->second;
+
+	fonts.emplace(assetName, std::make_pair(std::move(font), std::move(fontData)));
+
+	return fonts[assetName].first;
 }
 
-void AssetManager::terminate()
+bool AssetManager::loadMetadata()
 {
+	std::ifstream metadataFile(METADATA_FILE, std::ios::beg);
+	if (!metadataFile)
+	{
+		LOG("Unable to open file [$]", METADATA_FILE);
+		return false;
+	}
+
+	std::string metadata((std::istreambuf_iterator<char>(metadataFile)), std::istreambuf_iterator<char>());
+	StringUtils::cipherText(metadata, CIPHER_KEY);
+
+	std::istringstream ss(metadata);
+	std::string line;
+	AssetMetadata newAssetMetadata = {};
+	while (std::getline(ss, line))
+	{
+		std::vector<std::string> tokens;
+		StringUtils::tokenize(line, ';', tokens);
+		newAssetMetadata.assetName = tokens[0];
+		newAssetMetadata.size      = static_cast<std::streamoff>(stoll(tokens[1]));
+		newAssetMetadata.offset    = static_cast<std::streamoff>(stoll(tokens[2]));
+		assetsMetadata.emplace(std::move(tokens[0]), std::move(newAssetMetadata));
+	}
+
+	for (const auto& el : assetsMetadata)
+	{
+		LOG("$:$:$", el.first, el.second.size, el.second.offset);
+	}
+
+	return true;
+}
+
+bool AssetManager::loadData(const RelativeAssetPath& assetName, const std::string& fileToOpen, std::vector<char>& outputData)
+{
+	std::ifstream file(fileToOpen, std::ios::binary | std::ios::beg);
+	if (!file) {
+		LOG("Could not read file [$]", fileToOpen);
+		return false;
+	}
+
+ 	if(usePackage)
+	{
+		file.seekg(assetsMetadata[assetName].offset);
+		outputData.resize(assetsMetadata[assetName].size);
+	}
+	else
+	{
+		file.seekg(0, std::ios::end);
+		outputData.resize(file.tellg());
+		file.seekg(0, std::ios::beg);
+	}
+
+	if (!file.read(outputData.data(), outputData.size())) {
+		LOG("Failed to read data from file: [$]", fileToOpen);
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -147,3 +244,6 @@ std::string AssetManager::getFullPath(const std::string& relativePath) const
 	return rootFolder + '/' + path;
 }
 
+void AssetManager::terminate()
+{
+}

@@ -17,7 +17,7 @@ class SpriteModule;
 class UISystem;
 class AssetManager;
 class PhysicsModule;
-
+class LevelHandlingModule;
 class BaseModule;
 
 namespace sf {
@@ -48,6 +48,7 @@ struct Modules
 	static UISystem* UI;
 	static AssetManager* Assets;
 	static PhysicsModule* Physics;
+	static LevelHandlingModule* Level;
 
 private:
 	static std::vector<std::unique_ptr<BaseModule>> modules;

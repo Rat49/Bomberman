@@ -11,6 +11,7 @@
 #include "UISystem/UISystem.hpp"
 #include "AssetManager/AssetManager.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "BaseModule/BaseModule.hpp"
 
 
@@ -29,6 +30,7 @@ SpriteModule* Modules::Sprite = nullptr;
 UISystem* Modules::UI = nullptr;
 AssetManager* Modules::Assets = nullptr;
 PhysicsModule* Modules::Physics = nullptr;
+LevelHandlingModule* Modules::Level = nullptr;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
@@ -49,6 +51,7 @@ bool Modules::initialize()
 	Modules::UI = dynamic_cast<UISystem*>(modules.emplace_back(std::make_unique<UISystem>()).get());
 	Modules::Assets = dynamic_cast<AssetManager*>(modules.emplace_back(std::make_unique<AssetManager>()).get());
 	Modules::Physics = dynamic_cast<PhysicsModule*>(modules.emplace_back(std::make_unique<PhysicsModule>()).get());
+	Modules::Level = dynamic_cast<LevelHandlingModule*>(modules.emplace_back(std::make_unique<LevelHandlingModule>()).get());
 
 	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
 

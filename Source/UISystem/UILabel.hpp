@@ -33,10 +33,16 @@ public:
 	// Override the handleEvent from UIElement
 	bool handleEvent(const sf::Event& event) override;
 
+	// Functions for event registration
+	std::function<void()> onHover;
+
 protected:
 	// Render the label on the screen
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	// SFML text object to hold and display the label's text
 	sf::Text labelText;
+
+	// Additional states to handle button interaction (hovered and pressed)
+	bool isHovered = false;
 };
