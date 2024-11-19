@@ -3,7 +3,7 @@
 class HUD : public UIScreen
 {
 public:
-	HUD(sf::RenderWindow* renderWindow, const std::string& hudFont);
+	HUD(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile);
 
 	void setTime(const std::string& newTime);
 

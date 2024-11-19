@@ -9,6 +9,7 @@
 
 namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
+	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
 	const std::string& HEIGHT = "height";
@@ -24,6 +25,7 @@ bool GameModule::initialize() {
 
 	// Reading config file
 	Modules::Config->addFile(PATH_WINDOW_INFO);
+	Modules::Config->addFile(PATH_HUD);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 
 	if (!windowInfo.isSectionPresent(WINDOW))
@@ -41,7 +43,7 @@ bool GameModule::initialize() {
 
 	// Creating Window and HUD
 	window.create(sf::VideoMode(width, height), title);
-	hud = std::make_unique<HUD>(&window, font);
+	hud = std::make_unique<HUD>(&window, font, PATH_HUD);
 
 	return true;
 }

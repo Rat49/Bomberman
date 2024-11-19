@@ -8,7 +8,7 @@
 void UIScreen::addElement(const std::string& elementName, const std::shared_ptr<UIElement> element)
 {
 	// Check for null pointer
-	if (element)
+	if (element && elements.find(elementName) == elements.end())
 	{
 		elements[elementName] = element;
 	}
