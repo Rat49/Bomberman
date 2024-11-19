@@ -25,9 +25,6 @@ public:
 
 	const std::vector<sf::Vector2i>& getPatrollingPoints() const;
 
-	// Static method for generating enemies
-	static std::vector<Enemy> generateEnemies(int width, int height, int enemyCount, const sf::Vector2i& playerStartPosition, int gameLevel, const std::vector<Obstacle>& obstacles);
-
 private:
 	EnemyType enemyType;
 	sf::Vector2i spawnPosition;

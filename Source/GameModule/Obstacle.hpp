@@ -14,8 +14,6 @@ class Obstacle
 public:
 	Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate = false);
 
-	static std::vector<Obstacle> generateObstacles(int width, int height, int breakableCount, const sf::Vector2i& playerStartPosition);
-
 	sf::Vector2i getPosition() const;
 
 	ObstacleType getType() const;
