@@ -16,6 +16,8 @@ public:
 
 	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
+	std::shared_ptr <sf::Music> getMusic(const RelativeAssetPath assetName);
+
 	std::shared_ptr<sf::Texture> getTexture(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
@@ -28,6 +30,8 @@ private:
 	bool usePackage;
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::SoundBuffer>> sounds;
+
+	std::map < RelativeAssetPath, std::shared_ptr<sf::Music>> musics;
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 

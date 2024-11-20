@@ -86,6 +86,45 @@ std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath
 	return sounds[assetName];
 }
 
+std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath assetName)
+{
+	auto it = musics.find(assetName);
+	if (it != musics.end())
+	{
+		return it->second;
+	}
+
+	auto music = std::make_shared<sf::Music>();
+	std::vector<char> musicData;
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!loadData(assetName, fullPath, musicData))
+		{
+			LOG("Failed to load musci data from file : [$]", fullPath);
+			return nullptr;
+		}
+	}
+	else
+	{
+		if (!loadData(assetName, PACKAGE_FILE, musicData))
+		{
+			LOG("Could not load music data from package");
+			return nullptr;
+		}
+	}
+
+	if (!music->openFromMemory(musicData.data(), musicData.size()))
+	{
+		LOG("Could not open music from memory: [$]", assetName);
+		return nullptr;
+	}
+
+	musics.emplace(assetName, std::move(music));
+
+	return musics[assetName];
+}
+
 std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& assetName)
 {
 	auto it = textures.find(assetName);
