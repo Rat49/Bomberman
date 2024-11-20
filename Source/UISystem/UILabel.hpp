@@ -17,7 +17,7 @@ public:
 	UILabel(const std::string& text, const sf::Font& font, unsigned int characterSize);
 
 	// Set method to change the displayed text
-	virtual void setText(const std::string& text);
+	void setText(const std::string& text);
 
 	// Set method to change the font of the label
 	void setFont(const sf::Font& font);

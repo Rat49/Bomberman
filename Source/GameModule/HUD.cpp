@@ -17,7 +17,7 @@ HUD::HUD(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::
 {
 	setWindow(renderWindow);
 
-	UIFactory::getInstance().makeScreen(pathToIniFile, this, hudFont);
+	UIFactory::makeScreen(pathToIniFile, this, hudFont);
 }
 
 // Set new value for Time
