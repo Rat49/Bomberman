@@ -12,7 +12,7 @@ class AssetManager : public BaseModule
 public:
 	AssetManager();
 
-	bool initialize(const std::string& rootFolderPath);
+	bool initialize() override;
 
 	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
@@ -31,7 +31,7 @@ private:
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::SoundBuffer>> sounds;
 
-	std::map < RelativeAssetPath, std::shared_ptr<sf::Music>> musics;
+	std::map < RelativeAssetPath, std::pair<std::shared_ptr<sf::Music>, std::vector<char>>> musics;
 
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
@@ -45,4 +45,3 @@ private:
 
 	bool loadMetadata();
 };
-

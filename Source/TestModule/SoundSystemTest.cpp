@@ -2,7 +2,6 @@
 #include "Common/Logs.hpp"
 #include "Common/Modules.hpp"
 #include "SoundSystem/SoundSystem.hpp"
-#include <thread>
 #include "AssetManager/AssetManager.hpp"
 
 namespace 
@@ -19,9 +18,6 @@ const std::string& SoundSystemTest::getName() const
 void SoundSystemTest::setup()
 {
 	LOG("SOUND SYSTEM TEST SETUP");
-
-	// initialize asset
-	Modules::Assets->initialize(AssetPath);
 
 	// load sound paths from config file and load sounds 
 	Modules::Sounds->loadSoundsFromConfig(SoundCoinfgPath);

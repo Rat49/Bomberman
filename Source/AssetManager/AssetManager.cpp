@@ -15,6 +15,7 @@ namespace
 	const std::string METADATA_FILE        = "Package/bomberman.mtd";
 	const std::string PACKAGE_FILE         = "Package/bomberman.pkg";
 	const std::string CIPHER_KEY           = "VERYSECUREKEY";
+	const std::string SETTINGS_PATH =      "../../Data/Config/assetmngr_config.ini";
 }
 
 AssetManager::AssetManager()
@@ -23,10 +24,10 @@ AssetManager::AssetManager()
 	usePackage = false;
 }
 
-bool AssetManager::initialize(const std::string& settingsPath)
+bool AssetManager::initialize()
 {
-	Modules::Config->addFile(settingsPath);
-	const ConfigFile& assetManagerSettings = Modules::Config->getFile(settingsPath);
+	Modules::Config->addFile(SETTINGS_PATH);
+	const ConfigFile& assetManagerSettings = Modules::Config->getFile(SETTINGS_PATH);
 	if (!assetManagerSettings.isSectionPresent(ABSOLUTE_ROOT_FOLDER))
 	{
 		return false;
@@ -91,7 +92,7 @@ std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath asset
 	auto it = musics.find(assetName);
 	if (it != musics.end())
 	{
-		return it->second;
+		return it->second.first;
 	}
 
 	auto music = std::make_shared<sf::Music>();
@@ -120,9 +121,9 @@ std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath asset
 		return nullptr;
 	}
 
-	musics.emplace(assetName, std::move(music));
+	musics.emplace(assetName, std::make_pair(std::move(music), std::move(musicData)));
 
-	return musics[assetName];
+	return musics[assetName].first;
 }
 
 std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& assetName)

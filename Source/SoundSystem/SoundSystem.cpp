@@ -71,7 +71,6 @@ bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 			// Use AssetManager to get the sound buffer
 			auto buffer = Modules::Assets->getSound(filePath);
 
-			// Check if 
 			if (!buffer)
 			{
 				LOG("Failed to load sound from $", filePath);
