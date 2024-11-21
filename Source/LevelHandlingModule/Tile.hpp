@@ -1,23 +1,18 @@
 #pragma once
-
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "TileTypes.hpp"
 
 class Tile : public sf::Sprite
 {
 public:
-
 	Tile();
 	
-	bool initialize(int32_t tileId, const sf::IntRect& textureRect, const sf::Vector2f& position, const std::shared_ptr<sf::Texture>& atlasTexture);
+	bool initialize(TileID tileId, const sf::IntRect& textureRect, const std::shared_ptr<sf::Texture>& atlasTexture);
 
-	int32_t getId() const { return m_id; }
-	
-	sf::Vector2f getPosition() const { return m_position; }
+	TileID getId() const { return m_id; }
 
 private:
+	TileID m_id;
 
-	int32_t m_id;
-
-	sf::Vector2f m_position;
 };

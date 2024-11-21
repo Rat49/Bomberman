@@ -5,6 +5,7 @@
 #include "EventSystem/EventSystem.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
+#include "AssetManager/AssetManager.hpp"
 
 
 using Time = std::chrono::high_resolution_clock;
@@ -16,14 +17,13 @@ void GameModule::run()
 	Modules::Tests->run();
 #endif
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Bomberman");
+    sf::RenderWindow window(sf::VideoMode(512, 480), "Bomberman");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
-
 
     while (window.isOpen())
     {
@@ -44,10 +44,11 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
+        window.clear();
         Modules::update(deltaTime, &window);
 
-		window.clear();
-		window.draw(shape);
+
+		//window.draw(shape);
 		window.display();
     }
 }

@@ -15,6 +15,7 @@ namespace
 	const std::string METADATA_FILE        = "Package/bomberman.mtd";
 	const std::string PACKAGE_FILE         = "Package/bomberman.pkg";
 	const std::string CIPHER_KEY           = "VERYSECUREKEY";
+	const std::string SETTINGS_PATH        = "../../Data/Config/assetmngr_config.ini";
 }
 
 AssetManager::AssetManager()
@@ -23,10 +24,10 @@ AssetManager::AssetManager()
 	usePackage = false;
 }
 
-bool AssetManager::initialize(const std::string& settingsPath)
+bool AssetManager::initialize()
 {
-	Modules::Config->addFile(settingsPath);
-	const ConfigFile& assetManagerSettings = Modules::Config->getFile(settingsPath);
+	Modules::Config->addFile(SETTINGS_PATH);
+	const ConfigFile& assetManagerSettings = Modules::Config->getFile(SETTINGS_PATH);
 	if (!assetManagerSettings.isSectionPresent(ABSOLUTE_ROOT_FOLDER))
 	{
 		return false;

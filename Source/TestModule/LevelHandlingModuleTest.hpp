@@ -21,6 +21,6 @@ private:
 
 	const std::string m_name = "LevelHandlingTest";
 
-	int32_t m_firstLevel, m_secondLevel;
+	int32_t m_firstLevel, m_secondLevel, m_baseLevel;
 };
 

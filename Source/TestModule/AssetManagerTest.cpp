@@ -16,7 +16,6 @@ const std::string& AssetManagerTest::getName() const
 void AssetManagerTest::setup()
 {
 	LOG("AssetManagerTest: setup()");
-	Modules::Assets->initialize("../../Data/Config/assetmngr_config.ini");
 }
 
 void AssetManagerTest::run()

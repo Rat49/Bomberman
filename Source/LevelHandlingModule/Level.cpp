@@ -8,6 +8,10 @@
 #include <algorithm>
 #include <Common/Logs.hpp>
 
+namespace
+{
+	const int32_t NUMBERS_OF_TILE_PER_ROW = 31;
+}
 
 Level::Level(const std::string levelConfigPath)
 	:m_configPath(levelConfigPath)
@@ -15,6 +19,7 @@ Level::Level(const std::string levelConfigPath)
 
 bool Level::initialize()
 {
+	tm.initialize();
 	//load level configuration data
 	if (!m_levelData.loadLevelConfigData(m_configPath))
 	{
@@ -26,13 +31,6 @@ bool Level::initialize()
 	if (!m_levelData.loadTilesetConfigData(m_levelData.getTilesetPath()))
 	{
 		LOG("Failed to load tileSet data from : " + m_levelData.getTilesetPath());
-		return false;
-	}
-
-	//load the atlas texture using the path from level data
-	if (!loadTexture(m_levelData.getAtlasPath()))
-	{
-		LOG("Failed to load texture from : " + m_levelData.getAtlasPath());
 		return false;
 	}
 
@@ -48,7 +46,6 @@ bool Level::initialize()
 
 bool Level::loadLevel(const std::string& levelPath)
 {
-	//open level file for reading
 	std::ifstream file(levelPath);
 	if (!file)
 	{ 
@@ -57,45 +54,29 @@ bool Level::loadLevel(const std::string& levelPath)
 	}
 
 	//read each line of file
-	int32_t rowIndex = 0;
+	int32_t row = 0;
 	std::string line;
 	while (std::getline(file, line))
 	{
-		std::vector<Tile> tileRow;
+		std::vector<FieldInfo> tileRow;
 		std::stringstream sStream(line);
 		std::string value;
-		int32_t columnIndex = 0;
+		int32_t col = 0;
 
 		//read row value
 		while (std::getline(sStream, value, ','))
 		{
-			//set value to int
 			int32_t tempId = std::stoi(value);
-
-			//calculate rect of tile
-			int32_t numTilesPerRow = m_atlasTexture->getSize().x / m_levelData.getTileWidth();
-			int32_t tileIndexX = (tempId % numTilesPerRow) * m_levelData.getTileWidth();
-			int32_t tileIndexY = (tempId / numTilesPerRow) * m_levelData.getTileHeight();
-			sf::IntRect textureRect(tileIndexX, tileIndexY, m_levelData.getTileWidth(), m_levelData.getTileHeight());
-
-			//calculate position of tile
-			sf::Vector2f position(static_cast<float>(columnIndex * m_levelData.getTileWidth()), static_cast<float>(rowIndex * m_levelData.getTileHeight()));
-
-			Tile tile;
-			if (!tile.initialize(tempId, textureRect, position, m_atlasTexture))
-			{ 
-				LOG("Failed to initialize tile with index : " + rowIndex, columnIndex);
-				return false;
-			}
 			
-			//add tile
-			tileRow.push_back(tile);
-			++columnIndex;
+			FieldInfo newFieldInfo;
+			newFieldInfo.tile = tm.getTile(tempId);
+			newFieldInfo.tilePosition = { (float)(col * m_levelData.getTileWidth()), (float)(row * m_levelData.getTileHeight()) };
+			tileRow.push_back(newFieldInfo);
+			++col;
 		}
 
-		//add the completed row of tiles
-		m_tiles.push_back(tileRow);
-		++rowIndex;
+		m_fields.push_back(tileRow);
+		++row;
 	}
 
 	file.close();
@@ -103,11 +84,6 @@ bool Level::loadLevel(const std::string& levelPath)
 	return true;
 }
 
-bool Level::loadTexture(const std::string& texturePath)
-{
-	m_atlasTexture = std::make_shared<sf::Texture>();
-	return m_atlasTexture->loadFromFile(texturePath);
-}
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
@@ -118,8 +94,8 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 	}
 
 	//calculate the total level width and height in pixels
-	float levelPixelWidth = static_cast<float>(m_tiles[0].size() * m_levelData.getTileWidth());
-	float levelPixelHeight = static_cast<float>(m_tiles.size() * m_levelData.getTileHeight());
+	float levelPixelWidth = static_cast<float>(m_fields[0].size() * m_levelData.getTileWidth());
+	float levelPixelHeight = static_cast<float>(m_fields.size() * m_levelData.getTileHeight());
 
 	//initialize view center to the target offset position
 	sf::Vector2f viewCenter = offset;
@@ -153,23 +129,70 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.setView(m_view);
+	for (std::size_t row = 0; row < m_fields.size(); ++row) {
+		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
+			const FieldInfo& fieldInfo = m_fields[row][col];
 
-	for (const auto& row : m_tiles)
-	{
-		for (const auto& tile : row)
-		{
-			//draw Tile sprites with positions
-			target.draw(tile, states);
+			Tile drawableTile = *fieldInfo.tile;
+			drawableTile.setPosition(fieldInfo.tilePosition);
+
+			target.draw(drawableTile, states);
 		}
 	}
 }
 
+sf::Vector2f Level::getTilePosition(int32_t row, int32_t col) const
+{
+	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
+	{
+		LOG("Tile [$][$]:{$, $}({row, col})", row, col, m_fields[row][col].tilePosition.x, m_fields[row][col].tilePosition.y);
+		return m_fields[row][col].tilePosition;
+	}
+	return { -1.f, -1.f };
+}
+
+TileID Level::getTileID(int32_t row, int32_t col) const
+{
+	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
+	{
+		return m_fields[col][row].tile->getId();
+	}
+	return -1;
+}
+
+sf::Vector2i Level::getTileRowCol(float x, float y) const
+{
+	int32_t col = static_cast<int>(x / 32.f);
+	int32_t row = static_cast<int>(y / 32.f);
+	LOG("ROWCOOL $ | $", row, col);
+	if (row < 0 || row >= m_fields[0].size() || col < 0 || col >= m_fields.size())
+	{
+		return { 0,0 };
+	}
+	return { row, col };
+}
+
+bool Level::setNewTile(int32_t row, int32_t col, TileID tileID)
+{
+	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
+	{
+		m_fields[row][col].tile = tm.getTile(tileID);
+		return true;
+	}
+	return false;
+}
+
+std::shared_ptr<std::vector<std::vector<FieldInfo>>> Level::getLevelFields() const
+{
+	return std::make_shared<std::vector<std::vector<FieldInfo>>>(m_fields);
+}
+
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
-	if (y >= 0 && y < m_tiles.size() && x >= 0 && x < m_tiles[0].size())
+	if (y >= 0 && y < m_fields.size() && x >= 0 && x < m_fields[0].size())
 	{
 		//get tile id based on x and y 
-		auto tileId = m_tiles[y][x].getId();
+		auto tileId = m_fields[y][x].tile->getId();
 
 		//get loaded tileSet infos
 		auto tilesetInfoMap = m_levelData.getTilesetInfo();
