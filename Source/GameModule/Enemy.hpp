@@ -4,14 +4,11 @@
 #include <vector>
 #include "GameModule/Obstacle.hpp"
 
-enum class EnemyType {
+enum class EnemyType
+{
 	Basic,
-	Chasing,
-	BombThrower,
-	Speedy,
-	Suicidal,
-	Flying,
-	Shielded
+	Medium,
+	Hard
 };
 
 class Enemy

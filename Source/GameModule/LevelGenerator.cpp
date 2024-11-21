@@ -3,41 +3,58 @@
 #include <set>
 #include <utility>
 
-LevelGenerator::LevelGenerator(int width, int height, int gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition)
-	: width(width), height(height), gameLevel(gameLevel), enemyCount(enemyCount), breakableCount(breakableCount), playerStartPosition(playerStartPosition)
+LevelGenerator::LevelGenerator() : width(20), height(20), gameLevelType(GameLevelType::Easy), enemyCount(5), breakableCount(10), playerStartPosition(1, 1) {}
+
+bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew)
 {
-	if (width <= 2 || height <= 2)
+	if (levelWidth <= 2 || levelHeight <= 2)
 	{
 		LOG("Width and height must be greater than 2.");
+		return false;
 	}
 
-	if (enemyCount < 0)
+	if (enemyCountNew < 0)
 	{
 		LOG("Enemy count cannot be negative.");
+		return false;
 	}
 
-	if (breakableCount < 0)
+	if (breakableCountNew < 0)
 	{
 		LOG("Breakable count cannot be negative.");
+		return false;
 	}
 
-	if (playerStartPosition.x < 0 || playerStartPosition.x >= width || playerStartPosition.y < 0 || playerStartPosition.y >= height)
+	if (playerStartPositionNew.x < 0 || playerStartPositionNew.x >= levelWidth || playerStartPositionNew.y < 0 || playerStartPositionNew.y >= levelHeight)
 	{
 		LOG("Player start position is out of bounds.");
+		return false;
 	}
+
+	this->width = levelWidth;
+	this->height = levelHeight;
+	this->gameLevelType = gameLevel;
+	this->enemyCount = enemyCountNew;
+	this->breakableCount = breakableCountNew;
+	this->playerStartPosition = playerStartPositionNew;
+
+	return true;
 }
 
-std::vector<Enemy> LevelGenerator::generateEnemies(const std::vector<Obstacle>& obstacles) const
+LevelGenerator::LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition)
 {
-	std::vector<Enemy> enemies;
+	Initialize(width, height, gameLevel, enemyCount, breakableCount, playerStartPosition);
+}
 
+void LevelGenerator::generateEnemies()
+{
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
 
 	// Enemy types based on game level
-	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(gameLevel);
+	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(gameLevelType);
 
 	std::set<std::pair<int, int>> usedPositions = generateSafetyZone(playerStartPosition, 3);
 
@@ -72,14 +89,11 @@ std::vector<Enemy> LevelGenerator::generateEnemies(const std::vector<Obstacle>& 
 			++placedEnemies;
 		}
 	}
-	return enemies;
 }
 
 // Generate obstacles
-std::vector<Obstacle> LevelGenerator::generateObstacles() const
+void LevelGenerator::generateObstacles()
 {
-	std::vector<Obstacle> obstacles;
-
 	// Unbreakable obstacles
 	for (int y = 0; y < height; ++y)
 	{
@@ -119,23 +133,25 @@ std::vector<Obstacle> LevelGenerator::generateObstacles() const
 		{
 			obstacles.emplace_back(ObstacleType::Breakable, sf::Vector2i(x, y));
 			usedPositions.emplace(x, y);
+			breakableObjPos.emplace(x, y);
 			++placedBreakables;
 		}
 	}
-	return obstacles;
 }
 
 // Get available enemy types for the current level
-std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(int level) const
+std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType level) const
 {
 	switch (level)
 	{
-	case 1: return { EnemyType::Basic };
-	case 2: return { EnemyType::Basic, EnemyType::Speedy };
-	case 3: return { EnemyType::Basic, EnemyType::Speedy, EnemyType::Chasing };
-	case 4: return { EnemyType::Basic, EnemyType::Speedy, EnemyType::Chasing, EnemyType::BombThrower };
-	case 5: return { EnemyType::Basic, EnemyType::Speedy, EnemyType::Chasing, EnemyType::BombThrower, EnemyType::Suicidal };
-	default: return { EnemyType::Basic, EnemyType::Speedy, EnemyType::Chasing, EnemyType::BombThrower, EnemyType::Suicidal, EnemyType::Flying, EnemyType::Shielded };
+	case GameLevelType::Easy: 
+		return { EnemyType::Basic };
+	case GameLevelType::Medium: 
+		return { EnemyType::Basic, EnemyType::Medium };
+	case GameLevelType::Hard: 
+		return { EnemyType::Basic, EnemyType::Medium, EnemyType::Hard };
+	default: 
+		return { EnemyType::Basic, EnemyType::Medium, EnemyType::Hard };
 	}
 }
 
@@ -181,7 +197,7 @@ std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937&
 	return patrollingPoints;
 }
 
-void LevelGenerator::generateGates(std::mt19937& gen, std::set<std::pair<int, int>>& occupiedPositions)
+void LevelGenerator::generateGates(std::mt19937& gen) // , std::set<std::pair<int, int>>& occupiedPositions)
 {
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
@@ -192,32 +208,75 @@ void LevelGenerator::generateGates(std::mt19937& gen, std::set<std::pair<int, in
 		int x = distX(gen);
 		int y = distY(gen);
 
-		// Check if the position is available
-		if (occupiedPositions.find({ x, y }) == occupiedPositions.end())
+		// Check if the position is under breakable object
+		if (breakableObjPos.find({ x, y }) != breakableObjPos.end())
 		{
+			//Gate* newGate = new Gate(sf::Vector2i(x, y), true, &keys[0]);
+
 			// The gate is hidden under a brick
-			gates.push_back({ sf::Vector2i(x, y), true });
-			occupiedPositions.insert({ x, y });
+			gates.push_back({ sf::Vector2i(x, y), true, &keys[0]});
+			breakableObjPos.insert({ x, y });
 		}
 	}
 }
 
-void LevelGenerator::generateBoosters(std::mt19937& gen, std::set<std::pair<int, int>>& occupiedPositions, int numBoosters)
+void LevelGenerator::generateKeys(std::mt19937& gen) // , std::set<std::pair<int, int>>& occupiedPositions)
 {
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
-	std::vector<std::string> boosterTypes = { "speed", "bomb", "health" };
 
-	while (boosters.size() < numBoosters)
+	// Generate one key per level
+	int numKeys = 1; 
+	while (keys.size() < numKeys)
 	{
 		int x = distX(gen);
 		int y = distY(gen);
 
-		if (occupiedPositions.find({ x, y }) == occupiedPositions.end())
+		// Checking if the position is under a breakable object
+		if (breakableObjPos.find({ x, y }) == breakableObjPos.end())
 		{
-			std::string boosterType = boosterTypes[gen() % boosterTypes.size()];
-			boosters.push_back({ sf::Vector2i(x, y), boosterType });
-			occupiedPositions.insert({ x, y });
+			// Add the key below the breakable object
+			keys.push_back(Key(sf::Vector2i(x, y)));
+			breakableObjPos.insert({ x, y });
 		}
 	}
+}
+
+void LevelGenerator::generateBoosters(std::mt19937& gen, int numBoosters)
+{
+	std::uniform_int_distribution<> distX(1, width - 2);
+	std::uniform_int_distribution<> distY(1, height - 2);
+	std::uniform_int_distribution<> distBoosterType(0, 2);
+
+	for (int i = 0; i < numBoosters; ++i)
+	{
+		BoosterType boosterType = static_cast<BoosterType>(distBoosterType(gen));
+		boosters.emplace_back(boosterType);
+	}
+}
+
+// Getter methods
+const std::vector<Obstacle>& LevelGenerator::getObstacles() const
+{
+	return obstacles;
+}
+
+const std::vector<Enemy>& LevelGenerator::getEnemies() const
+{
+	return enemies;
+}
+
+const std::vector<Gate>& LevelGenerator::getGates() const
+{
+	return gates;
+}
+
+const std::vector<Booster>& LevelGenerator::getBoosters() const
+{
+	return boosters;
+}
+
+const std::vector<Key>& LevelGenerator::getKeys() const
+{
+	return keys;
 }

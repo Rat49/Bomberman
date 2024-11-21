@@ -7,6 +7,13 @@
 
 using TileInfo = std::string;
 
+enum class GameLevelType
+{
+	Easy = 1,
+	Medium = 2,
+	Hard = 3
+};
+
 
 class Level : public sf::Drawable
 {

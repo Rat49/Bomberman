@@ -27,5 +27,5 @@ void Obstacle::setHasKeyOrGate(bool value)
 
 bool Obstacle::isValidUnbreakablePosition(const sf::Vector2i& position)
 {
-	return (position.x % 2 == 0 && position.y % 2 == 0) || (position.x == 0 && position.y % 2 == 0) || (position.y == 0 && position.x % 2 == 0);
+	return position.x % 2 == 0 && position.y % 2 == 0;;
 }
