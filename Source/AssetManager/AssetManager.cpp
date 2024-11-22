@@ -202,6 +202,41 @@ std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetNa
 	return fonts[assetName].first;
 }
 
+std::vector<char> AssetManager::getLevel(const RelativeAssetPath& assetName)
+{
+	auto it = levels.find(assetName);
+	if (it != levels.end())
+	{
+		return it->second;
+	}
+
+	std::vector<char> levelData;
+
+	if (!usePackage)
+	{
+		std::string fullPath = getFullPath(assetName);
+		if (!loadData(assetName, fullPath, levelData))
+		{
+			LOG("Could not load level data from file: [$]", assetName);
+			return {};
+		}
+	}
+	else
+	{
+		if (!loadData(assetName, PACKAGE_FILE, levelData))
+		{
+			LOG("Could not load level data from memory : [$]", assetName);
+			return {};
+		}
+	}
+
+	levels.emplace(assetName, std::move(levelData));
+
+	return levels[assetName];
+
+
+}
+
 bool AssetManager::loadMetadata()
 {
 	std::ifstream metadataFile(METADATA_FILE, std::ios::beg);

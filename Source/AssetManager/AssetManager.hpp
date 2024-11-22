@@ -22,6 +22,8 @@ public:
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
+	std::vector<char> getLevel(const RelativeAssetPath& assetName);
+
 	void terminate() override;
 
 private:
@@ -36,6 +38,8 @@ private:
 	std::map<RelativeAssetPath, std::shared_ptr<sf::Texture>> textures;
 
 	std::map<RelativeAssetPath, std::pair<std::shared_ptr<sf::Font>, std::vector<char>>> fonts;
+
+	std::map<RelativeAssetPath, std::vector<char>> levels;
 
 	std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
 

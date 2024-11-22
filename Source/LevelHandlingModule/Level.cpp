@@ -2,11 +2,13 @@
 #include "Tile.hpp"
 #include "LevelData.hpp"
 #include "SFML/Graphics.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "Common/Logs.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <algorithm>
-#include <Common/Logs.hpp>
+
 
 
 Level::Level(const std::string levelConfigPath)
@@ -48,13 +50,18 @@ bool Level::initialize()
 
 bool Level::loadLevel(const std::string& levelPath)
 {
-	//open level file for reading
-	std::ifstream file(levelPath);
-	if (!file)
-	{ 
-		LOG("Failed to load level config file from : " + levelPath);
+	//use Asset Manager to get level file data
+	std::vector<char> levelData = Modules::Assets->getLevel(levelPath);
+
+	if (levelData.empty())
+	{
+		LOG("Failed to load level .csv file from [$]", levelPath);
 		return false;
 	}
+
+	//convert data in string stream
+	std::string levelString(levelData.begin(), levelData.end());
+	std::istringstream file(levelString);
 
 	//read each line of file
 	int32_t rowIndex = 0;
@@ -98,15 +105,20 @@ bool Level::loadLevel(const std::string& levelPath)
 		++rowIndex;
 	}
 
-	file.close();
-
 	return true;
 }
 
 bool Level::loadTexture(const std::string& texturePath)
 {
 	m_atlasTexture = std::make_shared<sf::Texture>();
-	return m_atlasTexture->loadFromFile(texturePath);
+	m_atlasTexture = Modules::Assets->getTexture(texturePath);
+	if (!m_atlasTexture)
+	{
+		LOG("Failed to load asset from path: [$]", texturePath);
+		return false;
+	}
+
+	return true;
 }
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)

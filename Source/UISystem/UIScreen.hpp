@@ -32,9 +32,7 @@ public:
 	// Get the render window
 	sf::RenderWindow* getWindow() const { return window; }
 
-	// A method that returns a reference to the requested font
-	static sf::Font& getFont(const std::string& fontName);
-
+	// Update element position
 	void updateUIElementPositions();
 
 	// Override draw method to draw all UI elements on the given target
