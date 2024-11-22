@@ -79,4 +79,11 @@ void Animation::Stop()
 {
 	m_isPlaying = false;
 	m_elapsedTime = 0;
+	
+}
+
+//continues playing the animation
+void Animation::Continue()
+{
+	m_isPlaying = true;
 }

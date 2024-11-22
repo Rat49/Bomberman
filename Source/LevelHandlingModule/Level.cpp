@@ -141,52 +141,6 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 }
 
-sf::Vector2f Level::getTilePosition(int32_t row, int32_t col) const
-{
-	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
-	{
-		LOG("Tile [$][$]:{$, $}({row, col})", row, col, m_fields[row][col].tilePosition.x, m_fields[row][col].tilePosition.y);
-		return m_fields[row][col].tilePosition;
-	}
-	return { -1.f, -1.f };
-}
-
-TileID Level::getTileID(int32_t row, int32_t col) const
-{
-	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
-	{
-		return m_fields[col][row].tile->getId();
-	}
-	return -1;
-}
-
-sf::Vector2i Level::getTileRowCol(float x, float y) const
-{
-	int32_t col = static_cast<int>(x / 32.f);
-	int32_t row = static_cast<int>(y / 32.f);
-	LOG("ROWCOOL $ | $", row, col);
-	if (row < 0 || row >= m_fields[0].size() || col < 0 || col >= m_fields.size())
-	{
-		return { 0,0 };
-	}
-	return { row, col };
-}
-
-bool Level::setNewTile(int32_t row, int32_t col, TileID tileID)
-{
-	if (col >= 0 && col < m_fields.size() && row >= 0 && row < m_fields[0].size())
-	{
-		m_fields[row][col].tile = tm.getTile(tileID);
-		return true;
-	}
-	return false;
-}
-
-std::shared_ptr<std::vector<std::vector<FieldInfo>>> Level::getLevelFields() const
-{
-	return std::make_shared<std::vector<std::vector<FieldInfo>>>(m_fields);
-}
-
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
 	if (y >= 0 && y < m_fields.size() && x >= 0 && x < m_fields[0].size())

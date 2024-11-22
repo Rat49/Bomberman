@@ -18,6 +18,8 @@ public:
 
 	void setIsUpdated(bool isUpdated) { m_isUpdated = isUpdated; }
 
+	sf::Vector2f getCurrentPosition();
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 0.f;

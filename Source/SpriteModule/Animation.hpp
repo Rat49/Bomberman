@@ -17,6 +17,7 @@ public:
 	//functions for animation control
 	void Play();
 	void Stop();
+	void Continue();
 	bool isPlaying() const { return m_isPlaying; }
 
 	//function for updating animation

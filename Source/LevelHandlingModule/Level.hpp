@@ -28,16 +28,6 @@ public:
 
 	TileInfo Level::getTileInfos(int32_t x, int32_t y) const;
 
-	sf::Vector2f getTilePosition(int32_t row, int32_t col) const;
-
-	TileID getTileID(int32_t row, int32_t col) const;
-
-	sf::Vector2i Level::getTileRowCol(float x, float y) const;
-
-	bool setNewTile(int32_t row, int32_t col, TileID tileID);
-
-	std::shared_ptr<std::vector<std::vector<FieldInfo>>> getLevelFields() const;
-
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.

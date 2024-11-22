@@ -13,7 +13,6 @@ namespace
 	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
 	const std::string PATH = "../../Data/Config/TileAssetsConfig.ini";
 	const int8_t ATLAS_SPRITE_SIZE = 64;
-	const int8_t GAME_SPRITE_SIZE = 32;
 }
 
 TileManager::TileManager()
@@ -34,12 +33,10 @@ void TileManager::initialize()
 		TileID id     = tileTexturesSettings.getSection(section).getValue(ID).getInt32();
 		int32_t x     = tileTexturesSettings.getSection(section).getValue(X).getInt32();
 		int32_t y     = tileTexturesSettings.getSection(section).getValue(Y).getInt32();
-		float scale   = (float)(GAME_SPRITE_SIZE / (float)ATLAS_SPRITE_SIZE);
 
 		Tile newTile;
 		sf::IntRect newRect(x, y, ATLAS_SPRITE_SIZE, ATLAS_SPRITE_SIZE);
 		newTile.initialize(id, newRect, m_atlasTexture);
-		newTile.setScale(scale, scale);
 		m_availableTiles.emplace(id, std::make_shared<Tile>(std::move(newTile)));
 	}
 }
