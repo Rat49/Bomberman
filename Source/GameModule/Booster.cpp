@@ -3,6 +3,11 @@
 
 Booster::Booster(BoosterType type) : type(type) {}
 
+sf::Vector2i Booster::getPosition() const
+{
+	return boosterPosition;
+}
+
 // A function that returns the name of the booster type as a string
 std::string Booster::getTypeAsString() const
 {

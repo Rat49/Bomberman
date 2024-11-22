@@ -7,6 +7,7 @@
 #include "GameModule/Key.hpp"
 #include "LevelHandlingModule/Level.hpp"
 #include <SFML/System.hpp>
+#include <fstream>
 #include <vector>
 #include <random>
 #include <set>
@@ -16,15 +17,11 @@ class LevelGenerator
 public:
 	LevelGenerator();
 
-	bool Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew);
-
 	LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition);
 
-	void generateObstacles();
-	void generateEnemies();
-	void generateGates(std::mt19937& gen); // , std::set<std::pair<int, int>>& occupiedPositions);
-	void generateKeys(std::mt19937& gen); // , std::set<std::pair<int, int>>& occupiedPositions);
-	void generateBoosters(std::mt19937& gen, int numBoosters);
+	bool Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew);
+
+	void generateLevel(int newwidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters);
 
 	// Getter methods for private members
 	const std::vector<Obstacle>& getObstacles() const;
@@ -32,6 +29,9 @@ public:
 	const std::vector<Gate>& getGates() const;
 	const std::vector<Key>& getKeys() const;
 	const std::vector<Booster>& getBoosters() const;
+
+	// A method for exporting layers to text files
+	void exportLevelToTextFiles(const std::string& prefix);
 
 private:
 	// Data members
@@ -54,4 +54,13 @@ private:
 	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType level) const;
 	std::set<std::pair<int, int>> generateSafetyZone(const sf::Vector2i& center, int radius) const;
 	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const std::set<std::pair<int, int>>& occupiedPositions) const;
+
+	void generateObstacles(std::mt19937& gen);
+	void generateEnemies(std::mt19937& gen);
+	void generateGates(std::mt19937& gen);
+	void generateKeys(std::mt19937& gen);
+	void generateBoosters(std::mt19937& gen, int numBoosters);
+
+	// A method for writing a layer to a file
+	void saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const;
 };

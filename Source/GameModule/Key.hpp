@@ -9,6 +9,9 @@ public:
 
 	sf::Vector2i getKeyPosition() const;
 
+	// Check if the key has been collected
+	bool isCollected() const;
+
 	// Method indicating that the key has been collected
 	void collect();
 
