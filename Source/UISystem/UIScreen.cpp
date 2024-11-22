@@ -8,9 +8,16 @@
 void UIScreen::addElement(const std::string& elementName, const std::shared_ptr<UIElement> element)
 {
 	// Check for null pointer
-	if (element && elements.find(elementName) == elements.end())
-	{
-		elements[elementName] = element;
+	if (element) {
+		if (elements.find(elementName) == elements.end()) {
+			elements[elementName] = element;
+		}
+		else {
+			LOG("Error: adding element to UIScreen with name that already exists");
+		}
+	}
+	else {
+		LOG("Error: adding nullptr element to UIScreen");
 	}
 }
 

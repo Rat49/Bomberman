@@ -3,14 +3,9 @@
 #include "UISystem/UIFactory.hpp"
 
 namespace {
-	const std::string& TIME = "TIME";
 	const std::string& TIME_VALUE = "TIME VALUE";
-	const std::string& STARTING_TIME_VALUE = "200";
 	const std::string& SCORE = "SCORE";
-	const std::string& STARTING_SCORE = "00";
-	const std::string& LIVES_LEFT = "LEFT";
 	const std::string& LIVES_LEFT_VALUE = "LEFT VALUE";
-	const std::string& STARTING_LIVES_LEFT_VALUE = "2";
 }
 
 HUD::HUD(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile) : UIScreen()

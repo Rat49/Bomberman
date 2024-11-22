@@ -13,6 +13,8 @@ namespace
 	const std::string& SHADOW_COLOR = "shadowColor";
 	const std::string& OFFSET = "offset";
 	const std::string& UILABEl = "UILabel";
+	const float FACTOR_WIDTH = 0.0375f; // factor for text size, based on width (30/800)
+	const float FACTOR_HEIGHT = 0.017f;	// factor for offset from top, based on height (10/600)
 }
 
 void UIFactory::makeScreen(const std::string& path, UIScreen* screen, const std::string& screenFont)
@@ -43,9 +45,9 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 	auto& font = screen->getFont(screenFont);
 
 	int32_t width = screen->getWindow()->getSize().x;
-	int32_t heigth = screen->getWindow()->getSize().y;
+	int32_t height = screen->getWindow()->getSize().y;
 
-	auto characterSize = static_cast<unsigned int>(0.0375 * width);
+	auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width);
 
 	// Check if necessary values are present
 	if (element.areValuesPresent({ NAME, VALUE, OFFSET }))
@@ -56,7 +58,7 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 
 		auto myLabel = std::make_shared<UILabel>(elementValue, font, characterSize);
 
-		myLabel->setPosition(sf::Vector2f(elementOffset * width, 0.017f * heigth));
+		myLabel->setPosition(sf::Vector2f(elementOffset * width, FACTOR_HEIGHT * height));
 
 		// Check if label has shadow
 		if (element.areValuesPresent({ LABEL_COLOR, SHADOW_COLOR }))
