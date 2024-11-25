@@ -80,13 +80,6 @@ const sf::Font& UIScreen::getFont(const std::string& fontName)
 	std::shared_ptr<sf::Font> fontPtr = std::make_shared<sf::Font>();
 	fontPtr = Modules::Assets->getFont(assetPath);
 
-	if (!fontPtr)
-	{
-		LOG("Failed to load font from path: [$]", assetPath);
-		static sf::Font emptyFont;
-		return emptyFont;
-	}
-
 	return *fontPtr;
 }
 
