@@ -17,8 +17,6 @@ class LevelGenerator
 public:
 	LevelGenerator();
 
-	//LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition);
-
 	bool Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew);
 
 	void generateLevel(int newwidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters);

@@ -45,11 +45,6 @@ bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType g
 	return true;
 }
 
-//LevelGenerator::LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition)
-//{
-//	Initialize(width, height, gameLevel, enemyCount, breakableCount, playerStartPosition);
-//}
-
 void LevelGenerator::generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters)
 {
 	// Set up the level parameters
@@ -119,51 +114,6 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 }
 
 // Generate obstacles
-//void LevelGenerator::generateObstacles(std::mt19937& gen)
-//{
-//	// Unbreakable obstacles
-//	for (int y = 0; y < height; ++y)
-//	{
-//		for (int x = 0; x < width; ++x)
-//		{
-//			sf::Vector2i position(x, y);
-//			if (Obstacle::isValidUnbreakablePosition(position))
-//			{
-//				obstacles.emplace_back(ObstacleType::Unbreakable, position);
-//			}
-//		}
-//	}
-//
-//	// Breakable obstacles
-//	std::uniform_int_distribution<> distX(1, width - 2);
-//	std::uniform_int_distribution<> distY(1, height - 2);
-//
-//	std::set<std::pair<int, int>> usedPositions = generateSafetyZone(playerStartPosition, 2);
-//
-//	int totalAvailablePositions = (width - 2) * (height - 2) - static_cast<int>(usedPositions.size());
-//
-//	// Check if enough obstacles can be generated
-//	if (breakableCount > totalAvailablePositions)
-//	{
-//		LOG("Not enough space to generate the requested number of breakable obstacles.");
-//	}
-//
-//	int placedBreakables = 0;
-//	while (placedBreakables < breakableCount)
-//	{
-//		int x = distX(gen);
-//		int y = distY(gen);
-//
-//		if (usedPositions.find({ x, y }) == usedPositions.end())
-//		{
-//			obstacles.emplace_back(ObstacleType::Breakable, sf::Vector2i(x, y));
-//			usedPositions.emplace(x, y);
-//			breakableObjPos.emplace(x, y);
-//			++placedBreakables;
-//		}
-//	}
-//}
-
 void LevelGenerator::generateObstacles(std::vector<std::vector<int>>& layer, std::mt19937& gen)
 {
 	std::uniform_int_distribution<> distX(1, width - 2);
