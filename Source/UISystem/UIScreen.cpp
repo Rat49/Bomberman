@@ -76,7 +76,6 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 const sf::Font& UIScreen::getFont(const std::string& fontName)
 {
 	const std::string assetPath = BASE_PATH + fontName + FILE_EXTENSION;
-	Modules::Assets->getFont(assetPath);
 
 	std::shared_ptr<sf::Font> fontPtr = std::make_shared<sf::Font>();
 	fontPtr = Modules::Assets->getFont(assetPath);
