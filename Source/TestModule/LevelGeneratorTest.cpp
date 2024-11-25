@@ -12,8 +12,9 @@ void LevelGeneratorTest::setup()
 
 void LevelGeneratorTest::run()
 {
-	LevelGenerator levelGenerator(10, 10, GameLevelType::Easy, 2, 5, { 1, 1 });
-	levelGenerator.generateLevel(10, 10, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
+	LevelGenerator levelGenerator;
+	levelGenerator.Initialize(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 });
+	levelGenerator.generateLevel(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
 	levelGenerator.exportLevelToTextFiles("LevelTest");
 }
 

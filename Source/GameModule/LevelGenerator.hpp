@@ -17,7 +17,7 @@ class LevelGenerator
 public:
 	LevelGenerator();
 
-	LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition);
+	//LevelGenerator(int width, int height, GameLevelType gameLevel, int enemyCount, int breakableCount, const sf::Vector2i& playerStartPosition);
 
 	bool Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew);
 
@@ -55,7 +55,9 @@ private:
 	std::set<std::pair<int, int>> generateSafetyZone(const sf::Vector2i& center, int radius) const;
 	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const std::set<std::pair<int, int>>& occupiedPositions) const;
 
-	void generateObstacles(std::mt19937& gen);
+	std::vector<std::vector<int>> generateLayer() const;
+
+	void generateObstacles(std::vector<std::vector<int>>& layer, std::mt19937& gen); // (std::mt19937& gen);
 	void generateEnemies(std::mt19937& gen);
 	void generateGates(std::mt19937& gen);
 	void generateKeys(std::mt19937& gen);
