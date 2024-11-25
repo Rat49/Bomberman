@@ -22,7 +22,7 @@ public:
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
-	std::vector<char> getLevel(const RelativeAssetPath& assetName);
+	const std::vector<char>& getLevel(const RelativeAssetPath& assetName);
 
 	void terminate() override;
 

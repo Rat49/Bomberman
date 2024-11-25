@@ -51,7 +51,7 @@ bool Level::initialize()
 bool Level::loadLevel(const std::string& levelPath)
 {
 	//use Asset Manager to get level file data
-	std::vector<char> levelData = Modules::Assets->getLevel(levelPath);
+	const auto& levelData = Modules::Assets->getLevel(levelPath);
 
 	if (levelData.empty())
 	{

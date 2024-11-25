@@ -36,6 +36,10 @@ public:
 	// Functions for event registration
 	std::function<void()> onHover;
 
+	void dropShadows(const sf::Color& labelColor, const sf::Color& shadowColor);
+
+	void removeShadow() { hasShadow = false; }
+
 protected:
 	// Render the label on the screen
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -43,6 +47,12 @@ protected:
 private:
 	// SFML text object to hold and display the label's text
 	sf::Text labelText;
+
+	// Same as labelText, just placed beneath it
+	sf::Text shadowText;
+
+	// If shadowText should be shown
+	bool hasShadow = false;
 
 	// Additional states to handle button interaction (hovered and pressed)
 	bool isHovered = false;
