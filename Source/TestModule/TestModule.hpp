@@ -4,6 +4,11 @@
 
 #ifndef FINAL
 
+enum TestsMode
+{
+	RunLast,
+	RunDefined
+};
 
 class TestBase;
 namespace sf {
@@ -33,7 +38,11 @@ public:
 	void update(float deltaTime, sf::RenderWindow* window);
 
 private:
-	std::vector<std::shared_ptr<TestBase>> m_tests;
+	bool m_isLastTestFinished = false;
+	int32_t m_testsMode;
+	std::vector<int32_t>m_testsIDs;
+ 	std::vector<std::shared_ptr<TestBase>> m_tests;
+	std::vector<std::shared_ptr<TestBase>> m_predefinedTests;
 };
 
 #endif

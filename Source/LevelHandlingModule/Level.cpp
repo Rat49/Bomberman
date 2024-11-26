@@ -7,10 +7,17 @@
 #include <string>
 #include <algorithm>
 #include <Common/Logs.hpp>
+#include "Common/Modules.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
 
 namespace
 {
-	const int32_t NUMBERS_OF_TILE_PER_ROW = 31;
+	const std::string ID = "id";
+	const std::string X_COORD = "x";
+	const std::string Y_COORD = "y";
+	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
+	const int8_t ATLAS_SPRITE_SIZE = 64;
 }
 
 Level::Level(const std::string levelConfigPath)
@@ -19,7 +26,6 @@ Level::Level(const std::string levelConfigPath)
 
 bool Level::initialize()
 {
-	tm.initialize();
 	//load level configuration data
 	if (!m_levelData.loadLevelConfigData(m_configPath))
 	{
@@ -35,6 +41,13 @@ bool Level::initialize()
 	}
 
 	//initialize level tiles based on tile IDs
+	if (!loadTiles())
+	{
+		LOG("Failed to load tiles for the level");
+		return false;
+	}
+
+	//initialize level tiles based on tile IDs
 	if (!loadLevel(m_levelData.getLevelPath()))
 	{
 		LOG("Failed to load level from : " + m_levelData.getLevelPath());
@@ -44,6 +57,32 @@ bool Level::initialize()
 	return true;
 }
 
+bool Level::loadTiles() 
+{
+	m_atlasTexture = Modules::Assets->getTexture(ATLAS_PATH);
+
+	Modules::Config->addFile(m_levelData.getTilesetAssetConfigPath());
+	const ConfigFile& tileTexturesSettings = Modules::Config->getFile(m_levelData.getTilesetAssetConfigPath());
+	const auto& sections = tileTexturesSettings.getAllSections();
+
+	for (const auto& section : sections)
+	{
+		int32_t id = tileTexturesSettings.getSection(section).getValue(ID).getInt32();
+		int32_t x = tileTexturesSettings.getSection(section).getValue(X_COORD).getInt32();
+		int32_t y = tileTexturesSettings.getSection(section).getValue(Y_COORD).getInt32();
+
+		Tile newTile;
+		sf::IntRect newRect(x, y, ATLAS_SPRITE_SIZE, ATLAS_SPRITE_SIZE);
+		newTile.initialize(id, newRect, m_atlasTexture);
+		m_availableTiles.emplace(id, std::make_shared<Tile>(newTile));
+		if (!m_availableTiles[id])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 bool Level::loadLevel(const std::string& levelPath)
 {
 	std::ifstream file(levelPath);
@@ -69,7 +108,7 @@ bool Level::loadLevel(const std::string& levelPath)
 			int32_t tempId = std::stoi(value);
 			
 			FieldInfo newFieldInfo;
-			newFieldInfo.tile = tm.getTile(tempId);
+			newFieldInfo.tile = m_availableTiles[tempId];
 			newFieldInfo.tilePosition = { (float)(col * m_levelData.getTileWidth()), (float)(row * m_levelData.getTileHeight()) };
 			tileRow.push_back(newFieldInfo);
 			++col;
@@ -83,7 +122,6 @@ bool Level::loadLevel(const std::string& levelPath)
 
 	return true;
 }
-
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {

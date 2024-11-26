@@ -7,7 +7,7 @@ Tile::Tile()
 	m_id        = -1;
 }
 
-bool Tile::initialize(TileID tileId, const sf::IntRect& textureRect, const std::shared_ptr<sf::Texture>& atlasTexture)
+bool Tile::initialize(int32_t tileId, const sf::IntRect& textureRect, const std::shared_ptr<sf::Texture>& atlasTexture)
 {
 	if (!atlasTexture)
 	{

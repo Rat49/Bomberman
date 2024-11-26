@@ -3,7 +3,6 @@
 #include "SFML/Graphics.hpp"
 #include "LevelData.hpp"
 #include "Tile.hpp"
-#include "TileManager.hpp"
 #include <vector>
 
 using TileInfo = std::string;
@@ -33,6 +32,8 @@ private:
 	//loads the level configuration from a file and creates tiles with IDs.
 	bool loadLevel(const std::string& levelPath);
 
+	bool loadTiles();
+
 private:
 
 	std::string m_configPath;
@@ -43,7 +44,9 @@ private:
 
 	LevelData m_levelData;
 
-	TileManager tm;
+	std::map<int32_t, std::shared_ptr<Tile>> m_availableTiles;
+
+	std::shared_ptr<sf::Texture> m_atlasTexture;
 };
 
 

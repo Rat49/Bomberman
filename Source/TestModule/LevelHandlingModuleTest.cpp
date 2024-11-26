@@ -8,7 +8,7 @@
 
 namespace 
 {
-	const std::string BASE_LEVEL  = "../../Data/Config/BaseLevelConfig.ini";
+	const std::string TEST_LEVEL  = "../../Data/Config/TestLevel1.ini";
 }
 
 const std::string& LevelHandlingModuleTest::getName() const
@@ -18,7 +18,7 @@ const std::string& LevelHandlingModuleTest::getName() const
 
 void LevelHandlingModuleTest::setup()
 {
-	m_firstLevel = Modules::Level->loadLevel(BASE_LEVEL);
+	m_firstLevel = Modules::Level->loadLevel(TEST_LEVEL);
 	Modules::Level->setCurrentLevel(m_firstLevel);
 }
 
@@ -41,5 +41,5 @@ void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 
 bool LevelHandlingModuleTest::isComplete() const
 {
-	return false;
+	return true;
 }

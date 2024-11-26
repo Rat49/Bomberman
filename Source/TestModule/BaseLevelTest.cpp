@@ -27,9 +27,10 @@ void BaseLevelTest::run()
 	LOG("BaseLevelTest: run()");
 }
 
-void BaseLevelTest::update(float, sf::RenderWindow* window)
+void BaseLevelTest::update(float deltaTime, sf::RenderWindow* window)
 {
 	Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *window);
+	player.updateVelocity(deltaTime);
 	window->draw(*player.getCurrentAnimation());
 	player.setIsUpdated(false);
 }
