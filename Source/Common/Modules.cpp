@@ -40,8 +40,6 @@ bool Modules::initialize()
 	Modules::Logs = std::make_unique<LogManager>();
 #endif
 
-	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
-	
 	// add your modules here
 	Modules::Events = dynamic_cast<EventSystem*>(modules.emplace_back(std::make_unique<EventSystem>()).get());
 	Modules::Config = dynamic_cast<ConfigSystem*>(modules.emplace_back(std::make_unique<ConfigSystem>()).get());
@@ -54,6 +52,7 @@ bool Modules::initialize()
 	Modules::Physics = dynamic_cast<PhysicsModule*>(modules.emplace_back(std::make_unique<PhysicsModule>()).get());
 	Modules::Level = dynamic_cast<LevelHandlingModule*>(modules.emplace_back(std::make_unique<LevelHandlingModule>()).get());
 
+	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
 #ifndef FINAL
 	Modules::Tests = std::make_unique<TestModule>();
 #endif

@@ -8,7 +8,19 @@ UILabel::UILabel(const std::string& text, const sf::Font& font, unsigned int siz
 	labelText.setString(text);
 	labelText.setCharacterSize(size);
 
+	shadowText.setFont(font);
+	shadowText.setString(text);
+	shadowText.setCharacterSize(size);
+
 	setIsInteractable(false);
+}
+
+void UILabel::dropShadows(const sf::Color& labelColor, const sf::Color& shadowColor)
+{
+	labelText.setFillColor(labelColor);
+	shadowText.setFillColor(shadowColor);
+
+	hasShadow = true;
 }
 
 // Render the label on the screen
@@ -17,6 +29,10 @@ void UILabel::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	// Check visibility before drawing
 	if (isVisible())
 	{
+		if (hasShadow)
+		{
+			target.draw(shadowText, states);
+		}
 		target.draw(labelText, states);
 	}
 }
@@ -26,12 +42,16 @@ void UILabel::setPosition(const sf::Vector2f& pos)
 	UIElement::setPosition(pos);
 
 	labelText.setPosition(pos);
+
+	float offset = (shadowText.getCharacterSize() + 0.f) / 10;
+	shadowText.setPosition(sf::Vector2f(pos.x + offset, pos.y + offset));
 }
 
 // Set method to change the displayed text
 void UILabel::setText(const std::string& text)
 {
 	labelText.setString(text);
+	shadowText.setString(text);
 }
 
 // Set method to change the font of the label
