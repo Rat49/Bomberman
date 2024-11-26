@@ -12,6 +12,9 @@ PlayerCharacter::PlayerCharacter()
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
 	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
 
+	plantBomb = Modules::Input->GetActionID("PlantBomb");
+	plantBomb = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
+
 	leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
 	rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
 	upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
@@ -46,6 +49,12 @@ void PlayerCharacter::onMove(void* axis2DState)
 	}
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+}
+
+void PlayerCharacter::onBombPlant(void* axis2DState)
+{
+	// Need to add and then get Player's position here
+	//bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)

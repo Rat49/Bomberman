@@ -57,7 +57,7 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
-	int32_t gameTime = 200;
+	//int32_t gameTime = 200;
 	float timeCounter = 0.0f;
 
     while (window.isOpen())
@@ -79,12 +79,12 @@ void GameModule::run()
 		timeCounter += deltaTime;
 
 		// Checking if one second has passed for updating Time label (delta time is in microseconds)
-		if (timeCounter >= 1000000) {
-			timeCounter = 0.f;
-			gameTime--;
+		//if (timeCounter >= 1000000) {
+		//	timeCounter = 0.f;
+		//	gameTime--;
 
-			hud->setTime(std::to_string(gameTime));
-		}
+		//	hud->setTime(std::to_string(gameTime));
+		//}
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
@@ -92,8 +92,8 @@ void GameModule::run()
         Modules::update(deltaTime, &window);
 
 
-        window.clear(GREY);
-		hud->draw(window, sf::RenderStates::Default);
+        //window.clear(GREY);
+		//hud->draw(window, sf::RenderStates::Default);
         window.display();
     }
 }
