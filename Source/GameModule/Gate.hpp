@@ -15,6 +15,6 @@ public:
 
 private:
 	sf::Vector2i gatePosition;
-	bool locked;
+	bool locked = true;
 	Key* associatedKey;
 };

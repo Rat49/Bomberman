@@ -21,6 +21,9 @@ public:
 
 	void generateLevel(int newwidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters);
 
+	template <typename ObjectType>
+	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
+	
 	// Getter methods for private members
 	const std::vector<Obstacle>& getObstacles() const;
 	const std::vector<Enemy>& getEnemies() const;
@@ -40,6 +43,8 @@ private:
 	int breakableCount;
 	sf::Vector2i playerStartPosition;
 
+	int enemyRadius = 3;
+
 	std::vector<Obstacle> obstacles;
 	std::vector<Enemy> enemies;
 	std::vector<Gate> gates;
@@ -51,11 +56,11 @@ private:
 	// Methods
 	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType level) const;
 	std::set<std::pair<int, int>> generateSafetyZone(const sf::Vector2i& center, int radius) const;
-	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const std::set<std::pair<int, int>>& occupiedPositions) const;
+	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, const std::set<std::pair<int, int>>& occupiedPositions, int range) const;
 
 	std::vector<std::vector<int>> generateLayer() const;
 
-	void generateObstacles(std::vector<std::vector<int>>& layer, std::mt19937& gen); // (std::mt19937& gen);
+	void generateObstacles(std::vector<std::vector<int>>& layer, std::mt19937& gen);
 	void generateEnemies(std::mt19937& gen);
 	void generateGates(std::mt19937& gen);
 	void generateKeys(std::mt19937& gen);
@@ -64,3 +69,16 @@ private:
 	// A method for writing a layer to a file
 	void saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const;
 };
+
+template <typename ObjectType>
+bool LevelGenerator::isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const
+{
+	for (const auto& object : objects)
+	{
+		if (object.getPosition() == tilePosition)
+		{
+			return true;
+		}
+	}
+	return false;
+}

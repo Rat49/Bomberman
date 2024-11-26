@@ -1,4 +1,5 @@
 #include "TestModule/LevelGeneratorTest.hpp"
+#include "Common/Logs.hpp"
 
 const std::string& LevelGeneratorTest::getName() const
 {
@@ -7,7 +8,7 @@ const std::string& LevelGeneratorTest::getName() const
 
 void LevelGeneratorTest::setup()
 {
-
+	LOG("Setup done!");
 }
 
 void LevelGeneratorTest::run()
@@ -16,6 +17,13 @@ void LevelGeneratorTest::run()
 	levelGenerator.Initialize(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 });
 	levelGenerator.generateLevel(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
 	levelGenerator.exportLevelToTextFiles("LevelTest");
+
+	// test
+	sf::Vector2i tilePosition = { 5, 5 };
+	if (levelGenerator.isObjectOnTile(tilePosition, levelGenerator.getObstacles()))
+	{
+		LOG("Obstacle is on this tile!");
+	}
 }
 
 void LevelGeneratorTest::update(float deltaTime, sf::RenderWindow* window)

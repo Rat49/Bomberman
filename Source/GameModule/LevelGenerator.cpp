@@ -98,7 +98,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 			EnemyType type = availableTypes[distType(gen)];
 
 			// Generate patrolling points with busy check
-			std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, usedPositions);
+			std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), usedPositions, enemyRadius);
 
 			// Add all patrol points to occupied positions
 			for (const auto& point : patrollingPoints)
@@ -153,13 +153,17 @@ std::vector<std::vector<int>> LevelGenerator::generateLayer() const
 	// Set outer walls as UNBREAKABLE
 	for (int x = 0; x < width; ++x)
 	{
-		layer[0][x] = 0;               // Upper wall
-		layer[height - 1][x] = 0;      // Lower wall
+		// Upper wall
+		layer[0][x] = 0;
+		// Lower wall
+		layer[height - 1][x] = 0;
 	}
 	for (int y = 0; y < height; ++y)
 	{
-		layer[y][0] = 0;               // Left wall
-		layer[y][width - 1] = 0;       // Right wall
+		// Left wall
+		layer[y][0] = 0;
+		// Right wall
+		layer[y][width - 1] = 0;
 	}
 
 	// Add bulletproof fields inside the matrix
@@ -169,7 +173,8 @@ std::vector<std::vector<int>> LevelGenerator::generateLayer() const
 		{
 			if (Obstacle::isValidUnbreakablePosition({ x, y }))
 			{
-				layer[y][x] = 0; // UNBREAKABLE
+				// UNBREAKABLE
+				layer[y][x] = 0;
 			}
 		}
 	}
@@ -211,14 +216,14 @@ std::set<std::pair<int, int>> LevelGenerator::generateSafetyZone(const sf::Vecto
 }
 
 // Generate patrolling points
-std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937& gen, const std::set<std::pair<int, int>>& occupiedPositions) const
+std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, const std::set<std::pair<int, int>>& occupiedPositions, int range) const
 {
 	std::set<std::pair<int, int>> localOccupiedPositions = occupiedPositions;
 	std::vector<sf::Vector2i> patrollingPoints;
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
+	std::uniform_int_distribution<> distX(enemyPosition.x - range, enemyPosition.x + range);
+	std::uniform_int_distribution<> distY(enemyPosition.y - range, enemyPosition.y + range);
 
-	while (patrollingPoints.size() < 3)
+	while (patrollingPoints.size() <= range)
 	{
 		int x = distX(gen);
 		int y = distY(gen);
@@ -235,7 +240,7 @@ std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937&
 	return patrollingPoints;
 }
 
-void LevelGenerator::generateGates(std::mt19937& gen) // , std::set<std::pair<int, int>>& occupiedPositions)
+void LevelGenerator::generateGates(std::mt19937& gen)
 {
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
@@ -249,8 +254,6 @@ void LevelGenerator::generateGates(std::mt19937& gen) // , std::set<std::pair<in
 		// Check if the position is under breakable object
 		if (breakableObjPos.find({ x, y }) != breakableObjPos.end())
 		{
-			//Gate* newGate = new Gate(sf::Vector2i(x, y), true, &keys[0]);
-
 			// The gate is hidden under a brick
 			gates.push_back({ sf::Vector2i(x, y), true, &keys[0]});
 			breakableObjPos.insert({ x, y });
@@ -258,7 +261,7 @@ void LevelGenerator::generateGates(std::mt19937& gen) // , std::set<std::pair<in
 	}
 }
 
-void LevelGenerator::generateKeys(std::mt19937& gen) // , std::set<std::pair<int, int>>& occupiedPositions)
+void LevelGenerator::generateKeys(std::mt19937& gen)
 {
 	std::uniform_int_distribution<> distX(1, width - 2);
 	std::uniform_int_distribution<> distY(1, height - 2);
