@@ -45,6 +45,8 @@ public:
 	// Get the render window
 	sf::RenderWindow* getWindow() const { return window; }
 
+	const sf::Font& getFont(const std::string& fontName);
+	
 	// Update element position
 	void updateUIElementPositions();
 
@@ -56,9 +58,7 @@ public:
 	void setBackgroundColor(const sf::Color& newColor) { backgroundColor = newColor; }
 
 protected:
-	const sf::Font& getFont(const std::string& fontName);
 
-private:
 	// Map to store UI elements
 	std::unordered_map<std::string, std::shared_ptr<UIElement>> elements;
 
