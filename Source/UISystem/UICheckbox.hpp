@@ -7,7 +7,7 @@
 class UICheckbox : public UIElement
 {
 public:
-	UICheckbox(float edgeSize);
+	explicit UICheckbox(float edgeSize);
 
 	void setPosition(const sf::Vector2f& pos) override;
 
