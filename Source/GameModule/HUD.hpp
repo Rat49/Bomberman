@@ -1,3 +1,4 @@
+#pragma once
 #include "UISystem/UIScreen.hpp"
 
 class HUD : public UIScreen
