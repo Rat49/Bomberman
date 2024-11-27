@@ -8,26 +8,18 @@ UIButton::UIButton(const std::string& text, const sf::Font& font, unsigned int c
 	buttonText.setFont(font);
 	buttonText.setCharacterSize(characterSize);
 
+	shadowText.setFont(font);
+	shadowText.setString(text);
+	shadowText.setCharacterSize(characterSize);
+
 	setIsInteractable(true);
 
 	setSize(buttonSize);
-
-	// Draw the button with a background color
-	if (isHovered)
-	{
-		// Hovered color
-		buttonBackground.setFillColor(sf::Color::Cyan);
-	}
-	else
-	{
-		// Default color
-		buttonBackground.setFillColor(sf::Color::Green);
-	}
 }
 
 bool UIButton::handleEvent(const sf::Event& event)
 {
-	if (event.type == sf::Event::MouseButtonPressed)
+	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 	{
 		float mouseX = static_cast<float>(event.mouseButton.x);
 		float mouseY = static_cast<float>(event.mouseButton.y);
@@ -35,6 +27,9 @@ bool UIButton::handleEvent(const sf::Event& event)
 		if (containsPoint(sf::Vector2f(mouseX, mouseY)))
 		{
 			isPressed = true;
+
+			if(onClick)
+				onClick();
 		}
 		else
 		{
@@ -50,39 +45,22 @@ bool UIButton::handleEvent(const sf::Event& event)
 		// Check if the mouse is over the button
 		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
 
-		if (isHovered && !isPressed)
+		if (isHovered)
 		{
-			LOG("Hover callback called.");
 			onHover();
 		}
 	}
-
-	if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+	else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && isPressed)
 	{
-		if (onClick)
-		{
-			LOG("Click callback called.");
-			onClick();
+		if (onRelease) {
+			onRelease();
 		}
-	}
-	else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-	{
 		isPressed = false;
-		LOG("Button released.");
 
-		float mouseX = static_cast<float>(event.mouseMove.x);
-		float mouseY = static_cast<float>(event.mouseMove.y);
-
-		// Check if the mouse is over the button
-		isHovered = containsPoint(sf::Vector2f(mouseX, mouseY));
-
-		if (isHovered && !isPressed)
-		{
-			LOG("Hover callback called.");
+		if (isHovered && onHover) {
 			onHover();
 		}
 	}
-
 
 	return isHovered || isPressed;
 }
@@ -113,15 +91,14 @@ void UIButton::setPosition(const sf::Vector2f& pos)
 	buttonBackground.setPosition(pos);
 	buttonText.setPosition(buttonBackground.getPosition().x + 10.f, buttonBackground.getPosition().y + 5.f);
 
-	sf::FloatRect hitbox = buttonBackground.getGlobalBounds();
+	float offset = (shadowText.getCharacterSize() + 0.f) / 10;
+	shadowText.setPosition(buttonText.getPosition().x + offset, buttonText.getPosition().y + offset);
 }
 
 void UIButton::setSize(const sf::Vector2f& newSize)
 {
 	UIElement::setSize(newSize);
 	buttonBackground.setSize(newSize);
-
-	LOG("BUTTON size x: " + std::to_string(buttonBackground.getSize().x) + " , y: " + std::to_string(buttonBackground.getSize().y));
 }
 
 // Set default button color
@@ -172,6 +149,18 @@ void UIButton::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	// Draw the background
 	target.draw(tempBackground, states);
 
+	if (hasShadow) {
+		target.draw(shadowText, states);
+	}
+
 	// Draw the text
 	target.draw(buttonText, states);
+}
+
+void UIButton::dropShadows(const sf::Color& labelColor, const sf::Color& shadowColor)
+{
+	buttonText.setFillColor(labelColor);
+	shadowText.setFillColor(shadowColor);
+
+	hasShadow = true;
 }
