@@ -87,21 +87,22 @@ void GameModule::run()
         sf::Event event;
 		while (window.pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed)
+			switch (event.type)
 			{
+			case sf::Event::Closed:
 				window.close();
-			}
-			else if (event.type == sf::Event::MouseMoved
-				|| event.type == sf::Event::MouseButtonPressed
-				|| event.type == sf::Event::MouseButtonReleased)
-			{
-				screens[currentScreen]->handleEvent(event);
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
+				break;
 
+			case sf::Event::Resized:
+				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
+				[[fallthrough]];
+
+			case sf::Event::MouseMoved:
+			case sf::Event::MouseButtonPressed:
+			case sf::Event::MouseButtonReleased:
 				screens[currentScreen]->handleEvent(event);
+				break;
+
 			}
 		}
 
