@@ -23,6 +23,13 @@ void UICheckboxTest::setup()
 	screen1 = std::make_shared<UIScreen>();
 	screen1->addElement("CheckBox", checkBox);
 	screen1->addElement("CheckBox1", checkBox1);
+
+	checkBox1->onHover = []() {
+		LOG("checkBox1 onHover event triggered!");
+		};
+	checkBox1->onClick = []() {
+		LOG("checkBox1 onClick triggered!");
+		};
 }
 
 void UICheckboxTest::run()
