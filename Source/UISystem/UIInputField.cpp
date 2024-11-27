@@ -1,0 +1,202 @@
+#include "UIInputField.hpp"
+#include "Common/Logs.hpp"
+
+namespace {
+
+	const float INPUT_TEXT_OFFSET = 5.0f;
+	const float CURSOR_OFFSET = 2.0f;
+	const unsigned int MIN_CHARACTER_SIZE = 5;
+	const std::string INITIAL_TEXT = "Enter text...";
+}
+
+
+UIInputField::UIInputField(const sf::Font& font, unsigned int characterSize, const sf::Vector2f& fieldSize)
+	:m_maxCharacters(30), m_hasPlaceholder(true), m_characterSizeOriginal(characterSize)
+{
+	//setup input field
+	setSize(fieldSize);
+
+	//setup input text
+	m_inputText.setCharacterSize(characterSize);
+	setFont(font);
+
+	//setup color of both
+	setColor(sf::Color::Black, sf::Color::White);
+
+	m_isWriteable = false;
+	setIsInteractable(true);
+
+	//set initial text
+	m_textBuffer = INITIAL_TEXT;
+	m_inputText.setString(m_textBuffer);
+}
+
+void UIInputField::setPosition(const sf::Vector2f& pos)
+{
+	UIElement::setPosition(pos);
+
+	//positions of field and text
+	m_fieldBackground.setPosition(pos);
+	m_inputText.setPosition(pos.x + INPUT_TEXT_OFFSET, pos.y + (m_fieldBackground.getSize().y - m_inputText.getCharacterSize()) / 2);
+
+	//position of cursor
+	sf::FloatRect textBounds = m_inputText.getGlobalBounds();
+	m_cursor.setPosition(textBounds.left + textBounds.width+ CURSOR_OFFSET, 
+						 m_fieldBackground.getPosition().y + (m_fieldBackground.getSize().y - m_inputText.getCharacterSize()) / 2);
+}
+
+void UIInputField::setSize(const sf::Vector2f& fieldSize)
+{
+	UIElement::setSize(fieldSize);
+
+	m_fieldBackground.setSize(fieldSize);
+}
+
+void UIInputField::setText(const std::string& text)
+{
+	m_textBuffer = text;
+	m_inputText.setString(m_textBuffer);
+
+	adjustTextToFit();
+}
+
+void UIInputField::setColor(const sf::Color& fieldColor, const sf::Color& inputTextColor)
+{
+	m_fieldBackground.setFillColor(fieldColor);
+	m_inputText.setFillColor(inputTextColor);
+}
+
+void UIInputField::setMaxCharacters(unsigned int maxChar)
+{
+	m_maxCharacters = maxChar;
+}
+
+void UIInputField::setFont(const sf::Font& font)
+{
+	m_inputText.setFont(font);
+}
+
+bool UIInputField::handleEvent(const sf::Event& event)
+{
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		float mouseX = static_cast<float>(event.mouseButton.x);
+		float mouseY = static_cast<float>(event.mouseButton.y);
+
+		m_isWriteable = containsPoint(sf::Vector2f(mouseX, mouseY));
+
+
+		if (m_isWriteable)
+		{
+			//create and display cursor (thin vertical line)
+			m_cursor.setSize(sf::Vector2f(CURSOR_OFFSET, static_cast<float>(m_inputText.getCharacterSize())));
+			m_cursor.setFillColor(sf::Color::White);
+
+			//hide initial text
+			if (m_hasPlaceholder)
+			{
+				m_textBuffer.clear();
+				m_inputText.setString("");
+				m_hasPlaceholder = false;
+			}
+		}
+		else
+		{
+			//hide cursor
+			m_cursor.setSize(sf::Vector2f(0.f, 0.f));
+
+			//show initial text if nothing is written
+			if (m_textBuffer.empty() && !m_hasPlaceholder)
+			{
+				m_hasPlaceholder = true;
+				m_textBuffer = INITIAL_TEXT;
+				m_inputText.setString(m_textBuffer);
+			}
+		}
+
+		//follow position with cursor
+		cursorMovement();
+	}
+
+	if (m_isWriteable && event.type == sf::Event::TextEntered)
+	{
+		if (event.text.unicode == '\b') //backspace (delete char)
+		{
+			if (!m_textBuffer.empty())
+			{
+				m_textBuffer.pop_back();
+			}
+		}
+		else if (event.text.unicode >= 32 && event.text.unicode <= 126) //printable characters
+		{
+			if (m_textBuffer.size() <= m_maxCharacters)
+			{
+				m_textBuffer += static_cast<char>(event.text.unicode);
+			}
+		}
+
+		
+		//fill input field text with chars
+		m_inputText.setString(m_textBuffer);
+
+		//manage text and cursor
+		adjustTextToFit();
+		cursorMovement();
+	}
+
+	return m_isWriteable;
+}
+
+void UIInputField::adjustTextToFit()
+{
+	//get the bounds of the input text
+	sf::FloatRect textBounds = m_inputText.getGlobalBounds();
+
+	//reduce character size if text exceeds field width
+	while (textBounds.width > m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET && m_inputText.getCharacterSize() > MIN_CHARACTER_SIZE)
+	{
+		m_inputText.setCharacterSize(m_inputText.getCharacterSize() - 1);
+		textBounds = m_inputText.getGlobalBounds();
+	}
+
+	//increase character size if there's extra space and it's smaller than the original size
+	while (textBounds.width < m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET &&
+		   m_inputText.getCharacterSize() < m_characterSizeOriginal)
+	{
+		m_inputText.setCharacterSize(m_inputText.getCharacterSize() + 1);
+		textBounds = m_inputText.getGlobalBounds();
+
+		//stop if text starts exceeding the field
+		if (textBounds.width > m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET)
+		{
+			m_inputText.setCharacterSize(m_inputText.getCharacterSize() - 1);
+			break;
+		}
+	}
+
+	//reposition the text vertically (to keep it centered)
+	m_inputText.setPosition(m_fieldBackground.getPosition().x + INPUT_TEXT_OFFSET,
+							m_fieldBackground.getPosition().y + (m_fieldBackground.getSize().y - m_inputText.getCharacterSize()) / 2);
+}
+
+void UIInputField::cursorMovement()
+{
+	//reposition cursor in case text changes
+	sf::FloatRect textBounds = m_inputText.getGlobalBounds();
+	m_cursor.setPosition(textBounds.left + textBounds.width + CURSOR_OFFSET,
+		m_fieldBackground.getPosition().y + (m_fieldBackground.getSize().y - m_inputText.getCharacterSize()) / 2);
+}
+
+void UIInputField::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	//draw field
+	target.draw(m_fieldBackground, states);
+
+	//draw text
+	target.draw(m_inputText, states);
+
+	//draw cursor
+	target.draw(m_cursor, states);
+}
+
+
