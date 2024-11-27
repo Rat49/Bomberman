@@ -57,7 +57,6 @@ std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath
 		return it->second;
 	}
 
-	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
 	std::vector<char> soundData;
 	if (!usePackage)
 	{
@@ -77,6 +76,7 @@ std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath
 		}
 	}
 
+	auto soundBuffer = std::make_shared<sf::SoundBuffer>();
 	if (!soundBuffer->loadFromMemory(soundData.data(), soundData.size())) {
 		LOG("Could not load sound from memory");
 		return nullptr;
@@ -87,7 +87,7 @@ std::shared_ptr <sf::SoundBuffer> AssetManager::getSound(const RelativeAssetPath
 	return sounds[assetName];
 }
 
-std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath assetName)
+std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath& assetName)
 {
 	auto it = musics.find(assetName);
 	if (it != musics.end())
@@ -95,14 +95,13 @@ std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath asset
 		return it->second.first;
 	}
 
-	auto music = std::make_shared<sf::Music>();
 	std::vector<char> musicData;
 	if (!usePackage)
 	{
 		std::string fullPath = getFullPath(assetName);
 		if (!loadData(assetName, fullPath, musicData))
 		{
-			LOG("Failed to load musci data from file : [$]", fullPath);
+			LOG("Failed to load music data from file : [$]", fullPath);
 			return nullptr;
 		}
 	}
@@ -115,6 +114,7 @@ std::shared_ptr <sf::Music> AssetManager::getMusic(const RelativeAssetPath asset
 		}
 	}
 
+	auto music = std::make_shared<sf::Music>();
 	if (!music->openFromMemory(musicData.data(), musicData.size()))
 	{
 		LOG("Could not open music from memory: [$]", assetName);
@@ -134,7 +134,6 @@ std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& a
 		return it->second;
 	}
 	
-	auto texture = std::make_shared<sf::Texture>();
 	std::vector<char> textureData;
 	if (!usePackage)
 	{
@@ -154,6 +153,7 @@ std::shared_ptr<sf::Texture> AssetManager::getTexture(const RelativeAssetPath& a
 		}
 	}
 
+	auto texture = std::make_shared<sf::Texture>();
 	if (!texture->loadFromMemory(textureData.data(), textureData.size())) {
 		LOG("Could not load texture from memory: [$]", assetName);
 		return nullptr;
@@ -172,7 +172,6 @@ std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetNa
 		return it->second.first;
 	} 
 
-	auto font = std::make_shared<sf::Font>();
 	std::vector<char> fontData;
 	if(!usePackage)
 	{
@@ -192,6 +191,7 @@ std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetNa
 		}
 	}
 
+	auto font = std::make_shared<sf::Font>();
 	if (!font->loadFromMemory(fontData.data(), fontData.size())) {
 		LOG("Could not load font from memory: [$]", assetName);
 		return nullptr;
@@ -202,7 +202,7 @@ std::shared_ptr<sf::Font> AssetManager::getFont(const RelativeAssetPath& assetNa
 	return fonts[assetName].first;
 }
 
-const std::vector<char>& AssetManager::getLevel(const RelativeAssetPath& assetName)
+std::shared_ptr<std::vector<char>> AssetManager::getLevel(const RelativeAssetPath& assetName)
 {
 	auto it = levels.find(assetName);
 	if (it != levels.end())
@@ -218,8 +218,7 @@ const std::vector<char>& AssetManager::getLevel(const RelativeAssetPath& assetNa
 		if (!loadData(assetName, fullPath, levelData))
 		{
 			LOG("Could not load level data from file: [$]", assetName);
-			static const std::vector<char> emptyData;
-			return emptyData;
+			return nullptr;
 		}
 	}
 	else
@@ -227,12 +226,12 @@ const std::vector<char>& AssetManager::getLevel(const RelativeAssetPath& assetNa
 		if (!loadData(assetName, PACKAGE_FILE, levelData))
 		{
 			LOG("Could not load level data from memory : [$]", assetName);
-			static const std::vector<char> emptyData;
-			return emptyData;
+			return nullptr;
 		}
 	}
 
-	levels.emplace(assetName, std::move(levelData));
+	auto levelDataPtr = std::make_shared<std::vector<char>>(std::move(levelData));
+	levels.emplace(assetName, std::move(levelDataPtr));
 
 	return levels[assetName];
 }

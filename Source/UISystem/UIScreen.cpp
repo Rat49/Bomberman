@@ -46,6 +46,42 @@ void UIScreen::removeElement(const std::string& element)
 	}
 }
 
+void UIScreen::addAnimation(const std::string& animationName, const std::shared_ptr<Animation> animation)
+{
+	// Check for null pointer
+	if (animation) {
+		if (animations.find(animationName) == animations.end()) {
+			animations[animationName] = animation;
+		}
+		else {
+			LOG("Error: adding animation to UIScreen with name that already exists");
+		}
+	}
+	else {
+		LOG("Error: adding nullptr animation to UIScreen");
+	}
+}
+
+std::shared_ptr<Animation> UIScreen::getAnimation(const std::string& animationName) const
+{
+	auto it = animations.find(animationName);
+	if (it != animations.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
+void UIScreen::removeAnimation(const std::string& animationName)
+{
+	// Find the element
+	auto it = animations.find(animationName);
+	if (it != animations.end())
+	{
+		it->second->Stop();
+		animations.erase(it);
+	}
+}
+
 // Draw all UI elements on the given target
 void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
@@ -63,6 +99,14 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		if (element.second->isVisible())
 		{
 			target.draw(*element.second, states);
+		}
+	}
+	for (const auto& animation : animations)
+	{
+		// Check if the element is visible before drawing
+		if (animation.second->isPlaying())
+		{
+			target.draw(*animation.second, states);
 		}
 	}
 

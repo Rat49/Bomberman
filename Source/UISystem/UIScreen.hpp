@@ -6,6 +6,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include "SpriteModule/Animation.hpp"
 #include <vector>
 #include <memory>
 
@@ -20,6 +21,15 @@ public:
 
 	// Remove a UI element
 	void removeElement(const std::string& element);
+
+	// Add animation
+	void addAnimation(const std::string& animationName, const std::shared_ptr<Animation> animation);
+
+	// Get animation
+	std::shared_ptr<Animation> getAnimation(const std::string& animationName) const;
+
+	// Remove animation
+	void removeAnimation(const std::string& animationName);
 
 	// Set the view for the UI screen
 	void setView(const sf::View& view);
@@ -41,11 +51,19 @@ public:
 	// Override draw method to draw all UI elements on the given target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
+	const sf::Color& getBackgroundColor() { return backgroundColor; }
+
+	void setBackgroundColor(const sf::Color& newColor) { backgroundColor = newColor; }
+
+protected:
 	const sf::Font& getFont(const std::string& fontName);
 
 private:
 	// Map to store UI elements
 	std::unordered_map<std::string, std::shared_ptr<UIElement>> elements;
+
+	// Map to store animations
+	std::unordered_map<std::string, std::shared_ptr<Animation>> animations;
 
 	// Optional view for handling UI viewport settings
 	sf::View view;
@@ -60,4 +78,6 @@ private:
 	static std::unordered_map<std::string, sf::Font> fonts;
 
 	UISystem* uiSystem;
+
+	sf::Color backgroundColor;
 };

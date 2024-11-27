@@ -16,13 +16,13 @@ public:
 
 	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
-	std::shared_ptr <sf::Music> getMusic(const RelativeAssetPath assetName);
+	std::shared_ptr <sf::Music> getMusic(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Texture> getTexture(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
 
-	const std::vector<char>& getLevel(const RelativeAssetPath& assetName);
+	std::shared_ptr<std::vector<char>> getLevel(const RelativeAssetPath& assetName);
 
 	void terminate() override;
 
@@ -39,7 +39,7 @@ private:
 
 	std::map<RelativeAssetPath, std::pair<std::shared_ptr<sf::Font>, std::vector<char>>> fonts;
 
-	std::map<RelativeAssetPath, std::vector<char>> levels;
+	std::map<RelativeAssetPath, std::shared_ptr<std::vector<char>>> levels;
 
 	std::map<RelativeAssetPath, AssetMetadata> assetsMetadata;
 

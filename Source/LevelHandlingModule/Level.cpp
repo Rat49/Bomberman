@@ -51,16 +51,16 @@ bool Level::initialize()
 bool Level::loadLevel(const std::string& levelPath)
 {
 	//use Asset Manager to get level file data
-	const auto& levelData = Modules::Assets->getLevel(levelPath);
+	const auto levelData = Modules::Assets->getLevel(levelPath);
 
-	if (levelData.empty())
+	if (levelData->empty())
 	{
 		LOG("Failed to load level .csv file from [$]", levelPath);
 		return false;
 	}
 
 	//convert data in string stream
-	std::string levelString(levelData.begin(), levelData.end());
+	std::string levelString(levelData->begin(), levelData->end());
 	std::istringstream file(levelString);
 
 	//read each line of file
