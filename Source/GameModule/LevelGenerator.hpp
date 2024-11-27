@@ -19,7 +19,7 @@ public:
 
 	bool Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew);
 
-	void generateLevel(int newwidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters);
+	static LevelGenerator* generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters);
 
 	template <typename ObjectType>
 	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
@@ -43,7 +43,9 @@ private:
 	int breakableCount;
 	sf::Vector2i playerStartPosition;
 
-	int enemyRadius = 3;
+	int enemyRange = 3;
+	int minNumOfPatrolPoints = 2;
+	int maxNumOfPatrolPoints = 6;
 
 	std::vector<Obstacle> obstacles;
 	std::vector<Enemy> enemies;

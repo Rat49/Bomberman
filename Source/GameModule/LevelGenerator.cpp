@@ -45,29 +45,34 @@ bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType g
 	return true;
 }
 
-void LevelGenerator::generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters)
+LevelGenerator* LevelGenerator::generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters)
 {
+	LevelGenerator* levelGenerator = new LevelGenerator();
+
 	// Set up the level parameters
-	if (!Initialize(newWidth, newHeight, gameLevel, enemyCountNew, breakableCountNew, playerStartPositionNew))
+	if (!levelGenerator->Initialize(newWidth, newHeight, gameLevel, enemyCountNew, breakableCountNew, playerStartPositionNew))
 	{
 		LOG("Failed to initialize the level with provided parameters.");
-		return;
+		delete levelGenerator;
+		return nullptr;
 	}
 
 	// Random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	std::vector<std::vector<int>> layer = generateLayer();
+	std::vector<std::vector<int>> layer = levelGenerator->generateLayer();
 
 	// Generate all level components
-	generateObstacles(layer, gen);
-	generateEnemies(gen);
-	generateKeys(gen);
-	generateGates(gen);
-	generateBoosters(gen, numBoosters);
+	levelGenerator->generateObstacles(layer, gen);
+	levelGenerator->generateEnemies(gen);
+	levelGenerator->generateKeys(gen);
+	levelGenerator->generateGates(gen);
+	levelGenerator->generateBoosters(gen, numBoosters);
 
-	saveLayerToFile("LevelTest_obstacles.txt", layer);
+	levelGenerator->saveLayerToFile("LevelTest_obstacles.txt", layer);
+
+	return levelGenerator;
 }
 
 void LevelGenerator::generateEnemies(std::mt19937& gen)
@@ -98,7 +103,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 			EnemyType type = availableTypes[distType(gen)];
 
 			// Generate patrolling points with busy check
-			std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), usedPositions, enemyRadius);
+			std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), usedPositions, enemyRange);
 
 			// Add all patrol points to occupied positions
 			for (const auto& point : patrollingPoints)
@@ -223,7 +228,12 @@ std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937&
 	std::uniform_int_distribution<> distX(enemyPosition.x - range, enemyPosition.x + range);
 	std::uniform_int_distribution<> distY(enemyPosition.y - range, enemyPosition.y + range);
 
-	while (patrollingPoints.size() <= range)
+	// Define a random distribution for the number of points between min and max
+	std::uniform_int_distribution<> distNumPatrolPoints(minNumOfPatrolPoints, maxNumOfPatrolPoints);
+	// Generate a random number of patrol points
+	int numPatrolPoints = distNumPatrolPoints(gen);
+
+	while (patrollingPoints.size() <= numPatrolPoints)
 	{
 		int x = distX(gen);
 		int y = distY(gen);

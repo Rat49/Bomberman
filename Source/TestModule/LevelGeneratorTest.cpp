@@ -13,16 +13,20 @@ void LevelGeneratorTest::setup()
 
 void LevelGeneratorTest::run()
 {
-	LevelGenerator levelGenerator;
-	levelGenerator.Initialize(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 });
-	levelGenerator.generateLevel(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
-	levelGenerator.exportLevelToTextFiles("LevelTest");
+	LevelGenerator* levelGenerator = LevelGenerator::generateLevel(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
+
+	levelGenerator->exportLevelToTextFiles("LevelTest");
 
 	// test
 	sf::Vector2i tilePosition = { 5, 5 };
-	if (levelGenerator.isObjectOnTile(tilePosition, levelGenerator.getObstacles()))
+	if (levelGenerator->isObjectOnTile(tilePosition, levelGenerator->getObstacles()))
 	{
 		LOG("Obstacle is on this tile!");
+	}
+
+	if (levelGenerator)
+	{
+		delete levelGenerator;
 	}
 }
 
