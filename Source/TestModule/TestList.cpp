@@ -15,6 +15,7 @@
 #include "TestModule/UIButtonTest.hpp"
 #include "TestModule/PlayerTest.hpp"
 #include "TestModule/LevelHandlingModuleTest.hpp"
+#include "TestModule/UICheckboxTest.hpp"
 
 #ifndef FINAL
 
@@ -36,6 +37,7 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
 	Modules::Tests->addTest(std::make_shared<PlayerTest>());
 	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());*/
+	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
 }
 
 #endif
