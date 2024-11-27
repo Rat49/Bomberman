@@ -68,7 +68,7 @@ void Animation::Play()
 	m_isPlaying = true;
 	m_currentFrame = 0;
 	m_elapsedTime = 0;
-
+	m_isStopped = false;
 	// this had to be added, so that first frame is drawn
 	setTexture(*m_atlasTexture);
 	setTextureRect(m_rects[m_currentFrame]);
@@ -79,4 +79,18 @@ void Animation::Stop()
 {
 	m_isPlaying = false;
 	m_elapsedTime = 0;
+	m_isStopped = true;
+}
+
+void Animation::Resume()
+{
+	if (!m_isStopped)
+	{
+		m_isPlaying = true;
+	}
+}
+
+void Animation::Pause()
+{
+	m_isPlaying = false;
 }

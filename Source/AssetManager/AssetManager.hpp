@@ -12,13 +12,13 @@ class AssetManager : public BaseModule
 public:
 	AssetManager();
 
-	bool initialize(const std::string& rootFolderPath);
-
 	std::shared_ptr <sf::SoundBuffer> getSound(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Texture> getTexture(const RelativeAssetPath& assetName);
 
 	std::shared_ptr<sf::Font> getFont(const RelativeAssetPath& assetName);
+
+	bool initialize() override;
 
 	void terminate() override;
 

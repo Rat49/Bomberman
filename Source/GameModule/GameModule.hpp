@@ -1,6 +1,8 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
 #include "HUD.hpp"
+#include "PlayerCharacter.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -17,4 +19,6 @@ public:
 private:
 	sf::RenderWindow window;
 	std::unique_ptr<HUD> hud;
+	PlayerCharacter player;
+	LevelId currentLevel;
 };

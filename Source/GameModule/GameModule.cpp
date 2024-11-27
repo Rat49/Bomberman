@@ -4,12 +4,15 @@
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
+#include "AssetManager/AssetManager.hpp"
 
 namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
 	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
+	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
 	const std::string& HEIGHT = "height";
@@ -21,12 +24,14 @@ namespace {
 using Time = std::chrono::high_resolution_clock;
 using Duration = std::chrono::duration<float, std::micro>;
 
-bool GameModule::initialize() {
-
+bool GameModule::initialize() 
+{
 	// Reading config file
 	Modules::Config->addFile(PATH_WINDOW_INFO);
 	Modules::Config->addFile(PATH_HUD);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
+	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
+	Modules::Level->setCurrentLevel(currentLevel);
 
 	if (!windowInfo.isSectionPresent(WINDOW))
 		return false;
@@ -89,10 +94,13 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
-        Modules::update(deltaTime, &window);
-
 
         window.clear(GREY);
+		Modules::update(deltaTime, &window);
+		Modules::Level->setLevelViewOffset(player.getCurrentPosition(), window);
+		player.updateVelocity(deltaTime);
+		window.draw(*player.getCurrentAnimation());
+		player.setIsUpdated(false);
 		hud->draw(window, sf::RenderStates::Default);
         window.display();
     }
