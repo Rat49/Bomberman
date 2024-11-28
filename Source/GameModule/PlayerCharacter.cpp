@@ -9,38 +9,40 @@
 
 PlayerCharacter::PlayerCharacter()
 {
-	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
-	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
+
 }
 
 bool PlayerCharacter::init()
 {
+	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
+
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
 
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
-	if (!playerMovement)
+	if (playerMovement < 0)
 	{
 		LOG("Failed to get PlayerMovement action ID.");
 		return false;
 	}
 
 	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
-	if (!playerMovementHandle)
+	if (playerMovementHandle < 0)
 	{
 		LOG("Failed to register PlayerMovement event.");
 		return false;
 	}
 
 	plantBomb = Modules::Input->GetActionID("PlantBomb");
-	if (!plantBomb)
+	if (plantBomb < 0)
 	{
 		LOG("Failed to get PlantBomb action ID.");
 		return false;
 	}
 
 	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, [this](void* /*axis2DState*/) { this->onBombPlant(nullptr); });
-	if (!plantBombHandle)
+	if (plantBombHandle < 0)
 	{
 		LOG("Failed to register PlantBomb event.");
 		return false;

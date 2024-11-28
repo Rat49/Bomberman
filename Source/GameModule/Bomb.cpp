@@ -4,6 +4,12 @@
 
 Bomb::Bomb()
 {
+
+}
+
+
+bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
+{
 	bombIdleID = Modules::Sprite->createAnimation("../../Data/Config/BombIdleAnimation.ini");
 	bombUpID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionUpAnimation.ini");
 	bombDownID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionDownAnimation.ini");
@@ -21,11 +27,7 @@ Bomb::Bomb()
 	{
 		LOG("Failed to retrieve animation with ID: " + std::to_string(bombIdleID));
 	}
-}
 
-
-bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
-{
 	if (newPosition.x < 2 || newPosition.y < 2)
 	{
 		LOG("Wrong position. The position of bomb on x and y must be greater than 2.");
