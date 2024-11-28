@@ -2,6 +2,8 @@
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
 #include "Screens.hpp"
+#include "PlayerCharacter.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -31,4 +33,8 @@ private:
 	int32_t gameTime;
 
 	void checkTimeCounter();
+
+	PlayerCharacter player;
+	 
+	LevelId currentLevel;
 };

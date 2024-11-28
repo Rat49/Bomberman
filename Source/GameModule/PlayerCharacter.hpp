@@ -25,10 +25,16 @@ public:
 
 	void setIsUpdated(bool isUpdated) { m_isUpdated = isUpdated; }
 
+	sf::Vector2f getCurrentPosition() const;
+
+	void updateVelocity(float deltaTime);
+
 private:
 	int32_t currentAnimation = -1;
-	float x = 0.f;
-	float y = 0.f;
+	float x = 70.f;
+	float y = 70.f;
+	float speed = 0.f;
+	float velocity = 0.f;
 
 	ActionID playerMovement;
 	FunctionHandle playerMovementHandle;

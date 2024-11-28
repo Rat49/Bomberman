@@ -2,13 +2,13 @@
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Common/Modules.hpp"
 #include "Common/Logs.hpp"
+#include "LevelHandlingModule/Level.hpp"
 #include <chrono>
 #include <thread>
 
 namespace 
 {
-	const std::string LEVEL1_CONFIG_PATH = "../../Data/Config/Level_1_ConfigTest.ini";
-	const std::string LEVEL2_CONFIG_PATH = "../../Data/Config/Level_2_ConfigTest.ini";
+	const std::string TEST_LEVEL  = "../../Data/Config/TestLevel1.ini";
 }
 
 const std::string& LevelHandlingModuleTest::getName() const
@@ -18,27 +18,20 @@ const std::string& LevelHandlingModuleTest::getName() const
 
 void LevelHandlingModuleTest::setup()
 {
-	//load levels
-	m_firstLevel = Modules::Level->loadLevel(LEVEL1_CONFIG_PATH);
-	m_secondLevel = Modules::Level->loadLevel(LEVEL2_CONFIG_PATH);
-
-
-	//chose current game level
+	m_firstLevel = Modules::Level->loadLevel(TEST_LEVEL);
 	Modules::Level->setCurrentLevel(m_firstLevel);
 }
 
 void LevelHandlingModuleTest::run()
 {
 	LOG("Run Level Handling Module Test");
-
-	//get information of tile based on x and y
-	Modules::Level->getTileInfo(0, 0);
+	Modules::Level->getTileInfo(1, 1);
 }
 
 void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 {
-	//test level view based on player position
-	sf::Vector2f playerPosition(100.f, 100.f); 
+	////test level view based on player position
+	sf::Vector2f playerPosition(600.f, 600.f); 
 
 	//set Level view using an offset
 	Modules::Level->setLevelViewOffset(playerPosition, *window);
@@ -48,5 +41,5 @@ void LevelHandlingModuleTest::update(float, sf::RenderWindow* window)
 
 bool LevelHandlingModuleTest::isComplete() const
 {
-	return false;
+	return true;
 }
