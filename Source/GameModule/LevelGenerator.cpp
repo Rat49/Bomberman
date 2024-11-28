@@ -47,13 +47,13 @@ bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType g
 
 LevelGenerator* LevelGenerator::generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters)
 {
-	LevelGenerator* levelGenerator = new LevelGenerator();
+	LevelGenerator* levelInfo = new LevelGenerator();
 
 	// Set up the level parameters
-	if (!levelGenerator->Initialize(newWidth, newHeight, gameLevel, enemyCountNew, breakableCountNew, playerStartPositionNew))
+	if (!levelInfo->Initialize(newWidth, newHeight, gameLevel, enemyCountNew, breakableCountNew, playerStartPositionNew))
 	{
 		LOG("Failed to initialize the level with provided parameters.");
-		delete levelGenerator;
+		delete levelInfo;
 		return nullptr;
 	}
 
@@ -61,18 +61,18 @@ LevelGenerator* LevelGenerator::generateLevel(int newWidth, int newHeight, GameL
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	std::vector<std::vector<int>> layer = levelGenerator->generateLayer();
+	std::vector<std::vector<int>> layer = levelInfo->generateLayer();
 
 	// Generate all level components
-	levelGenerator->generateObstacles(layer, gen);
-	levelGenerator->generateEnemies(gen);
-	levelGenerator->generateKeys(gen);
-	levelGenerator->generateGates(gen);
-	levelGenerator->generateBoosters(gen, numBoosters);
+	levelInfo->generateObstacles(layer, gen);
+	levelInfo->generateEnemies(gen);
+	levelInfo->generateKeys(gen);
+	levelInfo->generateGates(gen);
+	levelInfo->generateBoosters(gen, numBoosters);
 
-	levelGenerator->saveLayerToFile("LevelTest_obstacles.txt", layer);
+	//levelInfo->saveLayerToFile("LevelTest_obstacles.txt", layer);
 
-	return levelGenerator;
+	return levelInfo;
 }
 
 void LevelGenerator::generateEnemies(std::mt19937& gen)
@@ -307,81 +307,81 @@ void LevelGenerator::generateBoosters(std::mt19937& gen, int numBoosters)
 }
 
 // A method for exporting layers to text files
-void LevelGenerator::exportLevelToTextFiles(const std::string& prefix)
-{
-	// Generating layer layers as a matrix
-	std::vector<std::vector<int>> obstaclesLayer(width, std::vector<int>(height, 0));
-	std::vector<std::vector<int>> boostersLayer(width, std::vector<int>(height, 0));
-	std::vector<std::vector<int>> gatesLayer(width, std::vector<int>(height, 0));
-	std::vector<std::vector<int>> enemiesLayer(width, std::vector<int>(height, 0));
-	std::vector<std::vector<int>> keysLayer(width, std::vector<int>(height, 0));
+//void LevelGenerator::exportLevelToTextFiles(const std::string& prefix)
+//{
+//	// Generating layer layers as a matrix
+//	std::vector<std::vector<int>> obstaclesLayer(width, std::vector<int>(height, 0));
+//	std::vector<std::vector<int>> boostersLayer(width, std::vector<int>(height, 0));
+//	std::vector<std::vector<int>> gatesLayer(width, std::vector<int>(height, 0));
+//	std::vector<std::vector<int>> enemiesLayer(width, std::vector<int>(height, 0));
+//	std::vector<std::vector<int>> keysLayer(width, std::vector<int>(height, 0));
+//
+//	// Filling matrices with data from objects
+//	for (const auto& obstacle : obstacles)
+//	{
+//		obstaclesLayer[obstacle.getPosition().x][obstacle.getPosition().y] = 1;  // Obstacle = 1
+//	}
+//
+//	for (const auto& booster : boosters)
+//	{
+//		boostersLayer[booster.getPosition().x][booster.getPosition().y] = 2;  // Booster = 2
+//	}
+//
+//	for (const auto& gate : gates)
+//	{
+//		gatesLayer[gate.getGatePosition().x][gate.getGatePosition().y] = 3;  // Gate = 3
+//	}
+//
+//	for (const auto& enemy : enemies)
+//	{
+//		enemiesLayer[enemy.getSpawnPosition().x][enemy.getSpawnPosition().y] = 4;  // Enemy = 4
+//	}
+//
+//	for (const auto& key : keys)
+//	{
+//		keysLayer[key.getKeyPosition().x][key.getKeyPosition().y] = 5;  // Keys = 5
+//	}
+//
+//	// Writing each layer to a text file
+//	//saveLayerToFile(prefix + "_obstacles.txt", obstaclesLayer);
+//	saveLayerToFile(prefix + "_boosters.txt", boostersLayer);
+//	saveLayerToFile(prefix + "_gates.txt", gatesLayer);
+//	saveLayerToFile(prefix + "_enemies.txt", enemiesLayer);
+//	saveLayerToFile(prefix + "_keys.txt", keysLayer);
+//}
 
-	// Filling matrices with data from objects
-	for (const auto& obstacle : obstacles)
-	{
-		obstaclesLayer[obstacle.getPosition().x][obstacle.getPosition().y] = 1;  // Obstacle = 1
-	}
-
-	for (const auto& booster : boosters)
-	{
-		boostersLayer[booster.getPosition().x][booster.getPosition().y] = 2;  // Booster = 2
-	}
-
-	for (const auto& gate : gates)
-	{
-		gatesLayer[gate.getGatePosition().x][gate.getGatePosition().y] = 3;  // Gate = 3
-	}
-
-	for (const auto& enemy : enemies)
-	{
-		enemiesLayer[enemy.getSpawnPosition().x][enemy.getSpawnPosition().y] = 4;  // Enemy = 4
-	}
-
-	for (const auto& key : keys)
-	{
-		keysLayer[key.getKeyPosition().x][key.getKeyPosition().y] = 5;  // Keys = 5
-	}
-
-	// Writing each layer to a text file
-	//saveLayerToFile(prefix + "_obstacles.txt", obstaclesLayer);
-	saveLayerToFile(prefix + "_boosters.txt", boostersLayer);
-	saveLayerToFile(prefix + "_gates.txt", gatesLayer);
-	saveLayerToFile(prefix + "_enemies.txt", enemiesLayer);
-	saveLayerToFile(prefix + "_keys.txt", keysLayer);
-}
-
-// A method for writing a layer to a file
-void LevelGenerator::saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const
-{
-	// Define the path to the file
-	const std::string directory = "C:\\Users\\dragana.djurdjevic\\sfml-bomberman\\Data\\Config";
-
-	// Combine directory and file name
-	std::filesystem::path fullPath = std::filesystem::path(directory) / filename;
-
-	// Create directories if they do not exist
-	std::filesystem::create_directories(fullPath.parent_path());
-
-	// Try to open the file
-	std::ofstream file(fullPath.string());
-
-	if (file.is_open())
-	{
-		for (const auto& row : layer)
-		{
-			for (size_t i = 0; i < row.size(); ++i)
-			{
-				file << row[i] << (i < row.size() - 1 ? " " : "\n");
-			}
-		}
-		file.close();
-	}
-	else
-	{
-		LOG("Failed to open file.");
-		throw std::runtime_error("Failed to open file: " + filename);
-	}
-}
+//// A method for writing a layer to a file
+//void LevelGenerator::saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const
+//{
+//	// Define the path to the file
+//	const std::string directory = "C:\\Users\\dragana.djurdjevic\\sfml-bomberman\\Data\\Config";
+//
+//	// Combine directory and file name
+//	std::filesystem::path fullPath = std::filesystem::path(directory) / filename;
+//
+//	// Create directories if they do not exist
+//	std::filesystem::create_directories(fullPath.parent_path());
+//
+//	// Try to open the file
+//	std::ofstream file(fullPath.string());
+//
+//	if (file.is_open())
+//	{
+//		for (const auto& row : layer)
+//		{
+//			for (size_t i = 0; i < row.size(); ++i)
+//			{
+//				file << row[i] << (i < row.size() - 1 ? " " : "\n");
+//			}
+//		}
+//		file.close();
+//	}
+//	else
+//	{
+//		LOG("Failed to open file.");
+//		throw std::runtime_error("Failed to open file: " + filename);
+//	}
+//}
 
 // Getter methods
 const std::vector<Obstacle>& LevelGenerator::getObstacles() const

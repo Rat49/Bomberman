@@ -32,7 +32,7 @@ public:
 	const std::vector<Booster>& getBoosters() const;
 
 	// A method for exporting layers to text files
-	void exportLevelToTextFiles(const std::string& prefix);
+	//void exportLevelToTextFiles(const std::string& prefix);
 
 private:
 	// Data members
@@ -69,7 +69,7 @@ private:
 	void generateBoosters(std::mt19937& gen, int numBoosters);
 
 	// A method for writing a layer to a file
-	void saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const;
+	//void saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const;
 };
 
 template <typename ObjectType>

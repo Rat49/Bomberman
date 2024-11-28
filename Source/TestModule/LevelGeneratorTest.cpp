@@ -15,7 +15,7 @@ void LevelGeneratorTest::run()
 {
 	LevelGenerator* levelGenerator = LevelGenerator::generateLevel(11, 11, GameLevelType::Easy, 2, 5, { 1, 1 }, 2);
 
-	levelGenerator->exportLevelToTextFiles("LevelTest");
+	//levelGenerator->exportLevelToTextFiles("LevelTest");
 
 	// test
 	sf::Vector2i tilePosition = { 5, 5 };

@@ -38,7 +38,8 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
 	Modules::Tests->addTest(std::make_shared<PlayerTest>());
 	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
-	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());*/
+	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
+	Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());*/
 }
 
 #endif
