@@ -2,14 +2,23 @@
 #include "Tile.hpp"
 #include "LevelData.hpp"
 #include "SFML/Graphics.hpp"
-#include "AssetManager/AssetManager.hpp"
-#include "Common/Logs.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <algorithm>
+#include <Common/Logs.hpp>
+#include "Common/Modules.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
 
-
+namespace
+{
+	const std::string ID = "id";
+	const std::string X_COORD = "x";
+	const std::string Y_COORD = "y";
+	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
+	const int8_t ATLAS_SPRITE_SIZE = 64;
+}
 
 Level::Level(const std::string levelConfigPath)
 	:m_configPath(levelConfigPath)
@@ -31,10 +40,10 @@ bool Level::initialize()
 		return false;
 	}
 
-	//load the atlas texture using the path from level data
-	if (!loadTexture(m_levelData.getAtlasPath()))
+	//initialize level tiles based on tile IDs
+	if (!loadTiles())
 	{
-		LOG("Failed to load texture from : " + m_levelData.getAtlasPath());
+		LOG("Failed to load tiles for the level");
 		return false;
 	}
 
@@ -48,75 +57,69 @@ bool Level::initialize()
 	return true;
 }
 
-bool Level::loadLevel(const std::string& levelPath)
+bool Level::loadTiles() 
 {
-	//use Asset Manager to get level file data
-	const auto levelData = Modules::Assets->getLevel(levelPath);
+	m_atlasTexture = Modules::Assets->getTexture(ATLAS_PATH);
 
-	if (levelData->empty())
+	Modules::Config->addFile(m_levelData.getTilesetAssetConfigPath());
+	const ConfigFile& tileTexturesSettings = Modules::Config->getFile(m_levelData.getTilesetAssetConfigPath());
+	const auto& sections = tileTexturesSettings.getAllSections();
+
+	for (const auto& section : sections)
 	{
-		LOG("Failed to load level .csv file from [$]", levelPath);
-		return false;
-	}
+		int32_t id = tileTexturesSettings.getSection(section).getValue(ID).getInt32();
+		int32_t x = tileTexturesSettings.getSection(section).getValue(X_COORD).getInt32();
+		int32_t y = tileTexturesSettings.getSection(section).getValue(Y_COORD).getInt32();
 
-	//convert data in string stream
-	std::string levelString(levelData->begin(), levelData->end());
-	std::istringstream file(levelString);
-
-	//read each line of file
-	int32_t rowIndex = 0;
-	std::string line;
-	while (std::getline(file, line))
-	{
-		std::vector<Tile> tileRow;
-		std::stringstream sStream(line);
-		std::string value;
-		int32_t columnIndex = 0;
-
-		//read row value
-		while (std::getline(sStream, value, ','))
+		Tile newTile;
+		sf::IntRect newRect(x, y, ATLAS_SPRITE_SIZE, ATLAS_SPRITE_SIZE);
+		newTile.initialize(id, newRect, m_atlasTexture);
+		m_availableTiles.emplace(id, std::make_shared<Tile>(newTile));
+		if (!m_availableTiles[id])
 		{
-			//set value to int
-			int32_t tempId = std::stoi(value);
-
-			//calculate rect of tile
-			int32_t numTilesPerRow = m_atlasTexture->getSize().x / m_levelData.getTileWidth();
-			int32_t tileIndexX = (tempId % numTilesPerRow) * m_levelData.getTileWidth();
-			int32_t tileIndexY = (tempId / numTilesPerRow) * m_levelData.getTileHeight();
-			sf::IntRect textureRect(tileIndexX, tileIndexY, m_levelData.getTileWidth(), m_levelData.getTileHeight());
-
-			//calculate position of tile
-			sf::Vector2f position(static_cast<float>(columnIndex * m_levelData.getTileWidth()), static_cast<float>(rowIndex * m_levelData.getTileHeight()));
-
-			Tile tile;
-			if (!tile.initialize(tempId, textureRect, position, m_atlasTexture))
-			{ 
-				LOG("Failed to initialize tile with index : " + rowIndex, columnIndex);
-				return false;
-			}
-			
-			//add tile
-			tileRow.push_back(tile);
-			++columnIndex;
+			return false;
 		}
-
-		//add the completed row of tiles
-		m_tiles.push_back(tileRow);
-		++rowIndex;
 	}
 
 	return true;
 }
 
-bool Level::loadTexture(const std::string& texturePath)
+bool Level::loadLevel(const std::string& levelPath)
 {
-	m_atlasTexture = std::make_shared<sf::Texture>();
-	m_atlasTexture = Modules::Assets->getTexture(texturePath);
-	if (!m_atlasTexture)
-	{
-		LOG("Failed to load asset from path: [$]", texturePath);
+	std::ifstream file(levelPath);
+	if (!file)
+	{ 
+		LOG("Failed to load level config file from : " + levelPath);
 		return false;
 	}
+
+	//read each line of file
+	int32_t row = 0;
+	std::string line;
+	while (std::getline(file, line))
+	{
+		std::vector<FieldInfo> tileRow;
+		std::stringstream sStream(line);
+		std::string value;
+		int32_t col = 0;
+
+		//read row value
+		while (std::getline(sStream, value, ','))
+		{
+			int32_t tempId = std::stoi(value);
+			
+			FieldInfo newFieldInfo;
+			newFieldInfo.tile = m_availableTiles[tempId];
+			newFieldInfo.tilePosition = { (float)(col * m_levelData.getTileWidth()), (float)(row * m_levelData.getTileHeight()) };
+			tileRow.push_back(newFieldInfo);
+			++col;
+		}
+
+		m_fields.push_back(tileRow);
+		++row;
+	}
+
+	file.close();
 
 	return true;
 }
@@ -130,8 +133,8 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 	}
 
 	//calculate the total level width and height in pixels
-	float levelPixelWidth = static_cast<float>(m_tiles[0].size() * m_levelData.getTileWidth());
-	float levelPixelHeight = static_cast<float>(m_tiles.size() * m_levelData.getTileHeight());
+	float levelPixelWidth = static_cast<float>(m_fields[0].size() * m_levelData.getTileWidth());
+	float levelPixelHeight = static_cast<float>(m_fields.size() * m_levelData.getTileHeight());
 
 	//initialize view center to the target offset position
 	sf::Vector2f viewCenter = offset;
@@ -165,23 +168,24 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.setView(m_view);
+	for (std::size_t row = 0; row < m_fields.size(); ++row) {
+		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
+			const FieldInfo& fieldInfo = m_fields[row][col];
 
-	for (const auto& row : m_tiles)
-	{
-		for (const auto& tile : row)
-		{
-			//draw Tile sprites with positions
-			target.draw(tile, states);
+			Tile drawableTile = *fieldInfo.tile;
+			drawableTile.setPosition(fieldInfo.tilePosition);
+
+			target.draw(drawableTile, states);
 		}
 	}
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
-	if (y >= 0 && y < m_tiles.size() && x >= 0 && x < m_tiles[0].size())
+	if (y >= 0 && y < m_fields.size() && x >= 0 && x < m_fields[0].size())
 	{
 		//get tile id based on x and y 
-		auto tileId = m_tiles[y][x].getId();
+		auto tileId = m_fields[y][x].tile->getId();
 
 		//get loaded tileSet infos
 		auto tilesetInfoMap = m_levelData.getTilesetInfo();

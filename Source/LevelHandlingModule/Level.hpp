@@ -7,13 +7,15 @@
 
 using TileInfo = std::string;
 
+struct FieldInfo {
+	std::shared_ptr<Tile> tile;
+	sf::Vector2f tilePosition;
+};
 
 class Level : public sf::Drawable
 {
 public:
-
-	//constructor for the Level class that loads level data, the atlas texture, and initializes all tiles.
-	Level(const std::string levelConfigPath);
+	Level(const std::string configFilePath);
 
 	bool initialize();
 
@@ -23,16 +25,14 @@ public:
 	//draws all the tiles in the level to the specified render target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-	TileInfo getTileInfos(int32_t x, int32_t y) const;
+	TileInfo Level::getTileInfos(int32_t x, int32_t y) const;
 
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.
 	bool loadLevel(const std::string& levelPath);
 
-	//loads the atlas texture containing the tile sprites.
-	bool loadTexture(const std::string& texturePath);
-
+	bool loadTiles();
 
 private:
 
@@ -40,12 +40,13 @@ private:
 
 	sf::View m_view;
 
-	std::vector<std::vector<Tile>> m_tiles;
+	std::vector<std::vector<FieldInfo>> m_fields;
 
 	LevelData m_levelData;
 
-	std::shared_ptr<sf::Texture> m_atlasTexture;
+	std::map<int32_t, std::shared_ptr<Tile>> m_availableTiles;
 
+	std::shared_ptr<sf::Texture> m_atlasTexture;
 };
 
 

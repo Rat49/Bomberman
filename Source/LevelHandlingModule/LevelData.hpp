@@ -21,6 +21,8 @@ public:
 	
 	std::string getTilesetPath() const { return m_tilesetPath; }
 
+	std::string getTilesetAssetConfigPath() const { return m_tilesAssetsConfig; }
+
 	int32_t getTileWidth() const { return m_tileWidth; }
 
 	int32_t getTileHeight() const { return m_tileHeight; }
@@ -34,6 +36,8 @@ private:
 	std::string m_levelPath;
 	
 	std::string m_tilesetPath;
+
+	std::string m_tilesAssetsConfig;
 	
 	int32_t m_tileWidth;
 	
