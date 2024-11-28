@@ -9,6 +9,10 @@ class PlayerCharacter
 public:
 	PlayerCharacter();
 
+	~PlayerCharacter();
+
+	bool init();
+
 	void onMove(void* axis2DState);
 
 	void onBombPlant(void* axis2DState);
@@ -28,7 +32,8 @@ private:
 
 	ActionID playerMovement;
 	FunctionHandle playerMovementHandle;
-	FunctionHandle plantBomb;
+	ActionID plantBomb;
+	FunctionHandle plantBombHandle;
 	int32_t leftId;
 	int32_t rightId;
 	int32_t upId;

@@ -6,19 +6,71 @@
 #include <thread>
 #include <chrono>
 
-PlayerCharacter::PlayerCharacter()
+PlayerCharacter::PlayerCharacter() = default;
+//{
+	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+	//playerMovement = Modules::Input->GetActionID("PlayerMovement");
+	//playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
+
+	//plantBomb = Modules::Input->GetActionID("PlantBomb");
+	//plantBombHandle = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
+
+	//leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
+	//rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
+	//upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
+	//downId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationDown.ini");
+
+	//currentAnimation = downId;
+
+	//if (const auto& animation = Modules::Sprite->getAnimation(downId))
+	//{
+	//	animation->Play();
+	//}
+//}
+
+bool PlayerCharacter::init()
 {
 	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
+	if (!playerMovement)
+	{
+		LOG("Failed to get PlayerMovement action ID.");
+		return false;
+	}
+
 	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
+	if (!playerMovementHandle)
+	{
+		LOG("Failed to register PlayerMovement event.");
+		return false;
+	}
 
 	plantBomb = Modules::Input->GetActionID("PlantBomb");
-	plantBomb = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
+	if (!plantBomb)
+	{
+		LOG("Failed to get PlantBomb action ID.");
+		return false;
+	}
 
+	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
+	if (!plantBombHandle)
+	{
+		LOG("Failed to register PlantBomb event.");
+		return false;
+	}
+
+	// Loading animations
 	leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
 	rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
 	upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
 	downId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationDown.ini");
+
+	if (leftId <= 0 || rightId <= 0 || upId <= 0 || downId <= 0)
+	{
+		LOG("Failed to load one or more animations.");
+		return false;
+	}
 
 	currentAnimation = downId;
 
@@ -26,6 +78,13 @@ PlayerCharacter::PlayerCharacter()
 	{
 		animation->Play();
 	}
+	else
+	{
+		LOG("Failed to play initial animation.");
+		return false;
+	}
+
+	return true;
 }
 
 void PlayerCharacter::onMove(void* axis2DState)
@@ -75,4 +134,10 @@ void PlayerCharacter::updateAnimation(int32_t id)
 std::shared_ptr<Animation> PlayerCharacter::getCurrentAnimation() const
 {
 	return Modules::Sprite->getAnimation(currentAnimation);
+}
+
+PlayerCharacter::~PlayerCharacter()
+{
+	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
+	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }

@@ -19,6 +19,18 @@ Bomb::Bomb()
 	{
 		animation->Play();
 	}
+	else
+	{
+		LOG("Failed to retrieve animation with ID: " + std::to_string(bombIdleID));
+		if (const auto& defaultAnim = Modules::Sprite->getAnimation(defaultAnimation))
+		{
+			defaultAnim->Play();
+		}
+		else
+		{
+			LOG("Failed to play default animation.");
+		}
+	}
 }
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, int32_t newExplosionRadius, float newTimer)
@@ -46,11 +58,6 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, int32_t newExplosionRadiu
 	this->timer = newTimer;
 
 	return true;
-}
-
-Bomb::~Bomb()
-{
-	
 }
 
 // Bomb update
@@ -182,4 +189,9 @@ int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 	if (direction == sf::Vector2f{ 0, 1 }) return bombDownID; // Down
 	if (direction == sf::Vector2f{ 0, -1 }) return bombUpID;  // Up
 	if (direction == sf::Vector2f{ 0, 0 }) return bombCenterID;  // Center
+}
+
+Bomb::~Bomb()
+{
+
 }
