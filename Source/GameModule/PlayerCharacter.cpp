@@ -9,17 +9,56 @@
 
 PlayerCharacter::PlayerCharacter()
 {
+
+}
+
+bool PlayerCharacter::init()
+{
 	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
+
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
-	playerMovement = Modules::Input->GetActionID("PlayerMovement");
-	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
 
+	playerMovement = Modules::Input->GetActionID("PlayerMovement");
+	if (playerMovement < 0)
+	{
+		LOG("Failed to get PlayerMovement action ID.");
+		return false;
+	}
+
+	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
+	if (playerMovementHandle < 0)
+	{
+		LOG("Failed to register PlayerMovement event.");
+		return false;
+	}
+
+	plantBomb = Modules::Input->GetActionID("PlantBomb");
+	if (plantBomb < 0)
+	{
+		LOG("Failed to get PlantBomb action ID.");
+		return false;
+	}
+
+	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, [this](void* /*axis2DState*/) { this->onBombPlant(nullptr); });
+	if (plantBombHandle < 0)
+	{
+		LOG("Failed to register PlantBomb event.");
+		return false;
+	}
+
+	// Loading animations
 	leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
 	rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
 	upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
 	downId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationDown.ini");
+
+	if (leftId <= 0 || rightId <= 0 || upId <= 0 || downId <= 0)
+	{
+		LOG("Failed to load one or more animations.");
+		return false;
+	}
 
 	currentAnimation = downId;
 
@@ -28,6 +67,13 @@ PlayerCharacter::PlayerCharacter()
 		animation->Play();
 		updateAnimation(downId);
 	}
+	else
+	{
+		LOG("Failed to play initial animation.");
+		return false;
+	}
+
+	return true;
 }
 
 void PlayerCharacter::onMove(void* axis2DState)
@@ -49,6 +95,12 @@ void PlayerCharacter::onMove(void* axis2DState)
 		y -= velocity;
 		updateAnimation(upId);
 	}
+}
+
+void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
+{
+	// Need to add and then get Player's position here
+	bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)
@@ -86,4 +138,10 @@ sf::Vector2f PlayerCharacter::getCurrentPosition() const
 void PlayerCharacter::updateVelocity(float deltaTime)
 {
 	velocity = speed * deltaTime;
+}
+
+PlayerCharacter::~PlayerCharacter()
+{
+	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
+	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }

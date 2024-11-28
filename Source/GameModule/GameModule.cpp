@@ -69,6 +69,13 @@ bool GameModule::initialize()
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
 	screenStage->setStage(currentStage);
+
+	if (!player.init())
+	{
+		LOG("Failed to initialize PlayerCharacter.");
+		return false;
+	}
+
 	return true;
 }
 
