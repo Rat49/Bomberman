@@ -38,7 +38,6 @@ bool Modules::initialize()
 {
 #ifndef FINAL
 	Modules::Logs = std::make_unique<LogManager>();
-	Modules::Tests = std::make_unique<TestModule>();
 #endif
 
 	// add your modules here
@@ -54,6 +53,9 @@ bool Modules::initialize()
 	Modules::Level = dynamic_cast<LevelHandlingModule*>(modules.emplace_back(std::make_unique<LevelHandlingModule>()).get());
 
 	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
+#ifndef FINAL
+	Modules::Tests = std::make_unique<TestModule>();
+#endif
 
 	for (auto& module : modules) {
 		if (!module->initialize()) {

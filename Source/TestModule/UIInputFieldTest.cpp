@@ -20,7 +20,7 @@ void UIInputFieldTest::setup()
 	auto& font = m_screen->getFont("arial");
 
 	//input field
-	m_inputField = std::make_shared<UIInputField>(font, 20, sf::Vector2f(200.0f, 80.0f));
+	m_inputField = std::make_shared<UIInputField>(font, 15, sf::Vector2f(200.0f, 80.0f));
 	m_inputField->setPosition(sf::Vector2f(20.f, 20.f));
 
 	m_screen->addElement("inputField", m_inputField);
@@ -44,7 +44,6 @@ void UIInputFieldTest::update(float, sf::RenderWindow* window)
 	{
 		m_screen->setWindow(window);
 	}
-
 
 	//handle events
 	sf::Event event;
@@ -80,7 +79,7 @@ void UIInputFieldTest::update(float, sf::RenderWindow* window)
 		window->display();
 	}
 
-	m_isCompleted = false;
+	m_isCompleted = true;
 }
 
 bool UIInputFieldTest::isComplete() const

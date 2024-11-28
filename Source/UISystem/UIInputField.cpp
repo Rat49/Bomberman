@@ -5,19 +5,18 @@ namespace {
 
 	const float INPUT_TEXT_OFFSET = 5.0f;
 	const float CURSOR_OFFSET = 2.0f;
-	const unsigned int MIN_CHARACTER_SIZE = 5;
 	const std::string INITIAL_TEXT = "Enter text...";
 }
 
 
-UIInputField::UIInputField(const sf::Font& font, unsigned int characterSize, const sf::Vector2f& fieldSize)
+UIInputField::UIInputField(const sf::Font& font, uint32_t characterSize, const sf::Vector2f& fieldSize)
 	:m_maxCharacters(30), m_hasPlaceholder(true), m_characterSizeOriginal(characterSize)
 {
 	//setup input field
 	setSize(fieldSize);
 
 	//setup input text
-	m_inputText.setCharacterSize(characterSize);
+	setCharactersSize(characterSize);
 	setFont(font);
 
 	//setup color of both
@@ -52,23 +51,21 @@ void UIInputField::setSize(const sf::Vector2f& fieldSize)
 	m_fieldBackground.setSize(fieldSize);
 }
 
-void UIInputField::setText(const std::string& text)
-{
-	m_textBuffer = text;
-	m_inputText.setString(m_textBuffer);
-
-	adjustTextToFit();
-}
-
 void UIInputField::setColor(const sf::Color& fieldColor, const sf::Color& inputTextColor)
 {
 	m_fieldBackground.setFillColor(fieldColor);
 	m_inputText.setFillColor(inputTextColor);
 }
 
-void UIInputField::setMaxCharacters(unsigned int maxChar)
+void UIInputField::setMaxCharacters(uint32_t maxChar)
 {
 	m_maxCharacters = maxChar;
+}
+
+void UIInputField::setCharactersSize(uint32_t charSize)
+{
+	m_characterSizeOriginal = charSize;
+	m_inputText.setCharacterSize(charSize);
 }
 
 void UIInputField::setFont(const sf::Font& font)
@@ -129,7 +126,7 @@ bool UIInputField::handleEvent(const sf::Event& event)
 		}
 		else if (event.text.unicode >= 32 && event.text.unicode <= 126) //printable characters
 		{
-			if (m_textBuffer.size() <= m_maxCharacters)
+			if (m_textBuffer.size() <= m_maxCharacters && !isFieldEnd())
 			{
 				m_textBuffer += static_cast<char>(event.text.unicode);
 			}
@@ -139,44 +136,28 @@ bool UIInputField::handleEvent(const sf::Event& event)
 		//fill input field text with chars
 		m_inputText.setString(m_textBuffer);
 
-		//manage text and cursor
-		adjustTextToFit();
+		//follow position with cursor
 		cursorMovement();
 	}
 
 	return m_isWriteable;
 }
 
-void UIInputField::adjustTextToFit()
+bool UIInputField::isFieldEnd()
 {
 	//get the bounds of the input text
 	sf::FloatRect textBounds = m_inputText.getGlobalBounds();
 
-	//reduce character size if text exceeds field width
-	while (textBounds.width > m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET && m_inputText.getCharacterSize() > MIN_CHARACTER_SIZE)
+	//check if it's bound of field
+	if (textBounds.width > m_fieldBackground.getSize().x - (m_characterSizeOriginal + m_cursor.getSize().x + CURSOR_OFFSET + INPUT_TEXT_OFFSET))
 	{
-		m_inputText.setCharacterSize(m_inputText.getCharacterSize() - 1);
-		textBounds = m_inputText.getGlobalBounds();
+		LOG("Couldn't input more text because it's the end of the field");
+		return true;
 	}
-
-	//increase character size if there's extra space and it's smaller than the original size
-	while (textBounds.width < m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET &&
-		   m_inputText.getCharacterSize() < m_characterSizeOriginal)
+	else
 	{
-		m_inputText.setCharacterSize(m_inputText.getCharacterSize() + 1);
-		textBounds = m_inputText.getGlobalBounds();
-
-		//stop if text starts exceeding the field
-		if (textBounds.width > m_fieldBackground.getSize().x - 2 * INPUT_TEXT_OFFSET)
-		{
-			m_inputText.setCharacterSize(m_inputText.getCharacterSize() - 1);
-			break;
-		}
+		return false;
 	}
-
-	//reposition the text vertically (to keep it centered)
-	m_inputText.setPosition(m_fieldBackground.getPosition().x + INPUT_TEXT_OFFSET,
-							m_fieldBackground.getPosition().y + (m_fieldBackground.getSize().y - m_inputText.getCharacterSize()) / 2);
 }
 
 void UIInputField::cursorMovement()
