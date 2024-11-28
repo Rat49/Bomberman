@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
 #include "Common/Modules.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"

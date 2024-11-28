@@ -7,35 +7,16 @@
 #include <thread>
 #include <chrono>
 
-PlayerCharacter::PlayerCharacter() = default;
-//{
-	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
-	//playerMovement = Modules::Input->GetActionID("PlayerMovement");
-	//playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
-
-	//plantBomb = Modules::Input->GetActionID("PlantBomb");
-	//plantBombHandle = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
-
-	//leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
-	//rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
-	//upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
-	//downId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationDown.ini");
-
-	//currentAnimation = downId;
-
-	//if (const auto& animation = Modules::Sprite->getAnimation(downId))
-	//{
-	//	animation->Play();
-	//}
-//}
-
-bool PlayerCharacter::init()
+PlayerCharacter::PlayerCharacter()
 {
 	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
+}
+
+bool PlayerCharacter::init()
+{
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
-
 
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
 	if (!playerMovement)
@@ -156,6 +137,7 @@ void PlayerCharacter::updateVelocity(float deltaTime)
 {
 	velocity = speed * deltaTime;
 }
+
 PlayerCharacter::~PlayerCharacter()
 {
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);

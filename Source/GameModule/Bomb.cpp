@@ -1,7 +1,6 @@
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
 #include "Common/Logs.hpp"
-#include <vector>
 
 Bomb::Bomb()
 {
@@ -31,6 +30,7 @@ Bomb::Bomb()
 		}
 	}
 }
+
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
 {
@@ -157,7 +157,11 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 
 	if (hitObject)
 	{
-		// I will add something in Collision to mark if the object is destructable, or not?
+		// TODO
+		// Add code here for detecting objects with collisions and applying the effect that the bomb will have,
+		// or won't have, on the object depending on whether it is breakable or not.
+
+		
 		//if (hitObject-> check if object is destructable)
 		//{
 		//	LOG("The explosion destroyed the obstacle on: $", endPoint.x, ", $", endPoint.y);
