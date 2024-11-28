@@ -20,14 +20,6 @@ Bomb::Bomb()
 	else
 	{
 		LOG("Failed to retrieve animation with ID: " + std::to_string(bombIdleID));
-		if (const auto& defaultAnim = Modules::Sprite->getAnimation(defaultAnimation))
-		{
-			defaultAnim->Play();
-		}
-		else
-		{
-			LOG("Failed to play default animation.");
-		}
 	}
 }
 

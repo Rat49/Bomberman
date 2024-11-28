@@ -37,8 +37,6 @@ private:
 	int32_t bombRightID;
 	int32_t bombCenterID;
 
-	int32_t defaultAnimation = bombIdleID = Modules::Sprite->createAnimation("../../Data/Config/BombIdleAnimation.ini");
-
 	// Bomb position
 	sf::Vector2f position;
 	// Explosion radius
