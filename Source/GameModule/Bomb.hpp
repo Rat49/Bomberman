@@ -2,6 +2,7 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include "Common/Modules.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 
@@ -12,7 +13,7 @@ public:
 
 	~Bomb();
 
-	bool Initialize(const sf::Vector2f& newPosition, int32_t newExplosionRadius, float newTimer);
+	bool Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer);
 
 	// Bomb update
 	void update(float deltaTime);
@@ -34,16 +35,16 @@ private:
 	int32_t bombIdleID;
 	int32_t bombUpID;
 	int32_t bombDownID;
-	int32_t bombLeftID;;
-	int32_t bombRightID;;
-	int32_t bombCenterID;;
+	int32_t bombLeftID;
+	int32_t bombRightID;
+	int32_t bombCenterID;
 
 	int32_t defaultAnimation = bombIdleID = Modules::Sprite->createAnimation("../../Data/Config/BombIdleAnimation.ini");
 
 	// Bomb position
 	sf::Vector2f position;
 	// Explosion radius
-	int32_t explosionRadius;
+	float explosionRadius;
 	// Explosion timer
 	float timer;
 	// Did the bomb explode

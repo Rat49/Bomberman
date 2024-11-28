@@ -35,8 +35,7 @@ bool PlayerCharacter::init()
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
-	playerMovement = Modules::Input->GetActionID("PlayerMovement");
-	playerMovementHandle = Modules::Input->RegisterEvent(playerMovement, std::bind(&PlayerCharacter::onMove, this, std::placeholders::_1));
+
 
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
 	if (!playerMovement)
@@ -59,7 +58,7 @@ bool PlayerCharacter::init()
 		return false;
 	}
 
-	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
+	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, [this](void* /*axis2DState*/) { this->onBombPlant(nullptr); });
 	if (!plantBombHandle)
 	{
 		LOG("Failed to register PlantBomb event.");
@@ -115,10 +114,10 @@ void PlayerCharacter::onMove(void* axis2DState)
 	}
 }
 
-void PlayerCharacter::onBombPlant(void* axis2DState)
+void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 {
 	// Need to add and then get Player's position here
-	//bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
+	bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)

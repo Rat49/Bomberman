@@ -1,6 +1,5 @@
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
-#include "Common/Modules.hpp"
 #include "Common/Logs.hpp"
 #include <vector>
 
@@ -33,7 +32,7 @@ Bomb::Bomb()
 	}
 }
 
-bool Bomb::Initialize(const sf::Vector2f& newPosition, int32_t newExplosionRadius, float newTimer)
+bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
 {
 	if (newPosition.x < 2 || newPosition.y < 2)
 	{
@@ -82,6 +81,8 @@ void Bomb::draw(sf::RenderWindow& window)
 		{
 			animation->setPosition(position);
 			animation->Play();
+
+			window.draw(*animation);
 		}
 	}
 	// Draws an explosion
@@ -176,7 +177,7 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	int32_t animationID = getExplosionAnimationID(direction);
 	if (auto animation = Modules::Sprite->getAnimation(animationID))
 	{
-		animation->setPosition(position + direction * (float)explosionRadius);
+		animation->setPosition(position + direction * explosionRadius);
 		animation->Play();
 	}
 }
@@ -189,6 +190,8 @@ int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 	if (direction == sf::Vector2f{ 0, 1 }) return bombDownID; // Down
 	if (direction == sf::Vector2f{ 0, -1 }) return bombUpID;  // Up
 	if (direction == sf::Vector2f{ 0, 0 }) return bombCenterID;  // Center
+
+	return 0;
 }
 
 Bomb::~Bomb()
