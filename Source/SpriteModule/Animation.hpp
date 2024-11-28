@@ -17,6 +17,9 @@ public:
 	//functions for animation control
 	void Play();
 	void Stop();
+	void Resume();
+	void Pause();
+
 	bool isPlaying() const { return m_isPlaying; }
 
 	//function for updating animation
@@ -26,6 +29,7 @@ private:
 	
 	//animation infos
 	bool m_isLooping;
+	bool m_isStopped = true;
 	float m_frameDuration;
 
 	//state variables

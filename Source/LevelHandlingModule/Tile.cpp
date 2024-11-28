@@ -2,11 +2,12 @@
 #include "SFML/Graphics.hpp"
 #include <Common/Logs.hpp>
 
-Tile::Tile()
-	:m_id(-1), m_position(0.f, 0.f) //default values
-{}
+Tile::Tile() 
+{
+	m_id        = -1;
+}
 
-bool Tile::initialize(int32_t tileId, const sf::IntRect& textureRect, const sf::Vector2f& position, const std::shared_ptr<sf::Texture>& atlasTexture)
+bool Tile::initialize(int32_t tileId, const sf::IntRect& textureRect, const std::shared_ptr<sf::Texture>& atlasTexture)
 {
 	if (!atlasTexture)
 	{
@@ -14,12 +15,9 @@ bool Tile::initialize(int32_t tileId, const sf::IntRect& textureRect, const sf::
 		return false;
 	}
 	
-	m_id = tileId;
-	m_position = position;
-
+	m_id      = tileId;
 	setTexture(*atlasTexture);
 	setTextureRect(textureRect);
-	setPosition(position);
 
 	return true;
 }
