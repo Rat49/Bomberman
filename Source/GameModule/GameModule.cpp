@@ -129,11 +129,13 @@ void GameModule::run()
 		window.clear(screens[currentScreen]->getBackgroundColor());
 		if(currentScreen == Screens::LEVEL) 
 		{
+			sf::View tempView = screens[currentScreen]->getWindow()->getView();
 			Modules::update(deltaTime, &window);
 			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 			player.updateVelocity(deltaTime);
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
+			screens[currentScreen]->getWindow()->setView(tempView);
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();
