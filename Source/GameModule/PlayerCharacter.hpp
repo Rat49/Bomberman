@@ -1,5 +1,6 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
+#include "GameModule/Bomb.hpp"
 
 class Animation;
 
@@ -8,7 +9,13 @@ class PlayerCharacter
 public:
 	PlayerCharacter();
 
+	~PlayerCharacter();
+
+	bool init();
+
 	void onMove(void* axis2DState);
+
+	void onBombPlant(void* axis2DState);
 
 	void updateAnimation(int32_t id);
 
@@ -31,10 +38,14 @@ private:
 
 	ActionID playerMovement;
 	FunctionHandle playerMovementHandle;
+	ActionID plantBomb;
+	FunctionHandle plantBombHandle;
 	int32_t leftId;
 	int32_t rightId;
 	int32_t upId;
 	int32_t downId;
+
+	Bomb bomb;
 
 	bool m_isUpdated = true;
 };

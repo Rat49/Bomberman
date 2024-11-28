@@ -247,7 +247,6 @@ bool AssetManager::loadMetadata()
 
 	std::string metadata((std::istreambuf_iterator<char>(metadataFile)), std::istreambuf_iterator<char>());
 	StringUtils::cipherText(metadata, CIPHER_KEY);
-
 	std::istringstream ss(metadata);
 	std::string line;
 	AssetMetadata newAssetMetadata = {};

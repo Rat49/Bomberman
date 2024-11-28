@@ -86,12 +86,18 @@ bool Level::loadTiles()
 
 bool Level::loadLevel(const std::string& levelPath)
 {
-	std::ifstream file(levelPath);
-	if (!file)
-	{ 
-		LOG("Failed to load level config file from : " + levelPath);
+	//use Asset Manager to get level file data
+	const auto levelData = Modules::Assets->getLevel(levelPath);
+
+	if (levelData->empty())
+	{
+		LOG("Failed to load level .csv file from [$]", levelPath);
 		return false;
 	}
+
+	//convert data in string stream
+	std::string levelString(levelData->begin(), levelData->end());
+	std::istringstream file(levelString);
 
 	//read each line of file
 	int32_t row = 0;
@@ -118,8 +124,6 @@ bool Level::loadLevel(const std::string& levelPath)
 		m_fields.push_back(tileRow);
 		++row;
 	}
-
-	file.close();
 
 	return true;
 }
