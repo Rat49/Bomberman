@@ -24,8 +24,8 @@ public:
 
 private:
 	int32_t currentAnimation = -1;
-	float x = 0.f;
-	float y = 0.f;
+	float x = 70.f;
+	float y = 70.f;
 	float speed = 0.f;
 	float velocity = 0.f;
 

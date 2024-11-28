@@ -26,6 +26,7 @@ PlayerCharacter::PlayerCharacter()
 	if (const auto& animation = Modules::Sprite->getAnimation(downId))
 	{
 		animation->Play();
+		updateAnimation(downId);
 	}
 }
 
