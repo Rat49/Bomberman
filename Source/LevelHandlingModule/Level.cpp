@@ -54,6 +54,9 @@ bool Level::initialize()
 		return false;
 	}
 
+	// Setting Viewport so that HUD is always shown at the top of the window
+	m_view.setViewport(sf::FloatRect(0.0f, 0.1f, 1.f, 0.9f));
+
 	return true;
 }
 
