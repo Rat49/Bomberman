@@ -13,6 +13,7 @@
 #include "CollisionModule/PhysicsModule.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "BaseModule/BaseModule.hpp"
+#include "BoosterManager/BoosterManager.hpp"
 
 
 #ifndef FINAL
@@ -31,6 +32,7 @@ UISystem* Modules::UI = nullptr;
 AssetManager* Modules::Assets = nullptr;
 PhysicsModule* Modules::Physics = nullptr;
 LevelHandlingModule* Modules::Level = nullptr;
+BoosterManager* Modules::BoostersManager = nullptr;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
@@ -39,7 +41,6 @@ bool Modules::initialize()
 #ifndef FINAL
 	Modules::Logs = std::make_unique<LogManager>();
 #endif
-
 	// add your modules here
 	Modules::Events = dynamic_cast<EventSystem*>(modules.emplace_back(std::make_unique<EventSystem>()).get());
 	Modules::Config = dynamic_cast<ConfigSystem*>(modules.emplace_back(std::make_unique<ConfigSystem>()).get());
@@ -51,6 +52,7 @@ bool Modules::initialize()
 	Modules::Assets = dynamic_cast<AssetManager*>(modules.emplace_back(std::make_unique<AssetManager>()).get());
 	Modules::Physics = dynamic_cast<PhysicsModule*>(modules.emplace_back(std::make_unique<PhysicsModule>()).get());
 	Modules::Level = dynamic_cast<LevelHandlingModule*>(modules.emplace_back(std::make_unique<LevelHandlingModule>()).get());
+	Modules::BoostersManager = dynamic_cast<BoosterManager*>(modules.emplace_back(std::make_unique<BoosterManager>()).get());
 
 	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
 #ifndef FINAL

@@ -11,6 +11,7 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include "AssetManager/AssetManager.hpp"
+#include "BoosterManager/BoosterManager.hpp"
 
 namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
@@ -76,6 +77,7 @@ bool GameModule::initialize()
 		return false;
 	}
 
+	Modules::BoostersManager->initialize(std::make_shared<PlayerCharacter>(player));
 	return true;
 }
 
