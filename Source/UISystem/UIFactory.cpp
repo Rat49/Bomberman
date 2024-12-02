@@ -121,15 +121,23 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 
 void UIFactory::makeAnimation(UIScreen* screen, const ConfigSection& element)
 {
-	if (element.areValuesPresent({ PATH, NAME })) {
+	if (element.areValuesPresent({ PATH, NAME, WIDTH_OFFSET, HEIGHT_OFFSET })) {
 		auto& animationPath = element.getValue(PATH).getString();
 		auto& animationName = element.getValue(NAME).getString();
 		int32_t animationId = Modules::Sprite->createAnimation(animationPath);
+		float x = element.getValue(WIDTH_OFFSET).getFloat();
+		float y = element.getValue(HEIGHT_OFFSET).getFloat();
+		
 		if (const auto& animation = Modules::Sprite->getAnimation(animationId)) {
 			animation->Play();
+			
+			auto screenSize = screen->getWindow()->getSize();
+			animation->setPosition(sf::Vector2f(screenSize.x*x, screenSize.y*y));
+			
 			screen->addAnimation(animationName, animation);
 		}
 	}
+	
 }
 
 void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, const ConfigSection& element)

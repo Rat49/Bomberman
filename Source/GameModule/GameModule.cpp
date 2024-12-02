@@ -7,6 +7,7 @@
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
+#include "Leaderboard.hpp"
 #include "PauseMenu.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
@@ -19,6 +20,7 @@ namespace {
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
 	const std::string& PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
+	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
@@ -42,6 +44,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_HUD);
 	Modules::Config->addFile(PATH_MAIN_MENU);
 	Modules::Config->addFile(PATH_STAGE);
+	Modules::Config->addFile(PATH_LEADERBOARD);
 	Modules::Config->addFile(PATH_PAUSE_MENU);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -69,6 +72,7 @@ bool GameModule::initialize()
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
+	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
 	screens[Screens::PAUSE_MENU] = std::make_shared<PauseMenu>(&window, font, PATH_PAUSE_MENU);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
@@ -109,10 +113,13 @@ void GameModule::run()
 				window.close();
 				break;
 
-			case sf::Event::Resized:
+			case sf::Event::Resized: {
 				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
-				[[fallthrough]];
-
+				for (auto sc : screens) {
+					sc.second->handleEvent(event);
+				}
+				break;
+			}
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:

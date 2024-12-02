@@ -12,6 +12,7 @@ namespace
 	const sf::Color& YELLOW = sf::Color(247, 190, 57);
 	const sf::Color& RED = sf::Color(173, 0, 16);
 	const std::string& START = "START";
+	const std::string& LEADERBOARD = "LEADERBOARD";
 	const std::string& OPTIONS = "OPTIONS";
 }
 
@@ -34,6 +35,11 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 					Modules::Game->setCurrentScreen(Screens::STAGE);
 				};
 			}
+			else if (element.first == LEADERBOARD) {
+				button->onRelease = []() {
+					Modules::Game->setCurrentScreen(Screens::LEADERBOARD);
+					};
+			}
 			else if (element.first == OPTIONS) {
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::PAUSE_MENU);
@@ -46,8 +52,7 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 bool MainMenu::handleEvent(const sf::Event& event)
 {
 	if (event.type == sf::Event::Resized) {
-		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
-		updateUIElementPositions();
+		return UIScreen::handleEvent(event);
 	}
 	for (auto& element : elements) {
 		if (std::shared_ptr<UIButton> button = std::dynamic_pointer_cast<UIButton>(element.second)) {
