@@ -25,6 +25,9 @@ public:
 	//set level 
 	void setCurrentLevel(LevelId levelId);
 
+	//get level 
+	LevelId getCurrentLevel();
+
 	//check if level is loaded 
 	bool isLevelLoaded(LevelId levelId) const;
 
@@ -33,6 +36,8 @@ public:
 
 	//get level tile info based on tile id
 	TileInfo getTileInfo(int32_t x, int32_t y);
+
+	std::vector<sf::Vector2f> getWalkablePositions() const;
 
 	//draw level on window
 	void update(float, sf::Window*) override;

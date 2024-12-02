@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 
 enum class ObstacleType
@@ -9,7 +10,7 @@ enum class ObstacleType
 	Breakable
 };
 
-class Obstacle
+class Obstacle : public sf::Sprite
 {
 public:
 	Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate = false);
@@ -27,6 +28,7 @@ public:
 private:
 	ObstacleType obstacleType;
 	sf::Vector2i obstaclePosition;
+
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
 };

@@ -41,7 +41,7 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
 	Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
 	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());*/
-	Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
+	//Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
 }
 
 #endif

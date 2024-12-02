@@ -29,6 +29,10 @@ public:
 
 	void updateVelocity(float deltaTime);
 
+	void updateBombs(float deltaTime);
+
+	void drawBombs(sf::RenderWindow& window);
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;
@@ -45,7 +49,9 @@ private:
 	int32_t upId;
 	int32_t downId;
 
-	Bomb bomb;
+	//Bomb bomb;
+
+	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
 };

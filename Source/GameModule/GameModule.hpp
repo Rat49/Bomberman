@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
+#include "GameModule/LevelGenerator.hpp"
 #include "Screens.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
@@ -35,6 +36,8 @@ private:
 	void checkTimeCounter();
 
 	PlayerCharacter player;
+
+	LevelGenerator* levelGenerator;;
 	 
 	LevelId currentLevel;
 };

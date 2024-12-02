@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <string>
 
 enum class BoosterType
@@ -10,7 +11,7 @@ enum class BoosterType
 	Health
 };
 
-class Booster
+class Booster : public sf::Sprite
 {
 public:
 	Booster(BoosterType type);

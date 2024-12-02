@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-class Key
+class Key : public sf::Sprite
 {
 public:
 	Key(const sf::Vector2i& position);

@@ -76,6 +76,24 @@ bool GameModule::initialize()
 		return false;
 	}
 
+	levelGenerator = new LevelGenerator();
+
+	int levelWidth = 13;
+	int levelHeight = 31;
+	GameLevelType gameLevel = GameLevelType::Easy;
+	int enemyCount = 5;
+	int breakableCount = 50;
+	sf::Vector2i playerStartPosition(1, 1);
+	int numBoosters = 3;
+
+	if (!levelGenerator->Initialize(levelWidth, levelHeight, gameLevel, enemyCount, breakableCount, playerStartPosition, numBoosters))
+	{
+		LOG("Failed to initialize LevelGenerator.");
+		delete levelGenerator;
+		levelGenerator = nullptr;
+
+	}
+
 	return true;
 }
 
@@ -88,6 +106,8 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
+
+	
 
     while (window.isOpen())
     {
@@ -132,8 +152,14 @@ void GameModule::run()
 			Modules::update(deltaTime, &window);
 			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 			player.updateVelocity(deltaTime);
+
+			player.updateBombs(deltaTime);
+			player.drawBombs(window);
+
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
+
+			levelGenerator->draw(window);
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();

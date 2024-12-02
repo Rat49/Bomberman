@@ -100,7 +100,36 @@ void PlayerCharacter::onMove(void* axis2DState)
 void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 {
 	// Need to add and then get Player's position here
-	bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
+	auto bomb = std::make_shared<Bomb>();
+	bomb->Initialize(getCurrentPosition(), 1, 3.0f);
+	activeBombs.push_back(bomb);
+}
+
+void PlayerCharacter::updateBombs(float deltaTime)
+{
+	for (auto it = activeBombs.begin(); it != activeBombs.end();)
+	{
+		auto& bomb = *it;
+		bomb->update(deltaTime);
+
+		if (!bomb->hasExploded())
+		{
+			// Remove bomb if inactive
+			it = activeBombs.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void PlayerCharacter::drawBombs(sf::RenderWindow& window)
+{
+	for (const auto& bomb : activeBombs)
+	{
+		window.draw(*bomb->getCurrentAnimation());
+	}
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)

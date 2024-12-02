@@ -11,10 +11,10 @@ enum class EnemyType
 	Hard
 };
 
-class Enemy
+class Enemy : public sf::Sprite
 {
 public:
-	Enemy(EnemyType type, sf::Vector2i spawnPosition, const std::vector<sf::Vector2i>& patrollingPoints = {});
+	Enemy(EnemyType type, sf::Vector2i spawnPosition); // , const std::vector<sf::Vector2i>& patrollingPoints = {});
 
 	EnemyType getType() const;
 

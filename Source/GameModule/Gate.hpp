@@ -4,7 +4,7 @@
 #include <SFML/System.hpp>
 #include "GameModule/Key.hpp"
 
-class Gate
+class Gate : public sf::Sprite
 {
 public:
 	Gate(const sf::Vector2i& position, bool isLocked = true, Key* key = nullptr);

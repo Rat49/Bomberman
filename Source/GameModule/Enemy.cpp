@@ -3,7 +3,7 @@
 #include <set>
 #include <utility>
 
-Enemy::Enemy(EnemyType type, sf::Vector2i spawnPosition, const std::vector<sf::Vector2i>& patrollingPoints) : enemyType(type), spawnPosition(spawnPosition), patrollingPoints(patrollingPoints) {}
+Enemy::Enemy(EnemyType type, sf::Vector2i spawnPosition) : enemyType(type), spawnPosition(spawnPosition) {} // , const std::vector<sf::Vector2i>& patrollingPoints) : enemyType(type), spawnPosition(spawnPosition), patrollingPoints(patrollingPoints) {}
 
 EnemyType Enemy::getType() const
 {

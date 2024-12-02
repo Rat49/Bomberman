@@ -1,5 +1,8 @@
-#include "GameModule/LevelGenerator.hpp"
+﻿#include "GameModule/LevelGenerator.hpp"
 #include "Common/Logs.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
+#include "Common/Modules.hpp"
 #include <set>
 #include <utility>
 #include <fstream>
@@ -7,9 +10,35 @@
 #include <filesystem>
 #include <iostream>
 
+namespace
+{
+	const std::string X_COORDINATE = "x";
+	const std::string Y_COORDINATE = "y";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+	const std::string ATLAS_PATH = "atlasPath";
+	const std::string IS_LOOPING = "isLooping";
+	const std::string RENDER_DURATION = "renderDuration";
+
+	const std::string OBSTACLE_RECT_NAME = "BreakableObstacle1";
+	const std::string OBSTACLE_PATH = "../../Data/Config/BreakableObstacle.ini";
+
+	const std::string KEY_RECT_NAME = "Key1";
+	const std::string KEY_PATH = "../../Data/Config/Key.ini";
+
+	const std::string GATE_RECT_NAME = "Gate1";
+	const std::string GATE_PATH = "../../Data/Config/Gate.ini";
+
+	const std::string SPEED_BOOSTER_RECT_NAME = "SpeedUpBooster";
+	const std::string SPEED_BOOSTER_PATH = "../../Data/Config/SpeedUpBooster.ini";
+
+	const std::string ENEMY_RECT_NAME = "Enemy1";
+	const std::string ENEMY_PATH = "../../Data/Config/Enemy1IdleAnimation.ini";
+}
+
 LevelGenerator::LevelGenerator() : width(20), height(20), gameLevelType(GameLevelType::Easy), enemyCount(5), breakableCount(10), playerStartPosition(1, 1) {}
 
-bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew)
+bool LevelGenerator::Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
 {
 	if (levelWidth <= 2 || levelHeight <= 2)
 	{
@@ -41,156 +70,283 @@ bool LevelGenerator::Initialize(int levelWidth, int levelHeight, GameLevelType g
 	this->enemyCount = enemyCountNew;
 	this->breakableCount = breakableCountNew;
 	this->playerStartPosition = playerStartPositionNew;
+	this->boostersNum = newNumOfBoosters;
+
+	generateLevel(width, height, gameLevelType, enemyCount, breakableCount, playerStartPosition, newNumOfBoosters);
 
 	return true;
 }
 
-LevelGenerator* LevelGenerator::generateLevel(int newWidth, int newHeight, GameLevelType gameLevel, int enemyCountNew, int breakableCountNew, const sf::Vector2i& playerStartPositionNew, int numBoosters)
+void LevelGenerator::generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
 {
-	LevelGenerator* levelInfo = new LevelGenerator();
-
-	// Set up the level parameters
-	if (!levelInfo->Initialize(newWidth, newHeight, gameLevel, enemyCountNew, breakableCountNew, playerStartPositionNew))
+	if (!parseConfigFile(OBSTACLE_PATH))
 	{
-		LOG("Failed to initialize the level with provided parameters.");
-		delete levelInfo;
-		return nullptr;
+		LOG("Failed to parse file: $", OBSTACLE_PATH);
+		return;
 	}
+
+	if (!parseConfigFile(ENEMY_PATH))
+	{
+		LOG("Failed to parse file: $", ENEMY_PATH);
+		return;
+	}
+
+	if (!parseConfigFile(KEY_PATH))
+	{
+		LOG("Failed to parse file: $", KEY_PATH);
+		return;
+	}
+
+	if (!parseConfigFile(GATE_PATH))
+	{
+		LOG("Failed to parse file: $", GATE_PATH);
+		return;
+	}
+
+	if (!parseConfigFile(SPEED_BOOSTER_PATH))
+	{
+		LOG("Failed to parse file: $", SPEED_BOOSTER_PATH);
+		return;
+	}
+
+	// Retrieve all walkable positions from the level
+	const auto& walkablePos = Modules::Level->getWalkablePositions();
+	freePositions.insert(freePositions.end(), walkablePos.begin(), walkablePos.end());
+
+	this->width = newWidth;
+	this->height = newHeight;
+	this->gameLevelType = gameLevel;
+	this->enemyCount = enemyCountNew;
+	this->breakableCount = breakableCountNew;
+	this->playerStartPosition = playerStartPositionNew;
+	this->boostersNum = newNumOfBoosters;
 
 	// Random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	std::vector<std::vector<int>> layer = levelInfo->generateLayer();
-
 	// Generate all level components
-	levelInfo->generateObstacles(layer, gen);
-	levelInfo->generateEnemies(gen);
-	levelInfo->generateKeys(gen);
-	levelInfo->generateGates(gen);
-	levelInfo->generateBoosters(gen, numBoosters);
-
-	//levelInfo->saveLayerToFile("LevelTest_obstacles.txt", layer);
-
-	return levelInfo;
+	generateObstacles(gen);
+	generateEnemies(gen);
+	generateKeys(gen);
+	generateGates(gen);
+	generateBoosters(gen);
 }
 
 void LevelGenerator::generateEnemies(std::mt19937& gen)
 {
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
+	// Generate a safety zone around the player to prevent placing obstacles too close
+	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
 
 	// Enemy types based on game level
 	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(gameLevelType);
 
-	std::set<std::pair<int, int>> usedPositions = generateSafetyZone(playerStartPosition, 3);
+	// Remove positions that overlap with the safety zone
+	freePositions.erase(std::remove_if(freePositions.begin(), freePositions.end(), [&usedPositions](const sf::Vector2f& pos)
+		{
+			std::pair<int32_t, int32_t> positionPair = std::make_pair(static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y));
+			return usedPositions.find(positionPair) != usedPositions.end();
+		}), freePositions.end());
 
-	// Add obstacles to used positions
-	for (const auto& obstacle : obstacles)
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(freePositions.begin(), freePositions.end(), gen);
+
+	// Counter to track how many enemies have been placed
+	int32_t placedEnemies = 0;
+
+	// Iterate through the shuffled free positions
+	for (auto it = freePositions.begin(); it != freePositions.end();)
 	{
-		usedPositions.emplace(obstacle.getPosition().x, obstacle.getPosition().y);
+		// Stop if the required number of enemies have been placed
+		if (placedEnemies >= enemyCount)
+		{
+			break;
+		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Generate patrolling points with busy check
+		//std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), freePositions, enemyRange);
+
+		// Increment the counter for placed enemy
+		++placedEnemies;
+
+		// Create a new enemy at the current position
+		Enemy enemy(EnemyType::Basic, { x, y }); // , patrollingPoints);
+
+		//load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
+		enemy.setTexture(*m_atlasTexture);
+		enemy.setTextureRect(getTextureRect(ENEMY_RECT_NAME));
+		enemy.setPosition((float)x, (float)y);
+
+		// Add the enemy to the list of all enemies
+		enemies.emplace_back(std::move(enemy));
+
+		// Remove the used position from the free positions list
+		it = freePositions.erase(it);
+	}
+}
+
+void LevelGenerator::draw(sf::RenderTarget& target) const
+{
+	for (const auto& enemy : enemies)
+	{
+		target.draw(enemy);
 	}
 
-	int placedEnemies = 0;
-	while (placedEnemies < enemyCount)
+	for (const auto& key : keys)
 	{
-		int x = distX(gen);
-		int y = distY(gen);
+		target.draw(key);
+	}
 
-		if (usedPositions.find({ x, y }) == usedPositions.end())
-		{
-			std::uniform_int_distribution<> distType(0, static_cast<int>(availableTypes.size() - 1));
-			EnemyType type = availableTypes[distType(gen)];
+	for (const auto& gate : gates)
+	{
+		target.draw(gate);
+	}
 
-			// Generate patrolling points with busy check
-			std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), usedPositions, enemyRange);
+	for (const auto& booster : boosters)
+	{
+		target.draw(booster);
+	}
 
-			// Add all patrol points to occupied positions
-			for (const auto& point : patrollingPoints)
-			{
-				usedPositions.emplace(point.x, point.y);
-			}
-
-			enemies.emplace_back(type, sf::Vector2i(x, y), patrollingPoints);
-			usedPositions.emplace(x, y);
-			++placedEnemies;
-		}
+	for (const auto& obstacle : obstacles)
+	{
+		target.draw(obstacle);
 	}
 }
 
 // Generate obstacles
-void LevelGenerator::generateObstacles(std::vector<std::vector<int>>& layer, std::mt19937& gen)
+void LevelGenerator::generateObstacles(std::mt19937& gen)
 {
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
+	// Generate a safety zone around the player to prevent placing obstacles too close
+	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
 
-	std::set<std::pair<int, int>> usedPositions = generateSafetyZone(playerStartPosition, 2);
-
-	int totalAvailablePositions = (width - 2) * (height - 2) - static_cast<int>(usedPositions.size());
-
-	if (breakableCount > totalAvailablePositions)
-	{
-		LOG("Not enough space to generate the requested number of breakable obstacles.");
-	}
-
-	int placedBreakables = 0;
-	while (placedBreakables < breakableCount)
-	{
-		int x = distX(gen);
-		int y = distY(gen);
-
-		// Check if the position is free and transient (WALKABLE)
-		if (usedPositions.find({ x, y }) == usedPositions.end() && layer[y][x] == 1)
+	// Remove positions that overlap with the safety zone
+	freePositions.erase(std::remove_if(freePositions.begin(), freePositions.end(), [&usedPositions](const sf::Vector2f& pos)
 		{
-			// Set breakable field (BREAKABLE)
-			layer[y][x] = 2;
-			usedPositions.emplace(x, y);
-			++placedBreakables;
+			int32_t x = static_cast<int32_t>(std::round(pos.x));
+			int32_t y = static_cast<int32_t>(std::round(pos.y));
+			std::pair<int32_t, int32_t> positionPair = std::make_pair(x, y);
+			return usedPositions.find(positionPair) != usedPositions.end();
+		}), freePositions.end());
+
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(freePositions.begin(), freePositions.end(), gen);
+
+	// Counter to track how many breakable obstacles have been placed
+	int32_t placedBreakables = 0;
+
+	// Iterate through the shuffled free positions
+	for (auto it = freePositions.begin(); it != freePositions.end();)
+	{
+		// Stop if the required number of breakable obstacles have been placed
+		if (placedBreakables >= breakableCount)
+		{
+			break;
 		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Mark the position as used to avoid placing another obstacle here
+		usedPositions.emplace(x, y);
+
+		// Increment the counter for placed breakable obstacles
+		++placedBreakables;
+
+		// Create a new breakable obstacle at the current position
+		Obstacle obstacle(ObstacleType::Breakable, { x, y }, false);
+
+		//load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
+		obstacle.setTexture(*m_atlasTexture);
+		obstacle.setTextureRect(getTextureRect(OBSTACLE_RECT_NAME));
+		obstacle.setPosition((float)x, (float)y);
+
+		// Save the obstacle's position in the breakable obstacles position vector
+		breakableObstaclesPositions.emplace_back(obstacle.getPosition());
+
+		// Add the obstacle to the list of all obstacles
+		obstacles.emplace_back(std::move(obstacle));
+
+		// Remove the used position from the free positions list
+		it = freePositions.erase(it);
 	}
 }
 
-std::vector<std::vector<int>> LevelGenerator::generateLayer() const
+bool LevelGenerator::parseConfigFile(const std::string& configFilePath)
 {
-	// Make an empty layer with 1 (WALKABLE)
-	std::vector<std::vector<int>> layer(height, std::vector<int>(width, 1));
+	Modules::Config->addFile(configFilePath); //"../../Data/Config/BreakableObstacle.ini");
+	const ConfigFile& obstacleConfig = Modules::Config->getFile(configFilePath);
 
-	// Set outer walls as UNBREAKABLE
-	for (int x = 0; x < width; ++x)
-	{
-		// Upper wall
-		layer[0][x] = 0;
-		// Lower wall
-		layer[height - 1][x] = 0;
-	}
-	for (int y = 0; y < height; ++y)
-	{
-		// Left wall
-		layer[y][0] = 0;
-		// Right wall
-		layer[y][width - 1] = 0;
-	}
+	bool anyTextureAdded = false;
+	std::vector<std::string> m_configValues = { ATLAS_PATH, IS_LOOPING, RENDER_DURATION };
+	std::vector<std::string> m_rectValues = { X_COORDINATE, Y_COORDINATE, WIDTH, HEIGHT };
 
-	// Add bulletproof fields inside the matrix
-	for (int y = 0; y < height; ++y)
+	//check all sections
+	const auto& sections = obstacleConfig.getAllSections();
+	for (const auto& sectionName : sections)
 	{
-		for (int x = 0; x < width; ++x)
+
+		if (!obstacleConfig.isSectionPresent(sectionName))
+			break;
+
+		if (obstacleConfig.getSection(sectionName).areValuesPresent(m_configValues))
 		{
-			if (Obstacle::isValidUnbreakablePosition({ x, y }))
-			{
-				// UNBREAKABLE
-				layer[y][x] = 0;
-			}
+			const ConfigSection& mySection = obstacleConfig.getSection(sectionName);
+
+			//load atlas path
+			m_atlasPath = mySection.getValue(ATLAS_PATH).getString();
+
+			//load isLooping value 
+			m_isLooping = mySection.getValue(IS_LOOPING).getBool();
+
+			//load render duration
+			m_renderDuration = mySection.getValue(RENDER_DURATION).getFloat();
+
+		}
+		else if (obstacleConfig.getSection(sectionName).areValuesPresent(m_rectValues))
+		{
+			//load rect infos
+			const ConfigSection& mySection = obstacleConfig.getSection(sectionName);
+			int32_t xa = mySection.getValue(X_COORDINATE).getInt32();
+			int32_t ya = mySection.getValue(Y_COORDINATE).getInt32();
+			int32_t widtha = mySection.getValue(WIDTH).getInt32();
+			int32_t heighta = mySection.getValue(HEIGHT).getInt32();
+
+			//set to map
+			m_texturesRect[sectionName] = sf::IntRect(xa, ya, widtha, heighta);
+			anyTextureAdded = true;
 		}
 	}
+	return anyTextureAdded;
+}
 
-	return layer;
+sf::IntRect LevelGenerator::getTextureRect(const std::string& textureName) const
+{
+	auto textureRect = m_texturesRect.find(textureName);
+
+	if (textureRect != m_texturesRect.end())
+	{
+		return textureRect->second;
+	}
+	return sf::IntRect();
 }
 
 // Get available enemy types for the current level
-std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType level) const
+std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType levelType) const
 {
-	switch (level)
+	switch (levelType)
 	{
 	case GameLevelType::Easy: 
 		return { EnemyType::Basic };
@@ -204,184 +360,211 @@ std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType leve
 }
 
 //Generate safety zone
-std::set<std::pair<int, int>> LevelGenerator::generateSafetyZone(const sf::Vector2i& center, int radius) const
+std::set<std::pair<int32_t, int32_t>> LevelGenerator::generateSafetyZone() const
 {
-	std::set<std::pair<int, int>> safetyZone;
-	for (int y = center.y - radius; y <= center.y + radius; ++y)
-	{
-		for (int x = center.x - radius; x <= center.x + radius; ++x)
-		{
-			if (x >= 0 && x < width && y >= 0 && y < height)
-			{
-				safetyZone.emplace(x, y);
-			}
-		}
-	}
+	std::set<std::pair<int32_t, int32_t>> safetyZone;
+
+	safetyZone.insert(std::make_pair(64, 64));
+	safetyZone.insert(std::make_pair(64, 128));
+	safetyZone.insert(std::make_pair(128, 64));
+
 	return safetyZone;
 }
 
 // Generate patrolling points
-std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, const std::set<std::pair<int, int>>& occupiedPositions, int range) const
+std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const
 {
-	std::set<std::pair<int, int>> localOccupiedPositions = occupiedPositions;
 	std::vector<sf::Vector2i> patrollingPoints;
+	
 	std::uniform_int_distribution<> distX(enemyPosition.x - range, enemyPosition.x + range);
 	std::uniform_int_distribution<> distY(enemyPosition.y - range, enemyPosition.y + range);
 
 	// Define a random distribution for the number of points between min and max
 	std::uniform_int_distribution<> distNumPatrolPoints(minNumOfPatrolPoints, maxNumOfPatrolPoints);
-	// Generate a random number of patrol points
-	int numPatrolPoints = distNumPatrolPoints(gen);
 
-	while (patrollingPoints.size() <= numPatrolPoints)
+	// Generate a random number of patrol points
+	int32_t numPatrolPoints = distNumPatrolPoints(gen);
+
+	int32_t maxAttempts = 10;
+	int32_t attempts = 0;
+
+	while (patrollingPoints.size() < numPatrolPoints && attempts < maxAttempts)
 	{
-		int x = distX(gen);
-		int y = distY(gen);
+		int32_t x = distX(gen);
+		int32_t y = distY(gen);
+
+		auto it = std::find_if(
+			newFreePositions.begin(),
+			newFreePositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
 
 		// Check if the position is free
-		if (localOccupiedPositions.find({ x, y }) == localOccupiedPositions.end())
+		if (it != newFreePositions.end())
 		{
 			patrollingPoints.emplace_back(x, y);
-
-			// Add the generated position to occupied
-			localOccupiedPositions.insert({ x, y });
 		}
+		++attempts;
 	}
 	return patrollingPoints;
 }
 
 void LevelGenerator::generateGates(std::mt19937& gen)
 {
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
 
-	int numGates = 1;
-	while (gates.size() < numGates)
+	int32_t numGates = 1;
+
+	// Iterate through the shuffled breakable obstacles positions
+	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end(); ++it)
 	{
-		int x = distX(gen);
-		int y = distY(gen);
+		// Stop if the required number of breakable obstacles have been placed
+		if (gates.size() >= numGates)
+		{
+			break;
+		}
 
-		// Check if the position is under breakable object
-		if (breakableObjPos.find({ x, y }) != breakableObjPos.end())
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Check if the position is under a breakable object
+		auto found = std::find_if(
+			breakableObstaclesPositions.begin(),
+			breakableObstaclesPositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
+
+		// Create a new breakable obstacle at the current position
+		Gate gate({ x, y }, false, &keys[0]);
+
+		//load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
+		gate.setTexture(*m_atlasTexture);
+		gate.setTextureRect(getTextureRect(GATE_RECT_NAME));
+		gate.setPosition((float)x, (float)y);
+
+		// Add the gate to the list of all gates
+		gates.emplace_back(std::move(gate));
+
+		if (found != breakableObstaclesPositions.end())
 		{
 			// The gate is hidden under a brick
-			gates.push_back({ sf::Vector2i(x, y), true, &keys[0]});
-			breakableObjPos.insert({ x, y });
+			gates.push_back({ sf::Vector2i(x, y), true, &keys[0] });
+
+			it = breakableObstaclesPositions.erase(it);
 		}
 	}
 }
 
 void LevelGenerator::generateKeys(std::mt19937& gen)
 {
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
 
 	// Generate one key per level
-	int numKeys = 1; 
-	while (keys.size() < numKeys)
-	{
-		int x = distX(gen);
-		int y = distY(gen);
+	int32_t numKeys = 1;
 
-		// Checking if the position is under a breakable object
-		if (breakableObjPos.find({ x, y }) == breakableObjPos.end())
+	// Iterate through the shuffled free positions
+	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end();)
+	{
+		// Stop if the required number of keys have been placed
+		if (keys.size() >= numKeys)
 		{
-			// Add the key below the breakable object
-			keys.push_back(Key(sf::Vector2i(x, y)));
-			breakableObjPos.insert({ x, y });
+			break;
+		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Check if the position is under a breakable object
+		auto found = std::find_if(
+			breakableObstaclesPositions.begin(),
+			breakableObstaclesPositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
+
+		// Create a new key at the current position
+		Key key({ x, y });
+
+		// Load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the key in the game world
+		key.setTexture(*m_atlasTexture);
+		key.setTextureRect(getTextureRect(KEY_RECT_NAME));
+		key.setPosition((float)x, (float)y);
+
+		// Add the gate to the list of all keys
+		keys.emplace_back(std::move(key));
+
+		if (found != breakableObstaclesPositions.end())
+		{
+			// The key is hidden under a brick
+			keys.push_back({ sf::Vector2i(x, y) });
+
+			it = breakableObstaclesPositions.erase(it);
 		}
 	}
 }
 
-void LevelGenerator::generateBoosters(std::mt19937& gen, int numBoosters)
+void LevelGenerator::generateBoosters(std::mt19937& gen)
 {
-	std::uniform_int_distribution<> distX(1, width - 2);
-	std::uniform_int_distribution<> distY(1, height - 2);
-	std::uniform_int_distribution<> distBoosterType(0, 2);
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
 
-	for (int i = 0; i < numBoosters; ++i)
+	// Iterate through the shuffled free positions
+	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end();)
 	{
-		BoosterType boosterType = static_cast<BoosterType>(distBoosterType(gen));
-		boosters.emplace_back(boosterType);
+		// Stop if the required number of boosters have been placed
+		if (boosters.size() >= boostersNum)
+		{
+			break;
+		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Check if the position is under a obstacle
+		auto found = std::find_if(
+			breakableObstaclesPositions.begin(),
+			breakableObstaclesPositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
+
+		Booster booster(BoosterType::Speed);
+
+		// Load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the booster in the game world
+		booster.setTexture(*m_atlasTexture);
+		booster.setTextureRect(getTextureRect(SPEED_BOOSTER_RECT_NAME));
+		booster.setPosition((float)x, (float)y);
+
+		// Add the booster to the list of all gates
+		boosters.emplace_back(std::move(booster));
+
+		if (found != breakableObstaclesPositions.end())
+		{
+			// The booster is hidden under a brick
+			 it = breakableObstaclesPositions.erase(it);
+			
+			boosters.push_back(BoosterType::Speed);
+		}
 	}
 }
-
-// A method for exporting layers to text files
-//void LevelGenerator::exportLevelToTextFiles(const std::string& prefix)
-//{
-//	// Generating layer layers as a matrix
-//	std::vector<std::vector<int>> obstaclesLayer(width, std::vector<int>(height, 0));
-//	std::vector<std::vector<int>> boostersLayer(width, std::vector<int>(height, 0));
-//	std::vector<std::vector<int>> gatesLayer(width, std::vector<int>(height, 0));
-//	std::vector<std::vector<int>> enemiesLayer(width, std::vector<int>(height, 0));
-//	std::vector<std::vector<int>> keysLayer(width, std::vector<int>(height, 0));
-//
-//	// Filling matrices with data from objects
-//	for (const auto& obstacle : obstacles)
-//	{
-//		obstaclesLayer[obstacle.getPosition().x][obstacle.getPosition().y] = 1;  // Obstacle = 1
-//	}
-//
-//	for (const auto& booster : boosters)
-//	{
-//		boostersLayer[booster.getPosition().x][booster.getPosition().y] = 2;  // Booster = 2
-//	}
-//
-//	for (const auto& gate : gates)
-//	{
-//		gatesLayer[gate.getGatePosition().x][gate.getGatePosition().y] = 3;  // Gate = 3
-//	}
-//
-//	for (const auto& enemy : enemies)
-//	{
-//		enemiesLayer[enemy.getSpawnPosition().x][enemy.getSpawnPosition().y] = 4;  // Enemy = 4
-//	}
-//
-//	for (const auto& key : keys)
-//	{
-//		keysLayer[key.getKeyPosition().x][key.getKeyPosition().y] = 5;  // Keys = 5
-//	}
-//
-//	// Writing each layer to a text file
-//	//saveLayerToFile(prefix + "_obstacles.txt", obstaclesLayer);
-//	saveLayerToFile(prefix + "_boosters.txt", boostersLayer);
-//	saveLayerToFile(prefix + "_gates.txt", gatesLayer);
-//	saveLayerToFile(prefix + "_enemies.txt", enemiesLayer);
-//	saveLayerToFile(prefix + "_keys.txt", keysLayer);
-//}
-
-//// A method for writing a layer to a file
-//void LevelGenerator::saveLayerToFile(const std::string& filename, const std::vector<std::vector<int>>& layer) const
-//{
-//	// Define the path to the file
-//	const std::string directory = "C:\\Users\\dragana.djurdjevic\\sfml-bomberman\\Data\\Config";
-//
-//	// Combine directory and file name
-//	std::filesystem::path fullPath = std::filesystem::path(directory) / filename;
-//
-//	// Create directories if they do not exist
-//	std::filesystem::create_directories(fullPath.parent_path());
-//
-//	// Try to open the file
-//	std::ofstream file(fullPath.string());
-//
-//	if (file.is_open())
-//	{
-//		for (const auto& row : layer)
-//		{
-//			for (size_t i = 0; i < row.size(); ++i)
-//			{
-//				file << row[i] << (i < row.size() - 1 ? " " : "\n");
-//			}
-//		}
-//		file.close();
-//	}
-//	else
-//	{
-//		LOG("Failed to open file.");
-//		throw std::runtime_error("Failed to open file: " + filename);
-//	}
-//}
 
 // Getter methods
 const std::vector<Obstacle>& LevelGenerator::getObstacles() const

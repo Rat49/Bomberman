@@ -7,10 +7,12 @@
 
 using TileInfo = std::string;
 
-struct FieldInfo {
+struct FieldInfo
+{
 	std::shared_ptr<Tile> tile;
 	sf::Vector2f tilePosition;
 };
+
 enum class GameLevelType
 {
 	Easy = 1,
@@ -33,6 +35,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	TileInfo Level::getTileInfos(int32_t x, int32_t y) const;
+
+	std::vector<sf::Vector2f> getWalkablePositions() const;
 
 private:
 
