@@ -76,7 +76,7 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	levelGenerator = new LevelGenerator();
+	levelGenerator = std::make_unique<LevelGenerator>();
 
 	int levelWidth = 13;
 	int levelHeight = 31;
@@ -89,9 +89,6 @@ bool GameModule::initialize()
 	if (!levelGenerator->Initialize(levelWidth, levelHeight, gameLevel, enemyCount, breakableCount, playerStartPosition, numBoosters))
 	{
 		LOG("Failed to initialize LevelGenerator.");
-		delete levelGenerator;
-		levelGenerator = nullptr;
-
 	}
 
 	return true;
@@ -152,16 +149,16 @@ void GameModule::run()
 			sf::View tempView = screens[currentScreen]->getWindow()->getView();
 			Modules::update(deltaTime, &window);
 			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
-			player.updateVelocity(deltaTime);
 
+			player.updateVelocity(deltaTime);
 			player.updateBombs(deltaTime);
 			player.drawBombs(window);
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
-			screens[currentScreen]->getWindow()->setView(tempView);
-
 			levelGenerator->draw(window);
+
+			screens[currentScreen]->getWindow()->setView(tempView);
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();

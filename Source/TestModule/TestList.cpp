@@ -27,7 +27,8 @@ void TestModule::CreateAllTests()
 	// add your tests based on TestBase class here using this preset
 	// Modules::Tests->addTest(std::make_shared<your-test-type>());
 	// ----------------------------------------------------------------
-	/*Modules::Tests->addTest(std::make_shared<SampleTest>());
+	/*
+	Modules::Tests->addTest(std::make_shared<SampleTest>());
 	Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
 	Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
 	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
@@ -42,8 +43,9 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
 	Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
 	Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
-	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());*/
-	//Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
+	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
+	Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
+	*/
 }
 
 #endif

@@ -19,6 +19,9 @@ bool PlayerCharacter::init()
 
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
+	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+
+	activeBombs.reserve(maxBombs);
 
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
 	if (playerMovement < 0)
@@ -99,6 +102,12 @@ void PlayerCharacter::onMove(void* axis2DState)
 
 void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 {
+	if (activeBombs.size() >= static_cast<size_t>(maxBombs))
+	{
+		LOG("Cannot plant more bombs. Maximum reached.");
+		return;
+	}
+
 	// Need to add and then get Player's position here
 	auto bomb = std::make_shared<Bomb>();
 	bomb->Initialize(getCurrentPosition(), 1, 3.0f);

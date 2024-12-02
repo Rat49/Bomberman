@@ -37,7 +37,7 @@ private:
 
 	PlayerCharacter player;
 
-	LevelGenerator* levelGenerator;;
+	std::unique_ptr<LevelGenerator> levelGenerator;
 	 
 	LevelId currentLevel;
 };

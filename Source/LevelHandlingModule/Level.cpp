@@ -185,13 +185,6 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 			target.draw(drawableTile, states);
 		}
 	}
-
-	//auto walkablePositions = getWalkablePositions();
-
-	//for (const auto& position : walkablePositions)
-	//{
-	//	std::cout << "Walkable position: (" << position.x << ", " << position.y << ")\n";
-	//}
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
