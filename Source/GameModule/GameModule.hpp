@@ -20,6 +20,10 @@ public:
 
 	void setCurrentScreen(const Screens& newScreen);
 
+	void setIsPaused(bool newPaused) { isPaused = newPaused; }
+
+	const bool getIsPaused() { return isPaused; }
+
 private:
 	sf::RenderWindow window;
 
@@ -31,6 +35,8 @@ private:
 	int32_t currentStage = 0;
 
 	int32_t gameTime;
+
+	bool isPaused = false;
 
 	void checkTimeCounter();
 

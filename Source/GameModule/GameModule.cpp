@@ -7,6 +7,7 @@
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
+#include "PauseMenu.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -16,6 +17,7 @@ namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
 	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
+	const std::string& PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string& WINDOW = "Window";
@@ -40,6 +42,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_HUD);
 	Modules::Config->addFile(PATH_MAIN_MENU);
 	Modules::Config->addFile(PATH_STAGE);
+	Modules::Config->addFile(PATH_PAUSE_MENU);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
@@ -66,6 +69,7 @@ bool GameModule::initialize()
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
+	screens[Screens::PAUSE_MENU] = std::make_shared<PauseMenu>(&window, font, PATH_PAUSE_MENU);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
 	screenStage->setStage(currentStage);
@@ -112,13 +116,16 @@ void GameModule::run()
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
-				screens[currentScreen]->handleEvent(event);
+				if (isPaused) {
+					screens[Screens::PAUSE_MENU]->handleEvent(event);
+				}
+				else screens[currentScreen]->handleEvent(event);
 				break;
 
 			}
 		}
-
-		timeCounter += deltaTime;
+		if(!isPaused)
+			timeCounter += deltaTime;
 
 		checkTimeCounter();
 
@@ -136,6 +143,10 @@ void GameModule::run()
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
 			screens[currentScreen]->getWindow()->setView(tempView);
+
+			if (isPaused) {
+				screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
+			}
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();
@@ -150,6 +161,7 @@ void GameModule::setCurrentScreen(const Screens& newScreen)
 {
 	currentScreen = newScreen;
 	timeCounter = 0.0f;
+	isPaused = false;
 }
 
 void GameModule::checkTimeCounter()
@@ -158,7 +170,7 @@ void GameModule::checkTimeCounter()
 	{
 	case Screens::LEVEL:
 		// Checking if one second has passed for updating Time label (delta time is in microseconds)
-		if (timeCounter >= 1000000) {
+		if (timeCounter >= 1000000 && !isPaused) {
 			timeCounter = 0.0f;
 			gameTime--;
 

@@ -27,6 +27,7 @@ namespace
 	const std::string& UIBUTTON = "UIButton";
 	const std::string& PATH = "path";
 	const float FACTOR_WIDTH = 0.0375f; // factor for text size, based on width (30/800)
+	const std::string& FACTOR_SIZE = "factorSize";
 }
 
 void UIFactory::makeScreen(const std::string& path, UIScreen* screen, const std::string& screenFont)
@@ -66,6 +67,17 @@ void UIFactory::setUIScreen(UIScreen* screen, const ConfigSection& element)
 		auto& backgroundColor = element.getValue(BACKGROUND_COLOR).getString();
 		screen->setBackgroundColor(sf::Color(std::stoul(backgroundColor, nullptr, 16)));
 	}
+	if (element.areValuesPresent({ WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT })) {
+		int32_t width = screen->getWindow()->getSize().x;
+		int32_t height = screen->getWindow()->getSize().y;
+
+		float elementWidthOffset = element.getValue(WIDTH_OFFSET).getFloat();
+		float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
+		float elementWidth = element.getValue(RECTANGLE_WIDTH).getFloat();
+		float elementHeight = element.getValue(REICTANGLE_HEIGHT).getFloat();
+
+		screen->setBackground(elementWidthOffset * width, elementHeightOffset * height, elementWidth, elementHeight);
+	}
 }
 
 void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, const ConfigSection& element)
@@ -75,7 +87,11 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 	int32_t width = screen->getWindow()->getSize().x;
 	int32_t height = screen->getWindow()->getSize().y;
 
-	auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width);
+	float factorSize = 1.0f;
+	if (element.isValuePresent(FACTOR_SIZE)) {
+		factorSize = element.getValue(FACTOR_SIZE).getFloat();
+	}
+	auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width * factorSize);
 
 	// Check if necessary values are present
 	if (element.areValuesPresent({ NAME, VALUE, WIDTH_OFFSET, HEIGHT_OFFSET }))
@@ -147,9 +163,10 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
 			myButton->dropShadows(sf::Color(std::stoul(textColor, nullptr, 16)),
 				sf::Color(std::stoul(shadowColor, nullptr, 16)));
 		}
-
+		bool hasSomeColor = false;
 		// Check if button has defined default background color (not Black)
 		if (element.isValuePresent(DEFAULT_COLOR)) {
+			hasSomeColor = true;
 			auto& defaultColor = element.getValue(DEFAULT_COLOR).getString();
 			myButton->setDefaultColor(sf::Color(std::stoul(defaultColor, nullptr, 16)));
 		}
@@ -157,13 +174,13 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
 		// Check if button has defined hover background color (not Black)
 		if (element.isValuePresent(HOVER_COLOR)) {
 			auto& buttonColor = element.getValue(HOVER_COLOR).getString();
-			myButton->setDefaultColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
+			myButton->setHoverColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
 		}
 
 		// Check if button has defined on pressed background color (not Black)
 		if (element.isValuePresent(PRESSED_COLOR)) {
 			auto& buttonColor = element.getValue(PRESSED_COLOR).getString();
-			myButton->setDefaultColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
+			myButton->setPressedColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
 		}
 
 		screen->addElement(elementName, myButton);
