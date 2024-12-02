@@ -37,4 +37,6 @@ private:
 	PlayerCharacter player;
 	 
 	LevelId currentLevel;
+
+	bool resized = false;
 };

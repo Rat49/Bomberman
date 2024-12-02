@@ -109,10 +109,13 @@ void GameModule::run()
 				window.close();
 				break;
 
-			case sf::Event::Resized:
+			case sf::Event::Resized: {
 				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
-				[[fallthrough]];
-
+				for (auto sc : screens) {
+					sc.second->handleEvent(event);
+				}
+				break;
+			}
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:

@@ -87,8 +87,7 @@ void Leaderboard::readLeaderboard()
 bool Leaderboard::handleEvent(const sf::Event& event)
 {
 	if (event.type == sf::Event::Resized) {
-		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
-		updateUIElementPositions();
+		return UIScreen::handleEvent(event);
 	}
 	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(MENU));
 	if (!menuButton->handleEvent(event)) {
