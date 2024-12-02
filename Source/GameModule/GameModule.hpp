@@ -4,6 +4,7 @@
 #include "Screens.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "Boosters/BoosterComponent.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -21,9 +22,18 @@ public:
 	void setCurrentScreen(const Screens& newScreen);
 
 private:
+	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+	void removeAllBoosters();
+
+	void updateBoosters();
+
+private:
 	sf::RenderWindow window;
 
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
+
+	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 

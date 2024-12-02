@@ -43,7 +43,6 @@ void TestModule::CreateAllTests()
 	//Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
 	//Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
 	//Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
-	Modules::Tests->addTest(std::make_shared<BoosterManagerTest>());
 }
 
 #endif

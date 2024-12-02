@@ -11,7 +11,6 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include "AssetManager/AssetManager.hpp"
-#include "BoosterManager/BoosterManager.hpp"
 
 namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
@@ -77,7 +76,6 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	Modules::BoostersManager->initialize(std::make_shared<PlayerCharacter>(player));
 	return true;
 }
 
@@ -127,6 +125,7 @@ void GameModule::run()
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
+		updateBoosters();
 
 		window.clear(screens[currentScreen]->getBackgroundColor());
 		if(currentScreen == Screens::LEVEL) 
@@ -176,3 +175,36 @@ void GameModule::checkTimeCounter()
 		break;
 	}
 }
+
+void GameModule::updateBoosters()
+{
+	std::map<int32_t, std::shared_ptr<BoosterComponent>>::iterator boostersIterator = m_boosters.begin();
+	while (boostersIterator != m_boosters.end())
+	{
+		if (boostersIterator->second->shoulRemoveEffect())
+		{
+			if (boostersIterator->second->removeEffect(player))
+			{
+				boostersIterator = m_boosters.erase(boostersIterator);
+				continue;
+			}
+		}
+		++boostersIterator;
+	}
+}
+
+void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
+{
+	if (m_boosters.find(newBooster->getBoosterID()) == m_boosters.end())
+	{
+		m_boosters[newBooster->getBoosterID()] = newBooster;
+	}
+	m_boosters[newBooster->getBoosterID()]->applyEffect(player);
+}
+
+void GameModule::removeAllBoosters()
+{
+	m_boosters.clear();
+}
+
+

@@ -19,7 +19,6 @@ class AssetManager;
 class PhysicsModule;
 class LevelHandlingModule;
 class BaseModule;
-class BoosterManager;
 
 namespace sf {
 	class Window;
@@ -50,7 +49,6 @@ struct Modules
 	static AssetManager* Assets;
 	static PhysicsModule* Physics;
 	static LevelHandlingModule* Level;
-	static BoosterManager* BoostersManager;
 
 private:
 	static std::vector<std::unique_ptr<BaseModule>> modules;
