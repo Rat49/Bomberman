@@ -1,24 +1,36 @@
 #include "SoundSystem/SoundSystem.hpp"
 #include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "AssetManager/AssetManager.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include <random>
 #include <iostream>
 
 // SOUND
 // Load audio and save to folder
+
 bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 {
-	sf::SoundBuffer buffer;
-	if (!buffer.loadFromFile(filePath))
+	// Check if sound already in map
+	if (soundEffectBuffers.find(soundID) != soundEffectBuffers.end())
 	{
-		LOG("Failed to load sound from $", filePath.c_str());
+		LOG("Sound effect already exists with id : $", soundID);
 		return false;
 	}
+
+	// Use AssetManager to get the sound buffer
+	auto buffer = Modules::Assets->getSound(filePath);
+
+	if(!buffer)
+	{
+		LOG("Failed to load sound from path : $" , filePath);
+		return false;
+	}
+
 	soundEffectBuffers[soundID].emplace_back(std::move(buffer));
 	LOG("Successfully loaded sound: $", soundID);
 	return true;
 }
-
 
 // Loading sounds from the configuration file
 bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
@@ -55,12 +67,14 @@ bool SoundSystem::loadSoundsFromConfig(const std::string& configFilePath)
 		while (section.isValuePresent(soundPrefix + std::to_string(i)))
 		{
 			std::string filePath = section.getValue(soundPrefix + std::to_string(i)).getString();
-			sf::SoundBuffer buffer;
 
-			// Try loading the file into SoundBuffer
-			if (!buffer.loadFromFile(filePath))
+			// Use AssetManager to get the sound buffer
+			auto buffer = Modules::Assets->getSound(filePath);
+
+			if (!buffer)
 			{
 				LOG("Failed to load sound from $", filePath);
+				return false;
 			}
 			else
 			{
@@ -106,16 +120,16 @@ bool SoundSystem::addSounds(int32_t soundID, const std::list<std::string>&filePa
 	return true;
 }
 
-void SoundSystem::playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID)
+void SoundSystem::playSoundFromBuffer(const std::shared_ptr<sf::SoundBuffer>& buffer, int32_t soundID)
 {
 	auto sound = std::make_unique<sf::Sound>();
-	sound->setBuffer(buffer);
+	sound->setBuffer(*buffer);
 	sound->setVolume(100.f);
 	sound->play();
 
 	// Saving active sounds
 	activeSounds.emplace(soundID, std::move(sound));
-	LOG("Playing sound: $", soundID);
+	LOG("Playing sound from buffer : $", soundID);
 }
 
 // Playing sound from the buffer
@@ -142,7 +156,7 @@ void SoundSystem::playSound(int32_t soundID)
 			auto randomIt = std::next(buffers.begin(), dist(randomEngine));
 
 			playSoundFromBuffer(*randomIt, soundID);
-			LOG("Playing sound:$", soundID);
+			LOG("Playing random sound:$", soundID);
 		}
 	}
 	else 
@@ -196,14 +210,24 @@ bool SoundSystem::isSoundPlaying(int32_t soundID) const
 // Load music from file and store it
 bool SoundSystem::addMusic(int32_t musicID, const std::string& filePath)
 {
-	auto music = std::make_unique<sf::Music>();
-	if (!music->openFromFile(filePath))
+	// Check if music is already in map
+	if (musicTracks.find(musicID) != musicTracks.end())
+	{
+		LOG("Music with id [$] is already in map" , musicID);
+		return false;
+	}
+
+	// Use Asset Manager to get music
+	auto music = Modules::Assets->getMusic(filePath);
+
+	if (!music)
 	{
 		LOG("Failed to load music from $", filePath.c_str());
 		return false;
 	}
+
 	musicTracks.emplace(musicID, std::move(music));
-	LOG("Successfully loaded music: $", musicID);
+	LOG("Successfully loaded music with id: $", musicID);
 	return true;
 }
 

@@ -1,5 +1,11 @@
 #include "TestModule/UILabelTest.hpp"
+#include "Common/Modules.hpp"
+#include "AssetManager/AssetManager.hpp"
 #include "Common/Logs.hpp"
+
+namespace {
+	const std::string FONT_PATH = "Game/Fonts/arial.ttf";
+}
 
 const std::string& UILabelTest::getName() const
 {
@@ -10,10 +16,16 @@ void UILabelTest::setup()
 {
 	LOG("UILabelTest: setup()");
 
-	sf::Font& font = UIScreen::getFont("arial");
+	std::shared_ptr<sf::Font> font = Modules::Assets->getFont(FONT_PATH);
+
+	if (!font)
+	{
+		LOG("Failed to load font from path : [$]", FONT_PATH);
+		return;
+	}
 
 	// Create a UILabel and set some basic text
-	label = std::make_unique<UILabel>("Test Label", font, 30);
+	label = std::make_unique<UILabel>("Test Label", *font, 30);
 	label->setText("Test Label");
 	label->setPosition(sf::Vector2f(100.0f, 100.0f));
 

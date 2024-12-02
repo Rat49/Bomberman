@@ -47,12 +47,12 @@ public:
 private:
 	//SOUNDS
 	// Map that associates a soundID with a list of SoundBuffer objects
-	std::map<int32_t, std::list<sf::SoundBuffer>> soundEffectBuffers;
+	std::map<int32_t, std::list<std::shared_ptr<sf::SoundBuffer>>> soundEffectBuffers;
 
 	// Map of active sounds, paired with their soundID
 	std::map<int32_t, std::unique_ptr<sf::Sound>> activeSounds;
 
-	void playSoundFromBuffer(const sf::SoundBuffer& buffer, int32_t soundID);
+	void playSoundFromBuffer(const std::shared_ptr<sf::SoundBuffer>& buffer, int32_t soundID);
 
 
 	//MUSIC

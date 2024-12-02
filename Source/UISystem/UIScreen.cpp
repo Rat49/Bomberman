@@ -1,8 +1,13 @@
 #include "UISystem/UIScreen.hpp"
 #include "UISystem/UISystem.hpp"
 #include "UISystem/UIButton.hpp"
+#include "AssetManager/AssetManager.hpp"
 #include "Common/Logs.hpp"
 
+namespace {
+	const std::string BASE_PATH = "Game/Fonts/";
+	const std::string FILE_EXTENSION = ".ttf";
+}
 
 // Add a UI element
 void UIScreen::addElement(const std::string& elementName, const std::shared_ptr<UIElement> element)
@@ -112,6 +117,16 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 }
 
+const sf::Font& UIScreen::getFont(const std::string& fontName)
+{
+	const std::string assetPath = BASE_PATH + fontName + FILE_EXTENSION;
+
+	std::shared_ptr<sf::Font> fontPtr = std::make_shared<sf::Font>();
+	fontPtr = Modules::Assets->getFont(assetPath);
+
+	return *fontPtr;
+}
+
 // Set the view for the UI screen
 void UIScreen::setView(const sf::View& newView)
 {
@@ -180,37 +195,4 @@ void UIScreen::updateUIElementPositions()
 	{
 		element.second->handleResize(scale);
 	}
-}
-
-// Definition of a static folder to store fonts
-std::unordered_map<std::string, sf::Font> UIScreen::fonts;
-
-// needs to be changed! (it also makes system to throw exception on closure, because of the way of storing fonts) 
-sf::Font& UIScreen::getFont(const std::string& fontName) {
-	// Checks if the font is already loaded and cached
-	auto it = fonts.find(fontName);
-	if (it != fonts.end())
-	{
-		// If found, returns the existing font
-		return it->second;
-	}
-
-	// If the font is not loaded, it tries to load it
-	sf::Font font;
-	if (!font.loadFromFile("Assets/Fonts/" + fontName + ".ttf"))
-	{
-		// Logs an error if the font cannot be loaded
-		LOG("Failed to load font: $" + fontName + ". Loading default font.\n");
-
-
-		// Loads the default font if the requested font is not found
-		if (!font.loadFromFile("Assets/Fonts/arial.ttf"))
-		{
-			LOG("Failed to load default font!\n");
-		}
-	}
-
-	// Adds the loaded font to the folder and returns it
-	fonts[fontName] = font;
-	return fonts[fontName];
 }

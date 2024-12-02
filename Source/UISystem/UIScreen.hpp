@@ -45,9 +45,9 @@ public:
 	// Get the render window
 	sf::RenderWindow* getWindow() const { return window; }
 
-	// A method that returns a reference to the requested font
-	static sf::Font& getFont(const std::string& fontName);
-
+	const sf::Font& getFont(const std::string& fontName);
+	
+	// Update element position
 	void updateUIElementPositions();
 
 	// Override draw method to draw all UI elements on the given target
@@ -58,6 +58,7 @@ public:
 	void setBackgroundColor(const sf::Color& newColor) { backgroundColor = newColor; }
 
 protected:
+
 	// Map to store UI elements
 	std::unordered_map<std::string, std::shared_ptr<UIElement>> elements;
 
