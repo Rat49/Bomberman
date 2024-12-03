@@ -19,6 +19,8 @@
 #include "TestModule/UIInputFieldTest.hpp"
 #include "TestModule/SoundSystemTest.hpp"
 
+#include "TestFactoryCreator.hpp"
+
 #ifndef FINAL
 
 void TestModule::CreateAllTests()
@@ -26,22 +28,26 @@ void TestModule::CreateAllTests()
 	// add your tests based on TestBase class here using this preset
 	// Modules::Tests->addTest(std::make_shared<your-test-type>());
 	// ----------------------------------------------------------------
-	Modules::Tests->addTest(std::make_shared<SampleTest>());
-	Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
-	Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
-	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
-	Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
-	Modules::Tests->addTest(std::make_shared<TestAI>());
-	Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
-	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
-	Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
-	Modules::Tests->addTest(std::make_shared<UILabelTest>());
-	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
-	Modules::Tests->addTest(std::make_shared<PlayerTest>());
-	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
-	Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
-	Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
-	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
+
+
+	//Modules::Tests->addTest(std::make_shared<SampleTest>());
+	//Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
+	//Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
+	//Modules::Tests->addTest(std::make_shared<InputModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
+	//Modules::Tests->addTest(std::make_shared<TestAI>());
+	//Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<UILabelTest>());
+	//Modules::Tests->addTest(std::make_shared<UIButtonTest>());
+	//Modules::Tests->addTest(std::make_shared<PlayerTest>());
+	//Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
+	//Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
+	//Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
+	//Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
+
+	Modules::Tests->addTest(std::make_shared<TestFactoryCreator<UICheckboxTest>>()->createTest());
 }
 
 #endif

@@ -41,6 +41,11 @@ void TestModule::addTest(const std::shared_ptr<TestBase>& testRunner)
 	m_tests.insert(m_tests.end(), testRunner);
 }
 
+void TestModule::addTest(std::pair<std::string, std::shared_ptr<TestBase>> newTest)
+{
+	m_testsMap.emplace(newTest.first, newTest.second);
+}
+
 void TestModule::removeTest(const std::shared_ptr<TestBase>& testRunner)
 {
 	const auto it = std::find(m_tests.begin(), m_tests.end(), testRunner);
