@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
-#include "Screens.hpp"
+#include "UIConstants.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 
@@ -22,7 +22,7 @@ public:
 
 	void setIsPaused(bool newPaused) { isPaused = newPaused; }
 
-	const bool getIsPaused() { return isPaused; }
+	bool getIsPaused() const { return isPaused; }
 
 private:
 	sf::RenderWindow window;

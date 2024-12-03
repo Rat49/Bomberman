@@ -5,16 +5,6 @@
 #include "GameModule/GameModule.hpp"
 #include "InputModule/InputModule.hpp"
 
-namespace
-{
-	const sf::Color& WHITE = sf::Color::White;
-	const sf::Color& GREY = sf::Color(128, 128, 128);
-	const sf::Color& YELLOW = sf::Color(247, 190, 57);
-	const sf::Color& RED = sf::Color(173, 0, 16);
-	const std::string& RESUME = "RESUME";
-	const std::string& MENU = "MENU";
-}
-
 PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFont, const std::string& pathToIniFile) 
 {
 	setWindow(renderWindow);
@@ -26,17 +16,17 @@ PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFon
 	for (auto& element : elements) {
 		if (std::shared_ptr<UIButton> button = std::dynamic_pointer_cast<UIButton>(element.second)) {
 			button->onHover = [button]() {
-				button->dropShadows(YELLOW, RED);
+				button->dropShadows(Colors::YELLOW, Colors::RED);
 				};
 			button->onClick = [button]() {
-				button->dropShadows(RED, YELLOW);
+				button->dropShadows(Colors::RED, Colors::YELLOW);
 				};
-			if (element.first == RESUME) {
+			if (element.first == Buttons::RESUME) {
 				button->onRelease = []() {
 					Modules::Game->setIsPaused(false);
 				};
 			}
-			else if (element.first == MENU) {
+			else if (element.first == Buttons::MENU) {
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
 				};
@@ -54,7 +44,7 @@ bool PauseMenu::handleEvent(const sf::Event& event)
 	for (auto& element : elements) {
 		if (std::shared_ptr<UIButton> button = std::dynamic_pointer_cast<UIButton>(element.second)) {
 			if (!button->handleEvent(event)) {
-				button->dropShadows(WHITE, GREY);
+				button->dropShadows(Colors::WHITE, Colors::GREY);
 			}
 		}
 	}
@@ -83,6 +73,5 @@ void PauseMenu::handleInput()
 void PauseMenu::onPause(void* buttonState)
 {
 	bool state = *reinterpret_cast<bool*>(buttonState);
-	if(state)
-		Modules::Game->setIsPaused(true);
+	Modules::Game->setIsPaused(state);
 }

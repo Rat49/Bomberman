@@ -128,6 +128,28 @@ std::string UIButton::getText() const
 // Draw the button
 void UIButton::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	sf::Color currentColor;
+
+	if (isPressed)
+	{
+		currentColor = pressedColor;
+	}
+	else if (isHovered)
+	{
+		currentColor = hoverColor;
+	}
+	else
+	{
+		currentColor = defaultColor;
+	}
+	
+	sf::RectangleShape tempBackground = buttonBackground;
+	tempBackground.setFillColor(currentColor);
+	
+
+	// Draw the background
+	target.draw(tempBackground, states);
+
 	if (hasShadow) {
 		target.draw(shadowText, states);
 	}

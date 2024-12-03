@@ -30,8 +30,7 @@ namespace {
 	const std::string& GAME_TIME = "gameTime";
 	const std::string& STAGE = "stage";
 
-	const sf::Color& GREY = sf::Color(189, 190, 189);
-	const sf::Color& BLACK = sf::Color::Black;
+	
 }
 
 using Time = std::chrono::high_resolution_clock;
@@ -115,26 +114,26 @@ void GameModule::run()
 
 			case sf::Event::Resized: {
 				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
-				for (auto sc : screens) {
-					sc.second->handleEvent(event);
+				for (auto& screen : screens) {
+					screen.second->handleEvent(event);
 				}
 				break;
 			}
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
-				if (isPaused) {
+				if (isPaused)
 					screens[Screens::PAUSE_MENU]->handleEvent(event);
-				}
-				else screens[currentScreen]->handleEvent(event);
+				else 
+					screens[currentScreen]->handleEvent(event);
 				break;
 
 			}
 		}
-		if(!isPaused)
+		if (!isPaused) {
 			timeCounter += deltaTime;
-
-		checkTimeCounter();
+			checkTimeCounter();
+		}
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
@@ -177,7 +176,7 @@ void GameModule::checkTimeCounter()
 	{
 	case Screens::LEVEL:
 		// Checking if one second has passed for updating Time label (delta time is in microseconds)
-		if (timeCounter >= 1000000 && !isPaused) {
+		if (timeCounter >= 1000000) {
 			timeCounter = 0.0f;
 			gameTime--;
 
