@@ -40,15 +40,17 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 		return false;
 	}
 
-	if (newTimer < 1.0f)
+	if (newTimer < 2.0f)
 	{
-		LOG("Timer must be at least 1.");
+		LOG("Timer must be at least 2.");
 		return false;
 	}
 
 	this->position = newPosition;
 	this->explosionRadius = newExplosionRadius;
 	this->timer = newTimer;
+
+	getCurrentAnimation()->setPosition(newPosition);
 
 	return true;
 }
