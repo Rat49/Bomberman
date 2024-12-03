@@ -29,11 +29,16 @@ public:
 
 	void updateVelocity(float deltaTime);
 
+	void updateBombs(float deltaTime);
+
+	void drawBombs(sf::RenderWindow& window);
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;
 	float y = 70.f;
 	float speed = 0.f;
+	int32_t maxBombs;
 	float velocity = 0.f;
 
 	ActionID playerMovement;
@@ -45,7 +50,9 @@ private:
 	int32_t upId;
 	int32_t downId;
 
-	Bomb bomb;
+	//Bomb bomb;
+
+	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
 };
