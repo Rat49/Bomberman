@@ -41,16 +41,27 @@ public:
 	// Functions for event registration
 	std::function<void()> onHover;
 	std::function<void()> onClick;
+	std::function<void()> onRelease;
+
+	void dropShadows(const sf::Color& labelColor, const sf::Color& shadowColor);
+
+	void removeShadow() { hasShadow = false; }
 
 private:
 	sf::Text buttonText;
+
+	// Same as buttonText, just placed beneath it
+	sf::Text shadowText;
+
+	// If shadowText should be shown
+	bool hasShadow = false;
 
 	// Additional states to handle button interaction (hovered and pressed)
 	bool isHovered = false;
 	bool isPressed = false;
 
 	// Colors for different button states
-	sf::Color defaultColor = sf::Color::Green;
-	sf::Color hoverColor = sf::Color::Cyan;
-	sf::Color pressedColor = sf::Color::Blue;
+	sf::Color defaultColor = sf::Color::Black;
+	sf::Color hoverColor = sf::Color::Black;
+	sf::Color pressedColor = sf::Color::Black;
 };

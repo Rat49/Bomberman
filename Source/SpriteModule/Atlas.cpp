@@ -4,6 +4,8 @@
 #include <optional>
 #include "Sprite.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "Common/Logs.hpp"
 #include <Common/Modules.hpp>
 
 namespace {
@@ -20,12 +22,19 @@ bool Atlas::initialize(const std::string& configFilePath)
 {
 	//load atlasPath and rects
 	if (!parseConfigFile(configFilePath))
+	{
+		LOG("Failed to parse config file [$] in atlas ", configFilePath);
 		return false;
+	}
+		
+	// using Asset Manager load atlas
+	m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
-	//load atlas texture
-	m_atlasTexture = std::make_shared<sf::Texture>();
-	if (!m_atlasTexture->loadFromFile(m_atlasPath))
+	if (!m_atlasTexture)
+	{
+		LOG("Failed to load atlas from path: [$]", m_atlasPath);
 		return false;
+	}
 
 	return true;
 	
