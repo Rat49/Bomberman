@@ -40,4 +40,6 @@ private:
 	std::unique_ptr<LevelGenerator> levelGenerator;
 	 
 	LevelId currentLevel;
+
+	bool resized = false;
 };

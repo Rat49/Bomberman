@@ -105,15 +105,23 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 
 void UIFactory::makeAnimation(UIScreen* screen, const ConfigSection& element)
 {
-	if (element.areValuesPresent({ PATH, NAME })) {
+	if (element.areValuesPresent({ PATH, NAME, WIDTH_OFFSET, HEIGHT_OFFSET })) {
 		auto& animationPath = element.getValue(PATH).getString();
 		auto& animationName = element.getValue(NAME).getString();
 		int32_t animationId = Modules::Sprite->createAnimation(animationPath);
+		float x = element.getValue(WIDTH_OFFSET).getFloat();
+		float y = element.getValue(HEIGHT_OFFSET).getFloat();
+		
 		if (const auto& animation = Modules::Sprite->getAnimation(animationId)) {
 			animation->Play();
+			
+			auto screenSize = screen->getWindow()->getSize();
+			animation->setPosition(sf::Vector2f(screenSize.x*x, screenSize.y*y));
+			
 			screen->addAnimation(animationName, animation);
 		}
 	}
+	
 }
 
 void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, const ConfigSection& element)
@@ -157,13 +165,13 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
 		// Check if button has defined hover background color (not Black)
 		if (element.isValuePresent(HOVER_COLOR)) {
 			auto& buttonColor = element.getValue(HOVER_COLOR).getString();
-			myButton->setDefaultColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
+			myButton->setHoverColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
 		}
 
 		// Check if button has defined on pressed background color (not Black)
 		if (element.isValuePresent(PRESSED_COLOR)) {
 			auto& buttonColor = element.getValue(PRESSED_COLOR).getString();
-			myButton->setDefaultColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
+			myButton->setPressedColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
 		}
 
 		screen->addElement(elementName, myButton);
