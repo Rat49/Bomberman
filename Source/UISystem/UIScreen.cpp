@@ -92,6 +92,12 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.setView(view);
 	}
 
+	sf::RectangleShape tempBackground = background;
+	tempBackground.setFillColor(backgroundColor);
+
+	// Draw the background
+	target.draw(tempBackground, states);
+
 	// Draw each UI element on the given target
 	for (const auto& element : elements)
 	{
@@ -195,4 +201,9 @@ void UIScreen::updateUIElementPositions()
 	{
 		element.second->handleResize(scale);
 	}
+}
+
+void UIScreen::setBackground(float positionX, float positionY, float sizeX, float sizeY) {
+	background.setPosition(sf::Vector2f(positionX, positionY));
+	background.setSize(sf::Vector2f(sizeX, sizeY));
 }

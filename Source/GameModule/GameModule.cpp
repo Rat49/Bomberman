@@ -9,6 +9,7 @@
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
 #include "Leaderboard.hpp"
+#include "PauseMenu.hpp"
 #include "Options.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
@@ -19,6 +20,7 @@ namespace {
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
 	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
+	const std::string& PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string& PATH_OPTIONS = "../../Data/Config/options.ini";
@@ -31,8 +33,7 @@ namespace {
 	const std::string& GAME_TIME = "gameTime";
 	const std::string& STAGE = "stage";
 
-	const sf::Color& GREY = sf::Color(189, 190, 189);
-	const sf::Color& BLACK = sf::Color::Black;
+	
 }
 
 using Time = std::chrono::high_resolution_clock;
@@ -46,6 +47,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_MAIN_MENU);
 	Modules::Config->addFile(PATH_STAGE);
 	Modules::Config->addFile(PATH_LEADERBOARD);
+	Modules::Config->addFile(PATH_PAUSE_MENU);
 	Modules::Config->addFile(PATH_OPTIONS);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -74,6 +76,7 @@ bool GameModule::initialize()
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
 	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
+	screens[Screens::PAUSE_MENU] = std::make_shared<PauseMenu>(&window, font, PATH_PAUSE_MENU);
 	screens[Screens::OPTIONS] = std::make_shared<Options>(&window, font, PATH_OPTIONS);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
@@ -133,27 +136,31 @@ void GameModule::run()
 
 			case sf::Event::Resized: {
 				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
-				for (auto sc : screens) {
-					sc.second->handleEvent(event);
+				for (auto& screen : screens) {
+					screen.second->handleEvent(event);
 				}
 				break;
 			}
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
-				screens[currentScreen]->handleEvent(event);
+				if (isPaused && currentScreen != Screens::OPTIONS)
+					screens[Screens::PAUSE_MENU]->handleEvent(event);
+				else 
+					screens[currentScreen]->handleEvent(event);
 				break;
 
 			}
 		}
-
-		timeCounter += deltaTime;
-
-		checkTimeCounter();
+		if (!isPaused) {
+			timeCounter += deltaTime;
+			checkTimeCounter();
+		}
 
 #ifndef FINAL
         Modules::Tests->update(deltaTime, &window);
 #endif
+		updateBoosters();
 
 		window.clear(screens[currentScreen]->getBackgroundColor());
 		if(currentScreen == Screens::LEVEL) 
@@ -171,6 +178,10 @@ void GameModule::run()
 			levelGenerator->draw(window);
 
 			screens[currentScreen]->getWindow()->setView(tempView);
+
+			if (isPaused) {
+				screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
+			}
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();
@@ -209,3 +220,38 @@ void GameModule::checkTimeCounter()
 		break;
 	}
 }
+
+void GameModule::updateBoosters()
+{
+	auto boostersIterator = m_boosters.begin();
+	while (boostersIterator != m_boosters.end())
+	{
+		if (boostersIterator->second->shoulRemoveEffect())
+		{
+			if (boostersIterator->second->removeEffect(player))
+			{
+				boostersIterator = m_boosters.erase(boostersIterator);
+				continue;
+			}
+		}
+		++boostersIterator;
+	}
+}
+
+void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
+{
+	auto id = newBooster->getBoosterID();
+	auto it = m_boosters.find(id);
+	if (it == m_boosters.end())
+	{
+		it = m_boosters.insert({ id, newBooster }).first;
+	}
+	it->second->applyEffect(player);
+}
+
+void GameModule::removeAllBoosters()
+{
+	m_boosters.clear();
+}
+
+

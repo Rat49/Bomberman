@@ -57,6 +57,8 @@ public:
 
 	void setBackgroundColor(const sf::Color& newColor) { backgroundColor = newColor; }
 
+	void setBackground(float positionX, float positionY, float sizeX, float sizeY);
+
 protected:
 
 	// Map to store UI elements
@@ -80,4 +82,6 @@ protected:
 	UISystem* uiSystem;
 
 	sf::Color backgroundColor;
+
+	sf::RectangleShape background;
 };

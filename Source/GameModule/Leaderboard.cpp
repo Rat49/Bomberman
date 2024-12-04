@@ -10,16 +10,9 @@
 namespace
 {
 	const std::string& PATH_LEARDERBOARD = "../../Data/Config/leaderboardResults.ini";
-	const std::string& LEARDERBOARD = "LEARDERBOARD";
-	const std::string& MENU = "MENU";
 	const std::string& PLAYER = "Player";
 	const std::string& NAME = "Name";
 	const std::string& VALUE = "Value";
-
-	const sf::Color& WHITE = sf::Color::White;
-	const sf::Color& GREY = sf::Color(128, 128, 128);
-	const sf::Color& YELLOW = sf::Color(247, 190, 57);
-	const sf::Color& RED = sf::Color(173, 0, 16);
 
 }
 
@@ -31,13 +24,13 @@ Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudF
 
 	readLeaderboard();
 
-	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(MENU));
+	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
 
 	menuButton->onHover = [menuButton]() {
-		menuButton->dropShadows(YELLOW, RED);
+		menuButton->dropShadows(Colors::YELLOW, Colors::RED);
 		};
 	menuButton->onClick = [menuButton]() {
-		menuButton->dropShadows(RED, YELLOW);
+		menuButton->dropShadows(Colors::RED, Colors::YELLOW);
 		};
 	menuButton->onRelease = []() {
 		Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
@@ -89,9 +82,9 @@ bool Leaderboard::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::Resized) {
 		return UIScreen::handleEvent(event);
 	}
-	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(MENU));
+	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
 	if (!menuButton->handleEvent(event)) {
-		menuButton->dropShadows(WHITE, GREY);
+		menuButton->dropShadows(Colors::WHITE, Colors::GREY);
 	}
 	return true;
 }
