@@ -201,10 +201,28 @@ TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 		//return the tile info
 		if (tileInfoIt != tilesetInfoMap.end())
 		{
-			LOG("Tile is : " + tileInfoIt->second);
+			//LOG("Tile is : " + tileInfoIt->second);
 			return tileInfoIt->second;
 		}
 	}
 
 	return TileInfo();
+}
+
+std::vector<sf::Vector2f> Level::getWalkablePositions() const
+{
+	std::vector<sf::Vector2f> walkablePositions;
+
+	for (std::size_t y = 0; y < m_fields.size(); ++y)
+	{
+		for (std::size_t x = 0; x < m_fields[y].size(); ++x)
+		{
+			if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Walkable")
+			{
+				walkablePositions.push_back(m_fields[y][x].tilePosition);
+			}
+		}
+	}
+
+	return walkablePositions;
 }

@@ -18,6 +18,8 @@
 #include "TestModule/UICheckboxTest.hpp"
 #include "TestModule/UIInputFieldTest.hpp"
 #include "TestModule/SoundSystemTest.hpp"
+#include "TestModule/LevelGeneratorTest.hpp"
+#include "TestModule/UIProgressBarTest.hpp"
 
 #ifndef FINAL
 
@@ -42,6 +44,8 @@ void TestModule::CreateAllTests()
 	Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
 	Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
 	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
+	Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
+	Modules::Tests->addTest(std::make_shared<UIProgressBarTest>());
 }
 
 #endif

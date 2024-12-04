@@ -81,6 +81,11 @@ void LevelHandlingModule::setCurrentLevel(LevelId levelId)
 	}
 }
 
+LevelId LevelHandlingModule::getCurrentLevel()
+{
+	return m_currentLevel;
+}
+
 bool LevelHandlingModule::isLevelLoaded(LevelId levelId) const
 {
 	// Check if the level ID exists in the map
@@ -104,6 +109,19 @@ TileInfo LevelHandlingModule::getTileInfo(int32_t x, int32_t y)
 
 	LOG("Can't return tile info, level is not loaded");
 	return TileInfo();
+}
+
+std::vector<sf::Vector2f> LevelHandlingModule::getWalkablePositions() const
+{
+	auto it = m_levels.find(m_currentLevel);
+
+	if (it != m_levels.end())
+	{
+		return it->second->getWalkablePositions();
+	}
+
+	LOG("Level not found");
+	return std::vector<sf::Vector2f>();
 }
 
 

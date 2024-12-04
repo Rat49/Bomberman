@@ -7,6 +7,7 @@
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
+#include "Leaderboard.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -17,6 +18,7 @@ namespace {
 	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
+	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
@@ -40,6 +42,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_HUD);
 	Modules::Config->addFile(PATH_MAIN_MENU);
 	Modules::Config->addFile(PATH_STAGE);
+	Modules::Config->addFile(PATH_LEADERBOARD);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
@@ -66,6 +69,7 @@ bool GameModule::initialize()
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
+	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
 	screenStage->setStage(currentStage);
@@ -74,6 +78,21 @@ bool GameModule::initialize()
 	{
 		LOG("Failed to initialize PlayerCharacter.");
 		return false;
+	}
+
+	levelGenerator = std::make_unique<LevelGenerator>();
+
+	int levelWidth = 13;
+	int levelHeight = 31;
+	GameLevelType gameLevel = GameLevelType::Easy;
+	int enemyCount = 5;
+	int breakableCount = 50;
+	sf::Vector2i playerStartPosition(1, 1);
+	int numBoosters = 3;
+
+	if (!levelGenerator->Initialize(levelWidth, levelHeight, gameLevel, enemyCount, breakableCount, playerStartPosition, numBoosters))
+	{
+		LOG("Failed to initialize LevelGenerator.");
 	}
 
 	return true;
@@ -88,6 +107,8 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
+
+	
 
     while (window.isOpen())
     {
@@ -105,10 +126,13 @@ void GameModule::run()
 				window.close();
 				break;
 
-			case sf::Event::Resized:
+			case sf::Event::Resized: {
 				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
-				[[fallthrough]];
-
+				for (auto sc : screens) {
+					sc.second->handleEvent(event);
+				}
+				break;
+			}
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
@@ -133,9 +157,15 @@ void GameModule::run()
 			sf::View tempView = screens[currentScreen]->getWindow()->getView();
 			Modules::update(deltaTime, &window);
 			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
+
 			player.updateVelocity(deltaTime);
+			player.updateBombs(deltaTime);
+			player.drawBombs(window);
+
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
+			levelGenerator->draw(window);
+
 			screens[currentScreen]->getWindow()->setView(tempView);
 		}
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
