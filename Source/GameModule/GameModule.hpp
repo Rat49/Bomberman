@@ -2,7 +2,7 @@
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
 #include "GameModule/LevelGenerator.hpp"
-#include "Screens.hpp"
+#include "UIConstants.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
@@ -21,6 +21,10 @@ public:
 	void terminate() override;
 
 	void setCurrentScreen(const Screens& newScreen);
+
+	void setIsPaused(bool newPaused) { isPaused = newPaused; }
+
+	bool getIsPaused() const { return isPaused; }
 
 private:
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
@@ -42,6 +46,8 @@ private:
 	int32_t currentStage = 0;
 
 	int32_t gameTime;
+
+	bool isPaused = false;
 
 	void checkTimeCounter();
 
