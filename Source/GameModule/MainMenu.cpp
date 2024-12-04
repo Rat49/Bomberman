@@ -13,6 +13,7 @@ namespace
 	const sf::Color& RED = sf::Color(173, 0, 16);
 	const std::string& START = "START";
 	const std::string& LEADERBOARD = "LEADERBOARD";
+	const std::string& OPTIONS = "OPTIONS";
 }
 
 MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, const std::string& pathToIniFile) : UIScreen()
@@ -38,6 +39,11 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::LEADERBOARD);
 				};
+			}
+			else if (element.first == OPTIONS) {
+				button->onRelease = []() {
+					Modules::Game->setCurrentScreen(Screens::OPTIONS);
+					};
 			}
 		}
 	}

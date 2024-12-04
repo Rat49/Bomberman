@@ -4,10 +4,12 @@
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
 #include "Leaderboard.hpp"
+#include "Options.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -19,6 +21,7 @@ namespace {
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
+	const std::string& PATH_OPTIONS = "../../Data/Config/options.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
@@ -43,6 +46,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_MAIN_MENU);
 	Modules::Config->addFile(PATH_STAGE);
 	Modules::Config->addFile(PATH_LEADERBOARD);
+	Modules::Config->addFile(PATH_OPTIONS);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
@@ -70,6 +74,7 @@ bool GameModule::initialize()
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
 	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
+	screens[Screens::OPTIONS] = std::make_shared<Options>(&window, font, PATH_OPTIONS);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
 	screenStage->setStage(currentStage);
@@ -107,8 +112,8 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
-
-	
+	Modules::Sounds->addMusic(1, "Game/Sounds/bgSound.wav");
+	Modules::Sounds->playMusic(1);
 
     while (window.isOpen())
     {
