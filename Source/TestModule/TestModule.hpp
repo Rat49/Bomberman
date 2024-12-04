@@ -26,12 +26,10 @@ public:
 	TestModule();
 	~TestModule();
 
-	static void CreateAllTests();
+	static void CreateTests();
 
 	// Add your implementation of test
 	void addTest(const std::shared_ptr<TestBase>& testRunner);
-
-	void TestModule::addTest(std::pair<std::string, std::shared_ptr<TestBase>> newTest);
 
 	// Remove the test if you changed your mind..
 	void removeTest(const std::shared_ptr<TestBase>& testRunner);
@@ -44,14 +42,8 @@ public:
 
 private:
 	bool m_isLastTestFinished = false;
-	int32_t m_testsMode;
 	std::vector<int32_t>m_testsIDs;
  	std::vector<std::shared_ptr<TestBase>> m_tests;
-	std::vector<std::shared_ptr<TestBase>> m_predefinedTests;
-
-	// store tests in a map, that way testName can be used as a key
-	// ,that way id wont be use but a test name in .ini file
-	std::map<std::string, std::shared_ptr<TestBase>> m_testsMap;
 };
 
 #endif

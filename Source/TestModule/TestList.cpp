@@ -21,33 +21,33 @@
 
 #include "TestFactoryCreator.hpp"
 
+#include "TestRegisty.hpp"
+
+
 #ifndef FINAL
 
-void TestModule::CreateAllTests()
+bool TestRegisty::initialize()
 {
-	// add your tests based on TestBase class here using this preset
-	// Modules::Tests->addTest(std::make_shared<your-test-type>());
-	// ----------------------------------------------------------------
+	bool isEverythingInitialized = true;
 
+	isEverythingInitialized &= registerFactory("SampleTest",std::make_shared<TestFactoryCreator<SampleTest>>());
+	isEverythingInitialized &= registerFactory("WindowClosingTest",std::make_shared<TestFactoryCreator<WindowClosingTest>>());
+	isEverythingInitialized &= registerFactory("ConfigSystemTest",std::make_shared<TestFactoryCreator<ConfigSystemTest>>());
+	isEverythingInitialized &= registerFactory("InputModuleTest",std::make_shared<TestFactoryCreator<InputModuleTest>>());
+	isEverythingInitialized &= registerFactory("AssetManagerTest",std::make_shared<TestFactoryCreator<AssetManagerTest>>());
+	isEverythingInitialized &= registerFactory("TestAI",std::make_shared<TestFactoryCreator<TestAI>>());
+	isEverythingInitialized &= registerFactory("CollisionModuleTest",std::make_shared<TestFactoryCreator<CollisionModuleTest>>());
+	isEverythingInitialized &= registerFactory("NavigationModuleTest",std::make_shared<TestFactoryCreator<NavigationModuleTest>>());
+	isEverythingInitialized &= registerFactory("SpriteModuleTest",std::make_shared<TestFactoryCreator<SpriteModuleTest>>());
+	isEverythingInitialized &= registerFactory("UILabelTest",std::make_shared<TestFactoryCreator<UILabelTest>>());
+	isEverythingInitialized &= registerFactory("UIButtonTest",std::make_shared<TestFactoryCreator<UIButtonTest>>());
+	isEverythingInitialized &= registerFactory("PlayerTest",std::make_shared<TestFactoryCreator<PlayerTest>>());
+	isEverythingInitialized &= registerFactory("LevelHandlingModuleTest",std::make_shared<TestFactoryCreator<LevelHandlingModuleTest>>());
+	isEverythingInitialized &= registerFactory("SoundSystemTest",std::make_shared<TestFactoryCreator<SoundSystemTest>>());
+	isEverythingInitialized &= registerFactory("UIInputFieldTest",std::make_shared<TestFactoryCreator<UIInputFieldTest>>());
+	isEverythingInitialized &= registerFactory("UICheckboxTest", std::make_shared<TestFactoryCreator<UICheckboxTest>>());
 
-	//Modules::Tests->addTest(std::make_shared<SampleTest>());
-	//Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
-	//Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
-	//Modules::Tests->addTest(std::make_shared<InputModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
-	//Modules::Tests->addTest(std::make_shared<TestAI>());
-	//Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<UILabelTest>());
-	//Modules::Tests->addTest(std::make_shared<UIButtonTest>());
-	//Modules::Tests->addTest(std::make_shared<PlayerTest>());
-	//Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
-	//Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
-	//Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
-	//Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
-
-	Modules::Tests->addTest(std::make_shared<TestFactoryCreator<UICheckboxTest>>()->createTest());
+	return isEverythingInitialized;
 }
 
 #endif
