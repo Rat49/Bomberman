@@ -178,7 +178,7 @@ void GameModule::checkTimeCounter()
 
 void GameModule::updateBoosters()
 {
-	std::map<int32_t, std::shared_ptr<BoosterComponent>>::iterator boostersIterator = m_boosters.begin();
+	auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
 		if (boostersIterator->second->shoulRemoveEffect())
@@ -195,11 +195,13 @@ void GameModule::updateBoosters()
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
 {
-	if (m_boosters.find(newBooster->getBoosterID()) == m_boosters.end())
+	auto id = newBooster->getBoosterID();
+	auto it = m_boosters.find(id);
+	if (it == m_boosters.end())
 	{
-		m_boosters[newBooster->getBoosterID()] = newBooster;
+		it = m_boosters.insert({ id, newBooster }).first;
 	}
-	m_boosters[newBooster->getBoosterID()]->applyEffect(player);
+	it->second->applyEffect(player);
 }
 
 void GameModule::removeAllBoosters()
