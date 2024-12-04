@@ -41,7 +41,6 @@ bool Modules::initialize()
 #ifndef FINAL
 	Modules::Logs = std::make_unique<LogManager>();
 #endif
-
 	// add your modules here
 	Modules::Events = dynamic_cast<EventSystem*>(modules.emplace_back(std::make_unique<EventSystem>()).get());
 	Modules::Config = dynamic_cast<ConfigSystem*>(modules.emplace_back(std::make_unique<ConfigSystem>()).get());

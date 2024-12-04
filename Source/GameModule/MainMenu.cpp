@@ -2,18 +2,8 @@
 #include "UISystem/UIFactory.hpp"
 #include "UISystem/UIButton.hpp"
 #include "Common/Logs.hpp"
-#include "Screens.hpp"
+#include "UIConstants.hpp"
 #include "GameModule.hpp"
-
-namespace
-{
-	const sf::Color& WHITE = sf::Color::White;
-	const sf::Color& GREY = sf::Color(128, 128, 128);
-	const sf::Color& YELLOW = sf::Color(247, 190, 57);
-	const sf::Color& RED = sf::Color(173, 0, 16);
-	const std::string& START = "START";
-	const std::string& LEADERBOARD = "LEADERBOARD";
-}
 
 MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, const std::string& pathToIniFile) : UIScreen()
 {
@@ -24,20 +14,20 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 	for (auto& element : elements) {
 		if (std::shared_ptr<UIButton> button = std::dynamic_pointer_cast<UIButton>(element.second)) {
 			button->onHover = [button]() {
-				button->dropShadows(YELLOW, RED);
+				button->dropShadows(Colors::YELLOW, Colors::RED);
 			};
 			button->onClick = [button]() {
-				button->dropShadows(RED, YELLOW);
+				button->dropShadows(Colors::RED, Colors::YELLOW);
 			};
-			if (element.first == START) {
+			if (element.first == Buttons::START) {
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::STAGE);
 				};
 			}
-			else if (element.first == LEADERBOARD) {
+			else if (element.first == Buttons::LEADERBOARD) {
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::LEADERBOARD);
-				};
+					};
 			}
 		}
 	}
@@ -51,7 +41,7 @@ bool MainMenu::handleEvent(const sf::Event& event)
 	for (auto& element : elements) {
 		if (std::shared_ptr<UIButton> button = std::dynamic_pointer_cast<UIButton>(element.second)) {
 			if (!button->handleEvent(event)) {
-				button->dropShadows(WHITE, GREY);
+				button->dropShadows(Colors::WHITE, Colors::GREY);
 			}
 		}
 	}

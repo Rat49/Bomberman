@@ -2,9 +2,10 @@
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
 #include "GameModule/LevelGenerator.hpp"
-#include "Screens.hpp"
+#include "UIConstants.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "Boosters/BoosterComponent.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -21,10 +22,23 @@ public:
 
 	void setCurrentScreen(const Screens& newScreen);
 
+	void setIsPaused(bool newPaused) { isPaused = newPaused; }
+
+	bool getIsPaused() const { return isPaused; }
+
+private:
+	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+	void removeAllBoosters();
+
+	void updateBoosters();
+
 private:
 	sf::RenderWindow window;
 
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
+
+	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 
@@ -32,6 +46,8 @@ private:
 	int32_t currentStage = 0;
 
 	int32_t gameTime;
+
+	bool isPaused = false;
 
 	void checkTimeCounter();
 
