@@ -174,7 +174,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 		++placedEnemies;
 
 		// Create a new enemy at the current position
-		Enemy enemy(EnemyType::Basic, { x, y }); // , patrollingPoints);
+		Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
 
 		//load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
@@ -197,7 +197,7 @@ void LevelGenerator::draw(sf::RenderTarget& target) const
 {
 	for (const auto& enemy : enemies)
 	{
-		target.draw(enemy);
+		target.draw(*enemy.getCurrentAnimation());
 	}
 
 	for (const auto& key : keys)
@@ -219,6 +219,23 @@ void LevelGenerator::draw(sf::RenderTarget& target) const
 	{
 		target.draw(obstacle);
 	}
+}
+
+void LevelGenerator::update(sf::RenderTarget& target)
+{
+	auto enemy_it = enemies.begin();
+	while (enemy_it != enemies.end())
+	{
+		if ((*enemy_it).isDead())
+		{
+			enemy_it = enemies.erase(enemy_it);
+		}
+		else
+		{
+			++enemy_it;
+		}
+	}
+	draw(target);
 }
 
 // Generate obstacles
@@ -572,7 +589,7 @@ const std::vector<Obstacle>& LevelGenerator::getObstacles() const
 	return obstacles;
 }
 
-const std::vector<Enemy>& LevelGenerator::getEnemies() const
+std::vector<Enemy>& LevelGenerator::getEnemies()
 {
 	return enemies;
 }

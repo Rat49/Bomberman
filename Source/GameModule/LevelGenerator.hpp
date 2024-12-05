@@ -22,11 +22,11 @@ public:
 
 	void generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
 
-	void draw(sf::RenderTarget& target) const;
+	void update(sf::RenderTarget& target);
 	
 	// Getter methods for private members
 	const std::vector<Obstacle>& getObstacles() const;
-	const std::vector<Enemy>& getEnemies() const;
+	std::vector<Enemy>& getEnemies();
 	const std::vector<Gate>& getGates() const;
 	const std::vector<Key>& getKeys() const;
 	const std::vector<Booster>& getBoosters() const;
@@ -69,6 +69,8 @@ private:
 	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType levelType) const;
 	std::set<std::pair<int32_t, int32_t>> generateSafetyZone() const;
 	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const;
+
+	void draw(sf::RenderTarget& target) const;
 
 	void generateObstacles(std::mt19937& gen);
 	void generateEnemies(std::mt19937& gen);
