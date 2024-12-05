@@ -5,6 +5,7 @@
 #include "UIConstants.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "LevelGeneratorManager.hpp"
 #include "Boosters/BoosterComponent.hpp"
 
 /*
@@ -14,6 +15,7 @@
 class GameModule : public BaseModule
 {
 public:
+
 	bool initialize() override;
 
 	void run();
@@ -27,35 +29,40 @@ public:
 	bool getIsPaused() const { return isPaused; }
 
 private:
+
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
 
 	void removeAllBoosters();
 
 	void updateBoosters();
 
+	void checkTimeCounter();
+
 private:
+
 	sf::RenderWindow window;
 
+	PlayerCharacter player;
+	
+	std::unique_ptr<LevelGeneratorManager> levelGeneratorManager;
+	
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
 	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 
-	float timeCounter = 0.0f;
+	LevelId currentLevel;
+	
 	int32_t currentStage = 0;
-
+	
 	int32_t gameTime;
 
+	int32_t level = 1;
+
+	float timeCounter = 0.0f;
+
 	bool isPaused = false;
-
-	void checkTimeCounter();
-
-	PlayerCharacter player;
-
-	std::unique_ptr<LevelGenerator> levelGenerator;
-	 
-	LevelId currentLevel;
 
 	bool resized = false;
 };

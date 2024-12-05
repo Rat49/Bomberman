@@ -8,6 +8,7 @@
 #include "GameModule/Key.hpp"
 #include "LevelHandlingModule/Level.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "LevelConfig.hpp"
 #include <fstream>
 #include <vector>
 #include <random>
@@ -18,9 +19,9 @@ class LevelGenerator
 public:
 	LevelGenerator();
 
-	bool Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
+	bool Initialize(const LevelConfig& levelConfig);
 
-	void generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
+	void generateLevel(const LevelConfig& levelConfig);
 
 	void draw(sf::RenderTarget& target) const;
 	
@@ -35,14 +36,9 @@ public:
 	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
 
 private:
+
 	// Variables
-	int32_t width;
-	int32_t height;
-	GameLevelType gameLevelType;
-	int32_t enemyCount;
-	int32_t breakableCount;
-	int32_t boostersNum;
-	sf::Vector2i playerStartPosition;
+	LevelConfig m_levelConfig;
 
 	int32_t enemyRange = 3;
 	int32_t minNumOfPatrolPoints = 2;

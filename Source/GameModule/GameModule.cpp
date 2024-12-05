@@ -4,6 +4,7 @@
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "LevelGeneratorManager.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
@@ -22,6 +23,7 @@ namespace {
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
+	const std::string& LEVEL_CONFIG = "../../Data/Config/LevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
 	const std::string& HEIGHT = "height";
@@ -83,20 +85,12 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	levelGenerator = std::make_unique<LevelGenerator>();
+	levelGeneratorManager = std::make_unique<LevelGeneratorManager>();
+	if (!levelGeneratorManager->initialize(LEVEL_CONFIG))
+		return false;
+	if (!levelGeneratorManager->createLevel(level))
+		return false;
 
-	int levelWidth = 13;
-	int levelHeight = 31;
-	GameLevelType gameLevel = GameLevelType::Easy;
-	int enemyCount = 5;
-	int breakableCount = 50;
-	sf::Vector2i playerStartPosition(1, 1);
-	int numBoosters = 3;
-
-	if (!levelGenerator->Initialize(levelWidth, levelHeight, gameLevel, enemyCount, breakableCount, playerStartPosition, numBoosters))
-	{
-		LOG("Failed to initialize LevelGenerator.");
-	}
 
 	return true;
 }
@@ -170,7 +164,7 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
-			levelGenerator->draw(window);
+			levelGeneratorManager->drawLevel(window);
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 

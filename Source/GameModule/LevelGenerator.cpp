@@ -36,48 +36,29 @@ namespace
 	const std::string ENEMY_PATH = "../../Data/Config/Enemy1IdleAnimation.ini";
 }
 
-LevelGenerator::LevelGenerator() : width(20), height(20), gameLevelType(GameLevelType::Easy), enemyCount(5), breakableCount(10), playerStartPosition(1, 1) {}
+LevelGenerator::LevelGenerator() : m_levelConfig{ GameLevelType::Easy, 5, 10, 3 } {}
 
-bool LevelGenerator::Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
+bool LevelGenerator::Initialize(const LevelConfig& levelConfig)
 {
-	if (levelWidth <= 2 || levelHeight <= 2)
-	{
-		LOG("Width and height must be greater than 2.");
-		return false;
-	}
-
-	if (enemyCountNew < 0)
+	if (levelConfig.enemyCount < 0)
 	{
 		LOG("Enemy count cannot be negative.");
 		return false;
 	}
 
-	if (breakableCountNew < 0)
+	if (levelConfig.breakableCount < 0)
 	{
 		LOG("Breakable count cannot be negative.");
 		return false;
 	}
 
-	if (playerStartPositionNew.x < 0 || playerStartPositionNew.x >= levelWidth || playerStartPositionNew.y < 0 || playerStartPositionNew.y >= levelHeight)
-	{
-		LOG("Player start position is out of bounds.");
-		return false;
-	}
-
-	this->width = levelWidth;
-	this->height = levelHeight;
-	this->gameLevelType = gameLevel;
-	this->enemyCount = enemyCountNew;
-	this->breakableCount = breakableCountNew;
-	this->playerStartPosition = playerStartPositionNew;
-	this->boostersNum = newNumOfBoosters;
-
-	generateLevel(width, height, gameLevelType, enemyCount, breakableCount, playerStartPosition, newNumOfBoosters);
+	m_levelConfig = levelConfig;
+	generateLevel(levelConfig);
 
 	return true;
 }
 
-void LevelGenerator::generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
+void LevelGenerator::generateLevel(const LevelConfig& levelConfig)
 {
 	if (!parseConfigFile(OBSTACLE_PATH))
 	{
@@ -113,17 +94,11 @@ void LevelGenerator::generateLevel(int32_t newWidth, int32_t newHeight, GameLeve
 	const auto& walkablePos = Modules::Level->getWalkablePositions();
 	freePositions.insert(freePositions.end(), walkablePos.begin(), walkablePos.end());
 
-	this->width = newWidth;
-	this->height = newHeight;
-	this->gameLevelType = gameLevel;
-	this->enemyCount = enemyCountNew;
-	this->breakableCount = breakableCountNew;
-	this->playerStartPosition = playerStartPositionNew;
-	this->boostersNum = newNumOfBoosters;
-
 	// Random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
+
+	m_levelConfig = levelConfig;
 
 	// Generate all level components
 	generateObstacles(gen);
@@ -139,7 +114,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
 
 	// Enemy types based on game level
-	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(gameLevelType);
+	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(m_levelConfig.levelType);
 
 	// Remove positions that overlap with the safety zone
 	freePositions.erase(std::remove_if(freePositions.begin(), freePositions.end(), [&usedPositions](const sf::Vector2f& pos)
@@ -158,7 +133,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 	for (auto it = freePositions.begin(); it != freePositions.end();)
 	{
 		// Stop if the required number of enemies have been placed
-		if (placedEnemies >= enemyCount)
+		if (placedEnemies >= m_levelConfig.enemyCount)
 		{
 			break;
 		}
@@ -246,7 +221,7 @@ void LevelGenerator::generateObstacles(std::mt19937& gen)
 	for (auto it = freePositions.begin(); it != freePositions.end();)
 	{
 		// Stop if the required number of breakable obstacles have been placed
-		if (placedBreakables >= breakableCount)
+		if (placedBreakables >= m_levelConfig.breakableCount)
 		{
 			break;
 		}
@@ -525,7 +500,7 @@ void LevelGenerator::generateBoosters(std::mt19937& gen)
 	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end();)
 	{
 		// Stop if the required number of boosters have been placed
-		if (boosters.size() >= boostersNum)
+		if (boosters.size() >= m_levelConfig.boostersCount)
 		{
 			break;
 		}
