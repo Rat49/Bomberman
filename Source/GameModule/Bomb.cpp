@@ -85,6 +85,11 @@ void Bomb::draw(sf::RenderWindow& window)
 	if (!Modules::Sprite->getAnimation(bombIdleID)->isPlaying())
 		exploded = true;
 
+	if (isObstacle)
+	{
+		parentObstacle->draw(window, obsPos);
+	}
+
 	// Draws a bomb if it hasn't exploded
 	if (!exploded && !animExploded)
 	{
@@ -179,23 +184,41 @@ void Bomb::explode()
 	//LOG("The bomb exploded at the position: $", position.x, ", $", position.y);
 }
 
+
+
 // Method about what will happen when there is an explosion
 void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
-	sf::Vector2f endPoint;
+	sf::Vector2f endPoint; // = sf::Vector2f(0.01f, 0.01f);
 
 	sf::Vector2f newDirection = directionToPosition(direction);
 	sf::Vector2f alignPos = alignToGrid(position);
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
-	sf::Vector2f endDIR = sf::Vector2f(directionAndPosition.x + 56.0f, directionAndPosition.y + 56.0f);
 
-	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, directionAndPosition, 1.0f, endPoint);
+	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint);
+
+	LOG("!!!!!!!!!!!!!!!Position: $ $", position.x, position.y);
+	LOG("!!!!!!!!!!!!!!!directionAndPosition: $ $", directionAndPosition.x, directionAndPosition.y);
+	LOG("!!!!!!!!!!!!!!!endPoint: $ $", endPoint.x, endPoint.y);
+
 
 	if (hitObject)
 	{
-		LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
+		//const Obstacle* obstacle = dynamic_cast<const Obstacle*>(hitObject);
+
+		//hitObject->getParent();
+
+		parentObstacle = static_cast<Obstacle*>(hitObject->getParent());
+		obsPos = directionAndPosition;
+		if (parentObstacle)
+		{
+			LOG("???????????????????????????????? $", hitObject->getParent());
+			isObstacle = true;
+			
+		}
+		 LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
 	}
-	else
+	else 
 	{
 		LOG("NO collision detection! Position: $ $", directionAndPosition.x, directionAndPosition.y);
 	}

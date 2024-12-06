@@ -3,6 +3,7 @@
 #include "Common/Modules.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"
+#include "GameModule/Obstacle.hpp"
 
 class Bomb
 {
@@ -18,8 +19,6 @@ public:
 
 	// Drawing a bomb
 	void draw(sf::RenderWindow& window);
-
-	//void drawExplosio(sf::RenderWindow& window);
 
 	// Explosion activation
 	void explode();
@@ -68,4 +67,8 @@ private:
 	sf::Vector2f alignToGrid(const sf::Vector2f& newPosition);
 
 	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
+
+	Obstacle* parentObstacle;
+	bool isObstacle = false;
+	sf::Vector2f obsPos;
 };
