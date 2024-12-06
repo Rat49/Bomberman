@@ -15,16 +15,6 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) 
 	collisionBox->setParent(this);
 
 	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(52.0f, 52.0f));
-
-	obstacleDestructionAnimID = Modules::Sprite->createAnimation("../../Data/Config/ObstacleDestruction.ini");
-	currentAnimation = obstacleDestructionAnimID;
-
-	if (const auto& animation = Modules::Sprite->getAnimation(obstacleDestructionAnimID))
-	{
-		getCurrentAnimation()->setPosition((float)position.x, (float)position.y);
-		animation->Play();
-	}
-
 }
 
 void Obstacle::draw(sf::RenderWindow& window, sf::Vector2f obsPos)
