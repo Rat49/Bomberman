@@ -92,7 +92,7 @@ void TestModule::CreateTests()
 	switch (testsMode)
 	{
 	case TestsMode::RunLast:
-		Modules::Tests->addTest(testRegisty->getLastRegisteredFactory()->createTest());
+		Modules::Tests->addTest(testRegisty->getLastRegisteredTest()());
 		break;
 	case TestsMode::RunDefined:
 		for (const auto& section : sections)
@@ -104,9 +104,9 @@ void TestModule::CreateTests()
 		}
 		break;
 	default:
-		for (const auto& el : testRegisty->getFactories()) 
+		for (const auto& el : testRegisty->getTests()) 
 		{
-			Modules::Tests->addTest(el.second->createTest());
+			Modules::Tests->addTest(el.second());
 		}
 		break;
 	}
