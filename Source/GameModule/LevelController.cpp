@@ -1,4 +1,4 @@
-﻿#include "GameModule/LevelGenerator.hpp"
+﻿#include "GameModule/LevelController.hpp"
 #include "Common/Logs.hpp"
 #include "AssetManager/AssetManager.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
@@ -36,9 +36,9 @@ namespace
 	const std::string ENEMY_PATH = "../../Data/Config/Enemy1IdleAnimation.ini";
 }
 
-LevelGenerator::LevelGenerator() : width(20), height(20), gameLevelType(GameLevelType::Easy), enemyCount(5), breakableCount(10), playerStartPosition(1, 1) {}
+LevelController::LevelController() : width(20), height(20), gameLevelType(GameLevelType::Easy), enemyCount(5), breakableCount(10), playerStartPosition(1, 1) {}
 
-bool LevelGenerator::Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
+bool LevelController::Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
 {
 	if (levelWidth <= 2 || levelHeight <= 2)
 	{
@@ -77,7 +77,7 @@ bool LevelGenerator::Initialize(int32_t levelWidth, int32_t levelHeight, GameLev
 	return true;
 }
 
-void LevelGenerator::generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
+void LevelController::generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
 {
 	if (!parseConfigFile(OBSTACLE_PATH))
 	{
@@ -133,7 +133,7 @@ void LevelGenerator::generateLevel(int32_t newWidth, int32_t newHeight, GameLeve
 	generateBoosters(gen);
 }
 
-void LevelGenerator::generateEnemies(std::mt19937& gen)
+void LevelController::generateEnemies(std::mt19937& gen)
 {
 	// Generate a safety zone around the player to prevent placing obstacles too close
 	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
@@ -174,7 +174,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 		++placedEnemies;
 
 		// Create a new enemy at the current position
-		Enemy enemy(EnemyType::Basic, { x, y }); // , patrollingPoints);
+		Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
 
 		//load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
@@ -193,11 +193,11 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 	}
 }
 
-void LevelGenerator::draw(sf::RenderTarget& target)
+void LevelController::draw(sf::RenderTarget& target) const
 {
 	for (const auto& enemy : enemies)
 	{
-		target.draw(enemy);
+		target.draw(*enemy.getCurrentAnimation());
 	}
 
 	for (const auto& key : keys)
@@ -222,8 +222,25 @@ void LevelGenerator::draw(sf::RenderTarget& target)
 	}
 }
 
+void LevelController::update(sf::RenderTarget& target)
+{
+	auto enemy_it = enemies.begin();
+	while (enemy_it != enemies.end())
+	{
+		if (enemy_it->isDead())
+		{
+			enemy_it = enemies.erase(enemy_it);
+		}
+		else
+		{
+			++enemy_it;
+		}
+	}
+	draw(target);
+}
+
 // Generate obstacles
-void LevelGenerator::generateObstacles(std::mt19937& gen)
+void LevelController::generateObstacles(std::mt19937& gen)
 {
 	// Generate a safety zone around the player to prevent placing obstacles too close
 	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
@@ -285,7 +302,7 @@ void LevelGenerator::generateObstacles(std::mt19937& gen)
 	}
 }
 
-bool LevelGenerator::parseConfigFile(const std::string& configFilePath)
+bool LevelController::parseConfigFile(const std::string& configFilePath)
 {
 	Modules::Config->addFile(configFilePath); //"../../Data/Config/BreakableObstacle.ini");
 	const ConfigFile& obstacleConfig = Modules::Config->getFile(configFilePath);
@@ -333,7 +350,7 @@ bool LevelGenerator::parseConfigFile(const std::string& configFilePath)
 	return anyTextureAdded;
 }
 
-sf::IntRect LevelGenerator::getTextureRect(const std::string& textureName) const
+sf::IntRect LevelController::getTextureRect(const std::string& textureName) const
 {
 	auto textureRect = m_texturesRect.find(textureName);
 
@@ -345,7 +362,7 @@ sf::IntRect LevelGenerator::getTextureRect(const std::string& textureName) const
 }
 
 // Get available enemy types for the current level
-std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType levelType) const
+std::vector<EnemyType> LevelController::getAvailableEnemyTypes(GameLevelType levelType) const
 {
 	switch (levelType)
 	{
@@ -361,7 +378,7 @@ std::vector<EnemyType> LevelGenerator::getAvailableEnemyTypes(GameLevelType leve
 }
 
 //Generate safety zone
-std::set<std::pair<int32_t, int32_t>> LevelGenerator::generateSafetyZone() const
+std::set<std::pair<int32_t, int32_t>> LevelController::generateSafetyZone() const
 {
 	std::set<std::pair<int32_t, int32_t>> safetyZone;
 
@@ -373,7 +390,7 @@ std::set<std::pair<int32_t, int32_t>> LevelGenerator::generateSafetyZone() const
 }
 
 // Generate patrolling points
-std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const
+std::vector<sf::Vector2i> LevelController::generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const
 {
 	std::vector<sf::Vector2i> patrollingPoints;
 	
@@ -411,7 +428,7 @@ std::vector<sf::Vector2i> LevelGenerator::generatePatrollingPoints(std::mt19937&
 	return patrollingPoints;
 }
 
-void LevelGenerator::generateGates(std::mt19937& gen)
+void LevelController::generateGates(std::mt19937& gen)
 {
 	// Shuffle the remaining positions to randomize obstacle placement
 	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
@@ -463,7 +480,7 @@ void LevelGenerator::generateGates(std::mt19937& gen)
 	}
 }
 
-void LevelGenerator::generateKeys(std::mt19937& gen)
+void LevelController::generateKeys(std::mt19937& gen)
 {
 	// Shuffle the remaining positions to randomize obstacle placement
 	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
@@ -517,7 +534,7 @@ void LevelGenerator::generateKeys(std::mt19937& gen)
 	}
 }
 
-void LevelGenerator::generateBoosters(std::mt19937& gen)
+void LevelController::generateBoosters(std::mt19937& gen)
 {
 	// Shuffle the remaining positions to randomize obstacle placement
 	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
@@ -573,22 +590,22 @@ std::vector<Obstacle>& LevelGenerator::getObstacles()
 	return obstacles;
 }
 
-const std::vector<Enemy>& LevelGenerator::getEnemies() const
+std::vector<Enemy>& LevelController::getEnemies()
 {
 	return enemies;
 }
 
-const std::vector<Gate>& LevelGenerator::getGates() const
+const std::vector<Gate>& LevelController::getGates() const
 {
 	return gates;
 }
 
-const std::vector<Booster>& LevelGenerator::getBoosters() const
+const std::vector<Booster>& LevelController::getBoosters() const
 {
 	return boosters;
 }
 
-const std::vector<Key>& LevelGenerator::getKeys() const
+const std::vector<Key>& LevelController::getKeys() const
 {
 	return keys;
 }

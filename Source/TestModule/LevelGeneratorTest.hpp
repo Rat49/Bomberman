@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TestModule/TestBase.hpp"
-#include "GameModule/LevelGenerator.hpp"
+#include "GameModule/LevelController.hpp"
 #include <fstream>
 #include <sstream>
 #include <iostream>
