@@ -4,6 +4,7 @@
 #include "Common/Logs.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "GameModule/GameModule.hpp"
 #include <thread>
 #include <chrono>
 
@@ -14,11 +15,14 @@ PlayerCharacter::PlayerCharacter()
 
 bool PlayerCharacter::init()
 {
-	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
 
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
+	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+
+	activeBombs.reserve(maxBombs);
 
 	playerMovement = Modules::Input->GetActionID("PlayerMovement");
 	if (playerMovement < 0)
@@ -78,29 +82,66 @@ bool PlayerCharacter::init()
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-	sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
-	if(state.x == 1 && state.y == 0) { //RIGHT
-		x+= velocity;
-		updateAnimation(rightId);
-	}
-	else if (state.x == 0 && state.y == -1) { //DOWN
-		y += velocity;
-		updateAnimation(downId);
-	}
-	else if (state.x == -1 && state.y == 0) { //LEFT
-		x -= velocity;
-		updateAnimation(leftId);
-	}
-	else if (state.x == 0 && state.y == 1) { //UP 
-		y -= velocity;
-		updateAnimation(upId);
+	if (!Modules::Game->getIsPaused()) {
+		sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
+		if (state.x == 1 && state.y == 0) { //RIGHT
+			x += velocity;
+			updateAnimation(rightId);
+		}
+		else if (state.x == 0 && state.y == -1) { //DOWN
+			y += velocity;
+			updateAnimation(downId);
+		}
+		else if (state.x == -1 && state.y == 0) { //LEFT
+			x -= velocity;
+			updateAnimation(leftId);
+		}
+		else if (state.x == 0 && state.y == 1) { //UP 
+			y -= velocity;
+			updateAnimation(upId);
+		}
 	}
 }
 
 void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 {
+	if (activeBombs.size() >= static_cast<size_t>(maxBombs))
+	{
+		LOG("Cannot plant more bombs. Maximum reached.");
+		return;
+	}
+
 	// Need to add and then get Player's position here
-	bomb.Initialize(this->getCurrentPosition(), 1, 2.0f);
+	auto bomb = std::make_shared<Bomb>();
+	bomb->Initialize(getCurrentPosition(), 1, 3.0f);
+	activeBombs.push_back(bomb);
+}
+
+void PlayerCharacter::updateBombs(float deltaTime)
+{
+	for (auto it = activeBombs.begin(); it != activeBombs.end();)
+	{
+		auto& bomb = *it;
+		bomb->update(deltaTime);
+
+		if (!bomb->hasExploded())
+		{
+			// Remove bomb if inactive
+			it = activeBombs.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+void PlayerCharacter::drawBombs(sf::RenderWindow& window)
+{
+	for (const auto& bomb : activeBombs)
+	{
+		window.draw(*bomb->getCurrentAnimation());
+	}
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)

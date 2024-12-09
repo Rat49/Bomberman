@@ -61,7 +61,7 @@ private:
 	bool isPressed = false;
 
 	// Colors for different button states
-	sf::Color defaultColor = sf::Color::Black;
-	sf::Color hoverColor = sf::Color::Black;
-	sf::Color pressedColor = sf::Color::Black;
+	sf::Color defaultColor = sf::Color(0, 0, 0, 0);
+	sf::Color hoverColor = sf::Color(0,0,0,0);
+	sf::Color pressedColor = sf::Color(0, 0, 0, 0);
 };

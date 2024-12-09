@@ -142,9 +142,10 @@ void UIButton::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		currentColor = defaultColor;
 	}
-
+	
 	sf::RectangleShape tempBackground = buttonBackground;
 	tempBackground.setFillColor(currentColor);
+	
 
 	// Draw the background
 	target.draw(tempBackground, states);

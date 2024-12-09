@@ -18,7 +18,9 @@
 #include "TestModule/UICheckboxTest.hpp"
 #include "TestModule/UIInputFieldTest.hpp"
 #include "TestModule/SoundSystemTest.hpp"
-#include "TestModule/UICheckboxTest.hpp"
+#include "TestModule/LevelGeneratorTest.hpp"
+#include "TestModule/UIProgressBarTest.hpp"
+#include "TestModule/SaveSystemTest.hpp"
 
 #include "TestRegisty.hpp"
 
@@ -27,6 +29,9 @@
 
 bool TestRegisty::initialize()
 {
+	// add your tests based on TestBase class here using this preset
+	// isEverythingInitialized &= registerTest<YourTest>("YourTest");
+	// ----------------------------------------------------------------
 	bool isEverythingInitialized = true;
 	isEverythingInitialized &= registerTest<SampleTest>("SampleTest");
 	isEverythingInitialized &= registerTest<WindowClosingTest>("WindowClosingTest");
@@ -43,6 +48,9 @@ bool TestRegisty::initialize()
 	isEverythingInitialized &= registerTest<SoundSystemTest>("SoundSystemTest");
 	isEverythingInitialized &= registerTest<UIInputFieldTest>("UIInputFieldTest");
 	isEverythingInitialized &= registerTest<AssetManagerTest>("AssetManagerTest");
+	isEverythingInitialized &= registerTest <LevelGeneratorTest>("LevelGeneratorTest");
+	isEverythingInitialized &= registerTest<UIProgressBarTest>("UIProgressBarTest");
+	isEverythingInitialized &= registerTest<SaveSystemTest>("SaveSystemTest");
 	isEverythingInitialized &= registerTest<UICheckboxTest>("UICheckboxTest");
 	return isEverythingInitialized;
 }
