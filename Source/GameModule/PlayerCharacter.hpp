@@ -50,8 +50,6 @@ private:
 	int32_t upId;
 	int32_t downId;
 
-	//Bomb bomb;
-
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
