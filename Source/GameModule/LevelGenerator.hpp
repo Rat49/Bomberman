@@ -22,10 +22,10 @@ public:
 
 	void generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
 
-	void draw(sf::RenderTarget& target) const;
+	void draw(sf::RenderTarget& target);
 	
 	// Getter methods for private members
-	const std::vector<Obstacle>& getObstacles() const;
+	std::vector<Obstacle>& getObstacles();
 	const std::vector<Enemy>& getEnemies() const;
 	const std::vector<Gate>& getGates() const;
 	const std::vector<Key>& getKeys() const;

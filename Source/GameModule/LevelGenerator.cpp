@@ -193,7 +193,7 @@ void LevelGenerator::generateEnemies(std::mt19937& gen)
 	}
 }
 
-void LevelGenerator::draw(sf::RenderTarget& target) const
+void LevelGenerator::draw(sf::RenderTarget& target)
 {
 	for (const auto& enemy : enemies)
 	{
@@ -215,9 +215,10 @@ void LevelGenerator::draw(sf::RenderTarget& target) const
 		target.draw(booster);
 	}
 
-	for (const auto& obstacle : obstacles)
+	for (auto& obstacle : obstacles)
 	{
-		target.draw(obstacle);
+		if (!obstacle.isExploded)
+			target.draw(*obstacle.getCurrentAnimation());
 	}
 }
 
@@ -262,16 +263,16 @@ void LevelGenerator::generateObstacles(std::mt19937& gen)
 		++placedBreakables;
 
 		// Create a new breakable obstacle at the current position
-		Obstacle obstacle(ObstacleType::Breakable, { x, y }, false);
+		Obstacle obstacle(ObstacleType::Breakable, { it->x, it->y }, false);
 
 		//load atlas texture
-		m_atlasTexture = std::make_shared<sf::Texture>();
-		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+		//m_atlasTexture = std::make_shared<sf::Texture>();
+		//m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
 		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
-		obstacle.setTexture(*m_atlasTexture);
-		obstacle.setTextureRect(getTextureRect(OBSTACLE_RECT_NAME));
-		obstacle.setPosition((float)x, (float)y);
+		//obstacle.setTexture(*m_atlasTexture);
+		//obstacle.setTextureRect(getTextureRect(OBSTACLE_RECT_NAME));
+		//obstacle.setPosition((float)x, (float)y);
 
 		// Save the obstacle's position in the breakable obstacles position vector
 		breakableObstaclesPositions.emplace_back(obstacle.getPosition());
@@ -567,7 +568,7 @@ void LevelGenerator::generateBoosters(std::mt19937& gen)
 }
 
 // Getter methods
-const std::vector<Obstacle>& LevelGenerator::getObstacles() const
+std::vector<Obstacle>& LevelGenerator::getObstacles()
 {
 	return obstacles;
 }

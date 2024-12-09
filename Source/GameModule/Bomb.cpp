@@ -4,11 +4,14 @@
 
 Bomb::Bomb()
 {
-	collisionBox = std::make_unique<CollisionComponent>();
+	//collision.setParent(static_cast<void*>(this));
 
-	collisionBox->setParent(this);
+	//collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 12.0f, gridSize -12.0f));
+	//collisionBox->setParent(this);
+
+	//collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize -8.0f));
+
 }
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
@@ -66,8 +69,8 @@ void Bomb::update(float deltaTime)
 		explosionTimer -= deltaTime;
 		if (explosionTimer <= 0.0f)
 		{
-			auto anim = getCurrentAnimation();
-			anim->Stop();
+			//auto anim = getCurrentAnimation();
+			//anim->Stop();
 			animExploded = true;
 		}
 	}
@@ -189,34 +192,31 @@ void Bomb::explode()
 // Method about what will happen when there is an explosion
 void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
-	sf::Vector2f endPoint; // = sf::Vector2f(0.01f, 0.01f);
+	sf::Vector2f endPoint;
 
 	sf::Vector2f newDirection = directionToPosition(direction);
 	sf::Vector2f alignPos = alignToGrid(position);
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
 	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint);
-
 	LOG("!!!!!!!!!!!!!!!Position: $ $", position.x, position.y);
 	LOG("!!!!!!!!!!!!!!!directionAndPosition: $ $", directionAndPosition.x, directionAndPosition.y);
 	LOG("!!!!!!!!!!!!!!!endPoint: $ $", endPoint.x, endPoint.y);
 
-
 	if (hitObject)
 	{
-		//const Obstacle* obstacle = dynamic_cast<const Obstacle*>(hitObject);
-
-		//hitObject->getParent();
-
 		parentObstacle = static_cast<Obstacle*>(hitObject->getParent());
-		obsPos = directionAndPosition;
+
 		if (parentObstacle)
 		{
-			LOG("???????????????????????????????? $", hitObject->getParent());
+			obsPos = directionAndPosition;
 			isObstacle = true;
-			
+			parentObstacle->isExploded = true;
+
+			LOG("Address of parentObstacle: $", parentObstacle);
+			LOG("Address of hitObject: $", hitObject);
 		}
-		 LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
+		LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
 	}
 	else 
 	{

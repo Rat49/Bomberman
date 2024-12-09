@@ -3,6 +3,7 @@
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include "CollisionModule/CollisionRectangle.hpp"
+#include "SpriteModule/Animation.hpp"
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -13,14 +14,12 @@ enum class ObstacleType
 	Breakable
 };
 
-class Obstacle : public sf::Sprite, public CollisionComponent
+class Obstacle : public sf::Sprite
 {
 public:
-	Obstacle();
+	Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate = false);
 
-	Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate = false);
-
-	sf::Vector2i getPosition() const;
+	sf::Vector2f getPosition() const;
 
 	ObstacleType getType() const;
 
@@ -31,20 +30,23 @@ public:
 	// Drawing a Obstacle
 	void draw(sf::RenderWindow& window, sf::Vector2f obsPos);
 
-	static bool isValidUnbreakablePosition(const sf::Vector2i& position);
+	static bool isValidUnbreakablePosition(const sf::Vector2f& position);
+
+	std::shared_ptr<Animation> getCurrentAnimation();
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	std::shared_ptr<Animation> getCurrentAnimation() const;
-
 	CollisionRectangle& getCollision() { return collision; }
+
+	bool isExploded;
 
 private:
 	ObstacleType obstacleType;
-	sf::Vector2i obstaclePosition;
+	sf::Vector2f obstaclePosition;
 	std::unique_ptr<CollisionComponent> collisionBox;
 	int32_t currentAnimation = -1;
-	int32_t obstacleDestructionAnimID;;
+	int32_t idleBreakableObstacleAnimID;
+	int32_t obstacleDestructionAnimID;
 
 	CollisionRectangle collision;
 

@@ -3,6 +3,7 @@
 #include "Common/Modules.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"
+#include "CollisionModule/CollisionRectangle.hpp"
 #include "GameModule/Obstacle.hpp"
 
 class Bomb
@@ -29,7 +30,9 @@ public:
 
 	std::shared_ptr<Animation> getCurrentAnimation() const;
 
-	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+	//CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
+	//CollisionRectangle& getCollision() { return collision; }
 
 private:
 	int32_t currentAnimation = -1;
@@ -41,7 +44,9 @@ private:
 	int32_t bombRightID;
 	int32_t bombCenterID;
 
-	std::unique_ptr<CollisionComponent> collisionBox;
+	//std::unique_ptr<CollisionComponent> collisionBox;
+
+	//CollisionRectangle collision;
 
 	float gridSize = 64.0f;
 
