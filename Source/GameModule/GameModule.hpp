@@ -1,7 +1,7 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
-#include "GameModule/LevelGenerator.hpp"
+#include "GameModule/LevelController.hpp"
 #include "Screens.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
@@ -37,7 +37,7 @@ private:
 
 	PlayerCharacter player;
 
-	std::unique_ptr<LevelGenerator> levelGenerator;
+	std::unique_ptr<LevelController> levelGenerator;
 	 
 	LevelId currentLevel;
 

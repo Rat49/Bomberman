@@ -80,7 +80,7 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	levelGenerator = std::make_unique<LevelGenerator>();
+	levelGenerator = std::make_unique<LevelController>();
 
 	int levelWidth = 13;
 	int levelHeight = 31;

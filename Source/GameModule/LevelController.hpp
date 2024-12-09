@@ -13,10 +13,10 @@
 #include <random>
 #include <set>
 
-class LevelGenerator
+class LevelController
 {
 public:
-	LevelGenerator();
+	LevelController();
 
 	bool Initialize(int32_t levelWidth, int32_t levelHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
 
@@ -83,7 +83,7 @@ private:
 };
 
 template <typename ObjectType>
-bool LevelGenerator::isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const
+bool LevelController::isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const
 {
 	for (const auto& object : objects)
 	{
