@@ -4,6 +4,7 @@
 #include "Common/Logs.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "GameModule/GameModule.hpp"
 #include <thread>
 #include <chrono>
 
@@ -14,7 +15,7 @@ PlayerCharacter::PlayerCharacter()
 
 bool PlayerCharacter::init()
 {
-	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
 
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
@@ -81,22 +82,24 @@ bool PlayerCharacter::init()
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-	sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
-	if(state.x == 1 && state.y == 0) { //RIGHT
-		x+= velocity;
-		updateAnimation(rightId);
-	}
-	else if (state.x == 0 && state.y == -1) { //DOWN
-		y += velocity;
-		updateAnimation(downId);
-	}
-	else if (state.x == -1 && state.y == 0) { //LEFT
-		x -= velocity;
-		updateAnimation(leftId);
-	}
-	else if (state.x == 0 && state.y == 1) { //UP 
-		y -= velocity;
-		updateAnimation(upId);
+	if (!Modules::Game->getIsPaused()) {
+		sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
+		if (state.x == 1 && state.y == 0) { //RIGHT
+			x += velocity;
+			updateAnimation(rightId);
+		}
+		else if (state.x == 0 && state.y == -1) { //DOWN
+			y += velocity;
+			updateAnimation(downId);
+		}
+		else if (state.x == -1 && state.y == 0) { //LEFT
+			x -= velocity;
+			updateAnimation(leftId);
+		}
+		else if (state.x == 0 && state.y == 1) { //UP 
+			y -= velocity;
+			updateAnimation(upId);
+		}
 	}
 }
 
