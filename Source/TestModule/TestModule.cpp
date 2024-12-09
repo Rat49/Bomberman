@@ -61,11 +61,11 @@ void TestModule::update(float deltaTime, sf::RenderWindow* window)
 
 	while (tests_it != m_tests.end())
 	{
-		(*tests_it)->update(deltaTime, window);
-
-		if ((*tests_it)->isComplete())
+		TestBase* test = tests_it->get();
+		test->update(deltaTime, window);
+		if (test->isComplete())
 		{
-			LOG("Test " + (*tests_it)->getName() + " complete");
+			LOG("Test " + test->getName() + " complete");
 			tests_it = m_tests.erase(tests_it);
 		}
 		else
