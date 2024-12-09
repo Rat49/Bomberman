@@ -1,6 +1,7 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
+#include <chrono>
 
 class Animation;
 
@@ -33,6 +34,12 @@ public:
 
 	void drawBombs(sf::RenderWindow& window);
 
+	void startInvincibility();
+
+	void updateInvincibility();
+
+	bool getIsInvincible() const;
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;
@@ -53,4 +60,8 @@ private:
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
+
+	bool isInvincible = false;
+	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
+	const std::chrono::seconds invincibilityDuration = std::chrono::seconds(30);
 };

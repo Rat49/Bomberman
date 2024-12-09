@@ -8,12 +8,18 @@ int32_t InvincibleBooster::getBoosterID()
 
 void InvincibleBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	playerCharacter.startInvincibility();
+	isEffectDone = false;
 }
 
 bool InvincibleBooster::removeEffect(PlayerCharacter& playerCharacter)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	playerCharacter.updateInvincibility();
+	if (!playerCharacter.getIsInvincible())
+	{
+		isEffectDone = true;
+	}
+	return isEffectDone;
 }
 
 bool InvincibleBooster::shoulRemoveEffect()

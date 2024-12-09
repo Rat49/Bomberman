@@ -8,10 +8,7 @@
 #include <thread>
 #include <chrono>
 
-PlayerCharacter::PlayerCharacter()
-{
-
-}
+PlayerCharacter::PlayerCharacter() {}
 
 bool PlayerCharacter::init()
 {
@@ -186,3 +183,33 @@ PlayerCharacter::~PlayerCharacter()
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
 	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }
+
+void PlayerCharacter::startInvincibility()
+{
+	isInvincible = true;
+	invincibilityStartTime = std::chrono::high_resolution_clock::now();
+}
+
+void PlayerCharacter::updateInvincibility()
+{
+	if (isInvincible)
+	{
+		auto now = std::chrono::high_resolution_clock::now();
+		if (now - invincibilityStartTime >= invincibilityDuration)
+		{
+			isInvincible = false;
+		}
+	}
+}
+
+bool PlayerCharacter::getIsInvincible() const
+{
+	return isInvincible;
+}
+
+// TODO
+// To check collision with player use this to avoid booster effect if booster effect is active:
+// if (!player.getIsInvincible())
+// {
+//		Handle damage from bombs or enemies
+// }

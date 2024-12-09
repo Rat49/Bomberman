@@ -228,6 +228,8 @@ void GameModule::checkTimeCounter()
 
 void GameModule::updateBoosters()
 {
+	player.updateInvincibility();
+
 	auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
