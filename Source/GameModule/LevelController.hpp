@@ -25,11 +25,12 @@ public:
 	void update(sf::RenderTarget& target);
 	
 	// Getter methods for private members
-	const std::vector<Obstacle>& getObstacles() const;
+	std::vector<Obstacle>& getObstacles();
 	std::vector<Enemy>& getEnemies();
+	std::vector<Booster>& getBoosters();
 	const std::vector<Gate>& getGates() const;
 	const std::vector<Key>& getKeys() const;
-	const std::vector<Booster>& getBoosters() const;
+
 
 	template <typename ObjectType>
 	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;

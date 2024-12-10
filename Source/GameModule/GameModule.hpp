@@ -6,6 +6,7 @@
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
+#include "GameStats.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -58,4 +59,7 @@ private:
 	LevelId currentLevel;
 
 	bool resized = false;
+
+	std::unique_ptr<GameStats> gameStats;
+
 };

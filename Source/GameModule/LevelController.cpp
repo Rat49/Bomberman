@@ -584,7 +584,7 @@ void LevelController::generateBoosters(std::mt19937& gen)
 }
 
 // Getter methods
-const std::vector<Obstacle>& LevelController::getObstacles() const
+std::vector<Obstacle>& LevelController::getObstacles()
 {
 	return obstacles;
 }
@@ -594,14 +594,14 @@ std::vector<Enemy>& LevelController::getEnemies()
 	return enemies;
 }
 
+std::vector<Booster>& LevelController::getBoosters()
+{
+	return boosters;
+}
+
 const std::vector<Gate>& LevelController::getGates() const
 {
 	return gates;
-}
-
-const std::vector<Booster>& LevelController::getBoosters() const
-{
-	return boosters;
 }
 
 const std::vector<Key>& LevelController::getKeys() const
