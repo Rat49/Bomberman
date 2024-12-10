@@ -42,6 +42,7 @@ private:
 	float y = 70.f;
 	float speed = 0.f;
 	int32_t maxBombs;
+	float bombDuration;
 	float velocity = 0.f;
 
 	ActionID playerMovement;

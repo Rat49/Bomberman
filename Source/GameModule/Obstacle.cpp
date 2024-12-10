@@ -25,15 +25,14 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(52.5f, 52.5f));
 }
 
-void Obstacle::draw(sf::RenderWindow& window, sf::Vector2f obsPos)
+void Obstacle::changeAnim(sf::Vector2f obsPos)
 {
-	//getCurrentAnimation()->Stop();
+	getCurrentAnimation()->Stop();
 	if (auto animation = Modules::Sprite->getAnimation(obstacleDestructionAnimID))
 	{ 
 		currentAnimation = obstacleDestructionAnimID;
 		animation->setPosition(obsPos);
 		animation->Play();
-		window.draw(*animation);
 	}
 }
 
@@ -62,7 +61,7 @@ bool Obstacle::isValidUnbreakablePosition(const sf::Vector2f& position)
 	return (int32_t)position.x % 2 == 0 && (int32_t)position.y % 2 == 0;;
 }
 
-std::shared_ptr<Animation> Obstacle::getCurrentAnimation() 
+std::shared_ptr<Animation> Obstacle::getCurrentAnimation() const
 {
 	return Modules::Sprite->getAnimation(currentAnimation);
 }

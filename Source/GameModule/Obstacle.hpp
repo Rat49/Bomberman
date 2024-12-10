@@ -27,12 +27,11 @@ public:
 
 	void setHasKeyOrGate(bool value);
 
-	// Drawing a Obstacle
-	void draw(sf::RenderWindow& window, sf::Vector2f obsPos);
+	void changeAnim(sf::Vector2f obsPos);
 
 	static bool isValidUnbreakablePosition(const sf::Vector2f& position);
 
-	std::shared_ptr<Animation> getCurrentAnimation();
+	std::shared_ptr<Animation> getCurrentAnimation() const;
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 

@@ -25,6 +25,7 @@ bool PlayerCharacter::init()
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
 
 	activeBombs.reserve(maxBombs);
 
@@ -117,7 +118,7 @@ void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 
 	// Need to add and then get Player's position here
 	auto bomb = std::make_shared<Bomb>();
-	bomb->Initialize(getCurrentPosition(), 1, 5000000.0f);
+	bomb->Initialize(getCurrentPosition(), 1, bombDuration);
 	activeBombs.push_back(bomb);
 }
 

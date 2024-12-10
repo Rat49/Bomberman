@@ -175,9 +175,9 @@ void GameModule::run()
 			//for testing purposes can be removed whenever
 			for(auto& enemy: levelGenerator->getEnemies())
 			{
-				if (enemy.getPosition().x < player.getCurrentPosition().x)
+				if (enemy->getPosition().x < player.getCurrentPosition().x)
 				{
-					enemy.initializeDeath();
+					enemy->initializeDeath();
 				}
 			}
 

@@ -54,9 +54,10 @@ private:
 	sf::Vector2f position;
 	// Explosion radius
 	float explosionRadius;
-	// Explosion timer
+	// Bomb before explosion timer
 	float timer;
-	float explosionTimer = 2000000.0f;
+	// Explosion timer
+	float explosionTimer = 1000000.0f;
 	// Did the bomb explode
 	bool exploded = false;
 	bool animExploded = false;
@@ -74,6 +75,7 @@ private:
 	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
 
 	Obstacle* parentObstacle;
+	std::vector<const CollisionComponent*> hits;
 	bool isObstacle = false;
 	sf::Vector2f obsPos;
 };

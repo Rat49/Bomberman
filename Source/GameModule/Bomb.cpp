@@ -64,13 +64,11 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 // Bomb update
 void Bomb::update(float deltaTime)
 {
-	if (exploded) // return;
+	if (exploded)  //return;
 	{
 		explosionTimer -= deltaTime;
 		if (explosionTimer <= 0.0f)
 		{
-			//auto anim = getCurrentAnimation();
-			//anim->Stop();
 			animExploded = true;
 		}
 	}
@@ -90,11 +88,11 @@ void Bomb::draw(sf::RenderWindow& window)
 
 	if (isObstacle)
 	{
-		parentObstacle->draw(window, obsPos);
+		parentObstacle->changeAnim(obsPos);
 	}
 
 	// Draws a bomb if it hasn't exploded
-	if (!exploded && !animExploded)
+	if (!exploded)
 	{
 		if (auto animation = Modules::Sprite->getAnimation(bombIdleID))
 		{
@@ -102,7 +100,7 @@ void Bomb::draw(sf::RenderWindow& window)
 		}
 	}
 	// Draws an explosion
-	else if(exploded && !animExploded)
+	else if(exploded)
 	{
 		animExplosionStart = true;
 
@@ -126,10 +124,8 @@ void Bomb::draw(sf::RenderWindow& window)
 			animPos = directionToPosition(direction);
 			if (auto animation = Modules::Sprite->getAnimation(animationID))
 			{
-				//currentAnimation = animationID;
 				sf::Vector2f pos = alignToGrid(position + (animPos * explosionRadius));
 				animation->setPosition(pos);
-				//animation->Play();
 				window.draw(*animation);
 			}
 		}
@@ -139,7 +135,6 @@ void Bomb::draw(sf::RenderWindow& window)
 		{
 			sf::Vector2f pos = alignToGrid(position);
 			animation->setPosition(pos);
-			//animation->Play();
 			window.draw(*animation);
 		}
 	}
@@ -183,8 +178,6 @@ void Bomb::explode()
 	{
 		explosionEffect(direction);
 	}
-	
-	//LOG("The bomb exploded at the position: $", position.x, ", $", position.y);
 }
 
 
@@ -199,22 +192,15 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
 	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint);
-	LOG("!!!!!!!!!!!!!!!Position: $ $", position.x, position.y);
-	LOG("!!!!!!!!!!!!!!!directionAndPosition: $ $", directionAndPosition.x, directionAndPosition.y);
-	LOG("!!!!!!!!!!!!!!!endPoint: $ $", endPoint.x, endPoint.y);
 
 	if (hitObject)
 	{
 		parentObstacle = static_cast<Obstacle*>(hitObject->getParent());
-
 		if (parentObstacle)
 		{
 			obsPos = directionAndPosition;
 			isObstacle = true;
 			parentObstacle->isExploded = true;
-
-			LOG("Address of parentObstacle: $", parentObstacle);
-			LOG("Address of hitObject: $", hitObject);
 		}
 		LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
 	}
@@ -246,15 +232,7 @@ int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 
 sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection)
 {
-	sf::Vector2f dir;
-	if (newDirection == sf::Vector2f(1, 0))
-		dir = sf::Vector2f(64, 0);
-	else if (newDirection == sf::Vector2f(-1, 0))
-		dir = sf::Vector2f(-64, 0);
-	else if (newDirection == sf::Vector2f(0, 1))
-		dir = sf::Vector2f(0, 64);
-	else if (newDirection == sf::Vector2f(0, -1))
-		dir = sf::Vector2f(0, -64);
+	sf::Vector2f dir = sf::Vector2f(newDirection.x * 64.0f, newDirection.y * 64.0f);
 
 	return dir;
 }
@@ -266,7 +244,4 @@ sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)
 	return { alignedX, alignedY };
 }
 
-Bomb::~Bomb()
-{
-
-}
+Bomb::~Bomb() {}

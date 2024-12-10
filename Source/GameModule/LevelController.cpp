@@ -174,51 +174,84 @@ void LevelController::generateEnemies(std::mt19937& gen)
 		++placedEnemies;
 
 		// Create a new enemy at the current position
-		Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
+		//Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
+		auto enemy = std::make_shared<Enemy>(EnemyType::Basic, sf::Vector2f((float)x, (float)y));
 
 		//load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
 		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
 		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
-		enemy.setTexture(*m_atlasTexture);
-		enemy.setTextureRect(getTextureRect(ENEMY_RECT_NAME));
-		enemy.setPosition((float)x, (float)y);
+		enemy->setTexture(*m_atlasTexture);
+		enemy->setTextureRect(getTextureRect(ENEMY_RECT_NAME));
+		enemy->setPosition((float)x, (float)y);
 
 		// Add the enemy to the list of all enemies
-		enemies.emplace_back(std::move(enemy));
+		//enemies.emplace_back(std::move(enemy));
+		enemies.push_back(enemy);
 
 		// Remove the used position from the free positions list
 		it = freePositions.erase(it);
 	}
 }
 
-void LevelController::draw(sf::RenderTarget& target) const
+void LevelController::draw(sf::RenderTarget& target)
 {
 	for (const auto& enemy : enemies)
 	{
-		target.draw(*enemy.getCurrentAnimation());
+		target.draw(*enemy->getCurrentAnimation());
 	}
 
 	for (const auto& key : keys)
 	{
-		target.draw(key);
+		target.draw(*key);
 	}
 
 	for (const auto& gate : gates)
 	{
-		target.draw(gate);
+		target.draw(*gate);
 	}
 
 	for (const auto& booster : boosters)
 	{
-		target.draw(booster);
+		target.draw(*booster);
 	}
 
-	for (auto& obstacle : obstacles)
+	//for (auto& obstacle : obstacles)
+	//{
+	//	if (!obstacle->isExploded)
+	//	{
+	//		target.draw(*obstacle->getCurrentAnimation());
+	//	}
+	//	else
+	//	{
+	//		target.draw(*obstacle->getCurrentAnimation());
+	//		if(!obstacle->getCurrentAnimation()->isPlaying())
+	//		{
+	//			obstacles.erase(obstacle);
+	//		}
+	//	}
+	//}
+
+	for (auto it = obstacles.begin(); it != obstacles.end(); )
 	{
-		if (!obstacle.isExploded)
-			target.draw(*obstacle.getCurrentAnimation());
+		if (!(*it)->isExploded)
+		{
+			target.draw(*(*it)->getCurrentAnimation());
+			++it;
+		}
+		else
+		{
+			target.draw(*(*it)->getCurrentAnimation());
+			if (!(*it)->getCurrentAnimation()->isPlaying())
+			{
+				it = obstacles.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 }
 
@@ -227,7 +260,7 @@ void LevelController::update(sf::RenderTarget& target)
 	auto enemy_it = enemies.begin();
 	while (enemy_it != enemies.end())
 	{
-		if (enemy_it->isDead())
+		if ((*enemy_it)->isDead())
 		{
 			enemy_it = enemies.erase(enemy_it);
 		}
@@ -280,7 +313,8 @@ void LevelController::generateObstacles(std::mt19937& gen)
 		++placedBreakables;
 
 		// Create a new breakable obstacle at the current position
-		Obstacle obstacle(ObstacleType::Breakable, { it->x, it->y }, false);
+		//Obstacle obstacle(ObstacleType::Breakable, { it->x, it->y }, false);
+		auto obstacle = std::make_shared<Obstacle>(ObstacleType::Breakable, sf::Vector2f(it->x, it->y), false);
 
 		//load atlas texture
 		//m_atlasTexture = std::make_shared<sf::Texture>();
@@ -292,10 +326,11 @@ void LevelController::generateObstacles(std::mt19937& gen)
 		//obstacle.setPosition((float)x, (float)y);
 
 		// Save the obstacle's position in the breakable obstacles position vector
-		breakableObstaclesPositions.emplace_back(obstacle.getPosition());
+		breakableObstaclesPositions.emplace_back(obstacle->getPosition());
 
 		// Add the obstacle to the list of all obstacles
-		obstacles.emplace_back(std::move(obstacle));
+		//obstacles.emplace_back(std::move(obstacle));
+		obstacles.push_back(obstacle);
 
 		// Remove the used position from the free positions list
 		it = freePositions.erase(it);
@@ -456,16 +491,16 @@ void LevelController::generateGates(std::mt19937& gen)
 			});
 
 		// Create a new breakable obstacle at the current position
-		Gate gate({ x, y }, false, &keys[0]);
+		std::shared_ptr<Gate> gate = std::make_shared<Gate>(sf::Vector2i(x, y), false, getKeys().empty() ? nullptr : getKeys().front());
 
 		//load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
 		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
 		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
-		gate.setTexture(*m_atlasTexture);
-		gate.setTextureRect(getTextureRect(GATE_RECT_NAME));
-		gate.setPosition((float)x, (float)y);
+		gate->setTexture(*m_atlasTexture);
+		gate->setTextureRect(getTextureRect(GATE_RECT_NAME));
+		gate->setPosition((float)x, (float)y);
 
 		// Add the gate to the list of all gates
 		gates.emplace_back(std::move(gate));
@@ -473,7 +508,8 @@ void LevelController::generateGates(std::mt19937& gen)
 		if (found != breakableObstaclesPositions.end())
 		{
 			// The gate is hidden under a brick
-			gates.push_back({ sf::Vector2i(x, y), true, &keys[0] });
+			std::shared_ptr<Gate> hiddenGate = std::make_shared<Gate>(sf::Vector2i(x, y), true, getKeys().empty() ? nullptr : getKeys().front());
+			gates.push_back(hiddenGate);
 
 			it = breakableObstaclesPositions.erase(it);
 		}
@@ -510,26 +546,28 @@ void LevelController::generateKeys(std::mt19937& gen)
 			});
 
 		// Create a new key at the current position
-		Key key({ x, y });
+		std::shared_ptr<Key> key = std::make_shared<Key>(sf::Vector2i(x, y));
 
 		// Load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
 		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
 		// Define, load, assign and set the specific texture and set the position of the key in the game world
-		key.setTexture(*m_atlasTexture);
-		key.setTextureRect(getTextureRect(KEY_RECT_NAME));
-		key.setPosition((float)x, (float)y);
+		key->setTexture(*m_atlasTexture);
+		key->setTextureRect(getTextureRect(KEY_RECT_NAME));
+		key->setPosition((float)x, (float)y);
 
 		// Add the gate to the list of all keys
-		keys.emplace_back(std::move(key));
+		keys.emplace_back(key);
 
 		if (found != breakableObstaclesPositions.end())
 		{
 			// The key is hidden under a brick
-			keys.push_back({ sf::Vector2i(x, y) });
-
 			it = breakableObstaclesPositions.erase(it);
+		}
+		else 
+		{
+			++it;
 		}
 	}
 }
@@ -560,52 +598,56 @@ void LevelController::generateBoosters(std::mt19937& gen)
 				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
 			});
 
-		Booster booster(BoosterType::Speed);
+		std::shared_ptr<Booster> booster = std::make_shared<Booster>(BoosterType::Speed);
 
 		// Load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
 		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
 		// Define, load, assign and set the specific texture and set the position of the booster in the game world
-		booster.setTexture(*m_atlasTexture);
-		booster.setTextureRect(getTextureRect(SPEED_BOOSTER_RECT_NAME));
-		booster.setPosition((float)x, (float)y);
+		booster->setTexture(*m_atlasTexture);
+		booster->setTextureRect(getTextureRect(SPEED_BOOSTER_RECT_NAME));
+		booster->setPosition((float)x, (float)y);
 
 		// Add the booster to the list of all gates
-		boosters.emplace_back(std::move(booster));
+		boosters.emplace_back(booster);
 
 		if (found != breakableObstaclesPositions.end())
 		{
 			// The booster is hidden under a brick
 			 it = breakableObstaclesPositions.erase(it);
 			
-			boosters.push_back(BoosterType::Speed);
+			//boosters.push_back(BoosterType::Speed);
+		}
+		else
+		{
+			++it;
 		}
 	}
 }
 
 // Getter methods
-std::vector<Obstacle>& LevelGenerator::getObstacles()
+std::list<std::shared_ptr<Obstacle>>& LevelController::getObstacles()
 {
 	return obstacles;
 }
 
-std::vector<Enemy>& LevelController::getEnemies()
+std::list<std::shared_ptr<Enemy>>& LevelController::getEnemies()
 {
 	return enemies;
 }
 
-const std::vector<Gate>& LevelController::getGates() const
+std::list<std::shared_ptr<Gate>>& LevelController::getGates()
 {
 	return gates;
 }
 
-const std::vector<Booster>& LevelController::getBoosters() const
+std::list<std::shared_ptr<Booster>>& LevelController::getBoosters()
 {
 	return boosters;
 }
 
-const std::vector<Key>& LevelController::getKeys() const
+std::list<std::shared_ptr<Key>>& LevelController::getKeys()
 {
 	return keys;
 }

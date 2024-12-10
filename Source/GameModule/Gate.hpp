@@ -7,14 +7,14 @@
 class Gate : public sf::Sprite
 {
 public:
-	Gate(const sf::Vector2i& position, bool isLocked = true, Key* key = nullptr);
+	Gate(const sf::Vector2i& position, bool isLocked = true, std::shared_ptr<Key> key = nullptr);
 
 	sf::Vector2i getGatePosition() const;
 	bool isLocked() const;
-	void unlock(Key* key);
+	void unlock(std::shared_ptr<Key> key);
 
 private:
 	sf::Vector2i gatePosition;
 	bool locked = true;
-	Key* associatedKey;
+	std::shared_ptr<Key> associatedKey;
 };
