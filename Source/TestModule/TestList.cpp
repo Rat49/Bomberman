@@ -20,32 +20,39 @@
 #include "TestModule/SoundSystemTest.hpp"
 #include "TestModule/LevelGeneratorTest.hpp"
 #include "TestModule/UIProgressBarTest.hpp"
+#include "TestModule/SaveSystemTest.hpp"
+
+#include "TestRegisty.hpp"
+
 
 #ifndef FINAL
 
-void TestModule::CreateAllTests()
+bool TestRegisty::initialize()
 {
 	// add your tests based on TestBase class here using this preset
-	// Modules::Tests->addTest(std::make_shared<your-test-type>());
+	// isEverythingInitialized &= registerTest<YourTest>("YourTest");
 	// ----------------------------------------------------------------
-	Modules::Tests->addTest(std::make_shared<SampleTest>());
-	Modules::Tests->addTest(std::make_shared<WindowClosingTest>());
-	Modules::Tests->addTest(std::make_shared<ConfigSystemTest>());
-	Modules::Tests->addTest(std::make_shared<InputModuleTest>());
-	Modules::Tests->addTest(std::make_shared<AssetManagerTest>());
-	Modules::Tests->addTest(std::make_shared<TestAI>());
-	Modules::Tests->addTest(std::make_shared<CollisionModuleTest>());
-	Modules::Tests->addTest(std::make_shared<NavigationModuleTest>());
-	Modules::Tests->addTest(std::make_shared<SpriteModuleTest>());
-	Modules::Tests->addTest(std::make_shared<UILabelTest>());
-	Modules::Tests->addTest(std::make_shared<UIButtonTest>());
-	Modules::Tests->addTest(std::make_shared<PlayerTest>());
-	Modules::Tests->addTest(std::make_shared<LevelHandlingModuleTest>());
-	Modules::Tests->addTest(std::make_shared<SoundSystemTest>());
-	Modules::Tests->addTest(std::make_shared<UIInputFieldTest>());
-	Modules::Tests->addTest(std::make_shared<UICheckboxTest>());
-	Modules::Tests->addTest(std::make_shared<LevelGeneratorTest>());
-	Modules::Tests->addTest(std::make_shared<UIProgressBarTest>());
+	bool isEverythingInitialized = true;
+	isEverythingInitialized &= registerTest<SampleTest>("SampleTest");
+	isEverythingInitialized &= registerTest<WindowClosingTest>("WindowClosingTest");
+	isEverythingInitialized &= registerTest<ConfigSystemTest>("ConfigSystemTest");
+	isEverythingInitialized &= registerTest<InputModuleTest>("InputModuleTest");
+	isEverythingInitialized &= registerTest<TestAI>("TestAI");
+	isEverythingInitialized &= registerTest<CollisionModuleTest>("CollisionModuleTest");
+	isEverythingInitialized &= registerTest<NavigationModuleTest>("NavigationModuleTest");
+	isEverythingInitialized &= registerTest<SpriteModuleTest>("SpriteModuleTest");
+	isEverythingInitialized &= registerTest<UILabelTest>("UILabelTest");
+	isEverythingInitialized &= registerTest<UIButtonTest>("UIButtonTest");
+	isEverythingInitialized &= registerTest<PlayerTest>("PlayerTest");
+	isEverythingInitialized &= registerTest<LevelHandlingModuleTest>("LevelHandlingModuleTest");
+	isEverythingInitialized &= registerTest<SoundSystemTest>("SoundSystemTest");
+	isEverythingInitialized &= registerTest<UIInputFieldTest>("UIInputFieldTest");
+	isEverythingInitialized &= registerTest<AssetManagerTest>("AssetManagerTest");
+	isEverythingInitialized &= registerTest <LevelGeneratorTest>("LevelGeneratorTest");
+	isEverythingInitialized &= registerTest<UIProgressBarTest>("UIProgressBarTest");
+	isEverythingInitialized &= registerTest<SaveSystemTest>("SaveSystemTest");
+	isEverythingInitialized &= registerTest<UICheckboxTest>("UICheckboxTest");
+	return isEverythingInitialized;
 }
 
 #endif

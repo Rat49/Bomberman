@@ -88,7 +88,7 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	levelGenerator = std::make_unique<LevelGenerator>();
+	levelGenerator = std::make_unique<LevelController>();
 
 	int levelWidth = 13;
 	int levelHeight = 31;
@@ -176,7 +176,16 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
-			levelGenerator->draw(window);
+			levelGenerator->update(window);
+
+			//for testing purposes can be removed whenever
+			for(auto& enemy: levelGenerator->getEnemies())
+			{
+				if (enemy.getPosition().x < player.getCurrentPosition().x)
+				{
+					enemy.initializeDeath();
+				}
+			}
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 
