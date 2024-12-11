@@ -13,20 +13,23 @@ void GameStats::updateLevelStats()
 {
 	if (m_enemiesSize > m_enemies.size())
 	{
-		m_points += ((m_enemiesSize - static_cast<int32_t>(m_enemies.size())) * 10);
-		m_enemiesSize = static_cast<int32_t>(m_enemies.size());
+		int32_t currentEnemiesSize = static_cast<int32_t>(m_enemies.size());
+		m_points += ((m_enemiesSize  - currentEnemiesSize) * 10);
+		m_enemiesSize = currentEnemiesSize;
 	}
 
 	if (m_boostersSize > m_boosters.size())
 	{
-		m_points += ((m_boostersSize - static_cast<int32_t>(m_boosters.size())) * 5);
-		m_boostersSize = static_cast<int32_t>(m_boosters.size());
+		int32_t currentBoostersSize = static_cast<int32_t>(m_boosters.size());
+		m_points += ((m_boostersSize - currentBoostersSize) * 5);
+		m_boostersSize = currentBoostersSize;
 	}
 
 	if (m_obstaclesSize > m_obstacles.size())
 	{
-			m_points += ((m_obstaclesSize - static_cast<int32_t>(m_obstacles.size())) * 3);
-			m_obstaclesSize = static_cast<int32_t>(m_obstacles.size());
+		int32_t currentObstaclesSize = static_cast<int32_t>(m_obstacles.size());
+		m_points += ((m_obstaclesSize - currentObstaclesSize) * 3);
+		m_obstaclesSize = currentObstaclesSize;
 	}
 }
 
