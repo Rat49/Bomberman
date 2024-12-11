@@ -5,10 +5,6 @@ UISlider::UISlider(const sf::Vector2f& size, float minValue, float maxValue) : m
 	setSize(size);
 	bar.setFillColor(sf::Color::White);
 	knob.setFillColor(sf::Color::Black);
-
-	// Knob radius
-	knob.setRadius(10.f);
-	knob.setOrigin(knob.getRadius(), knob.getRadius());
 }
 
 void UISlider::setValue(float value)
@@ -21,21 +17,27 @@ void UISlider::setValue(float value)
 	{
 		onValueChanged(currentValue);
 	}
-	LOG("Knob position: $ $", knob.getPosition().x, knob.getPosition().y);
 }
 
 void UISlider::setPosition(const sf::Vector2f& newPosition)
 {
+	UIElement::setPosition(newPosition);
 	bar.setPosition(newPosition);
 	setValue(currentValue);
 }
 
 void UISlider::setSize(const sf::Vector2f& size)
 {
+	UIElement::setSize(size);
 	bar.setSize(size);
 
 	// Align vertically
 	bar.setOrigin(0.f, size.y / 2.f);
+
+	// Knob radius -> smaller than bar (so 0.8f) and bar has height of (size.y / 2.f)
+	knob.setRadius(size.y * 0.8f / 2.f);
+	knob.setOrigin(knob.getRadius(), knob.getRadius());
+
 	setValue(currentValue);
 }
 
@@ -65,6 +67,9 @@ bool UISlider::handleEvent(const sf::Event& event)
 	}
 	else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
 	{
+		if (isDragging && onReleased) {
+			onReleased();
+		}
 		isDragging = false;
 	}
 	else if (event.type == sf::Event::MouseMoved && isDragging)
@@ -81,5 +86,12 @@ void UISlider::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(bar, states);
 	target.draw(knob, states);
+}
+
+void UISlider::handleResize(const sf::Vector2f& scale) {
+
+	setSize(sf::Vector2f((getSize().x) * scale.x, (getSize().y) * scale.y));
+
+	setPosition(sf::Vector2f((getPosition().x) * scale.x, (getPosition().y) * scale.y));
 }
 

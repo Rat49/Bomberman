@@ -26,6 +26,11 @@ public:
 
 	bool getIsPaused() const { return isPaused; }
 
+	// Method for handling resize event (changing resolution, mode)
+	void handleResize(float x, float y);
+
+	const std::string& getGameTitle() const { return gameTitle; }
+
 private:
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
 
@@ -33,7 +38,6 @@ private:
 
 	void updateBoosters();
 
-private:
 	sf::RenderWindow window;
 
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
@@ -57,5 +61,7 @@ private:
 	 
 	LevelId currentLevel;
 
-	bool resized = false;
+	// RenderWindow doesn't have method getTitle
+	// We need this for creating new windows (changing resolution)
+	std::string gameTitle;
 };

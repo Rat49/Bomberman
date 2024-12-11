@@ -62,6 +62,12 @@ void Animation::Update(float deltaTime)
 	}
 }
 
+void Animation::handleResize(const sf::Vector2f& scale)
+{
+	setPosition(sf::Vector2f(getPosition().x * scale.x, getPosition().y * scale.y));
+	setScale(sf::Vector2f(getScale().x * scale.x, getScale().y * scale.y));
+}
+
 //play animation
 void Animation::Play()
 {

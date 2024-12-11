@@ -63,14 +63,14 @@ bool GameModule::initialize()
 
 	int32_t width = windowSection.getValue(WIDTH).getInt32();
 	int32_t height = windowSection.getValue(HEIGHT).getInt32();
-	const std::string& title = windowSection.getValue(TITLE).getString();
+	gameTitle = windowSection.getValue(TITLE).getString();
 	const std::string& font = windowSection.getValue(FONT).getString();
 	gameTime = windowSection.getValue(GAME_TIME).getInt32();
 	currentStage = windowSection.getValue(STAGE).getInt32();
 
 	// Creating Window and HUD
-	window.create(sf::VideoMode(width, height), title);
-
+	window.create(sf::VideoMode(width, height), gameTitle);
+	Modules::UI->setViewportSize((float) width, (float) height);
 	// Creating all screens
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
@@ -115,8 +115,6 @@ void GameModule::run()
     Time::time_point currentTime;
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
-	Modules::Sounds->addMusic(1, "Game/Sounds/bgSound.wav");
-	Modules::Sounds->playMusic(1);
 
     while (window.isOpen())
     {
@@ -135,7 +133,8 @@ void GameModule::run()
 				break;
 
 			case sf::Event::Resized: {
-				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
+				window.setView(sf::View(sf::FloatRect(0.f, 0.f, (float) window.getSize().x, (float) window.getSize().y )));
+				Modules::UI->setViewportSize((float)(window.getSize().x), (float)(window.getSize().y));
 				for (auto& screen : screens) {
 					screen.second->handleEvent(event);
 				}
@@ -144,6 +143,8 @@ void GameModule::run()
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
+			case sf::Event::TextEntered:
+			case sf::Event::KeyReleased:
 				if (isPaused && currentScreen != Screens::OPTIONS)
 					screens[Screens::PAUSE_MENU]->handleEvent(event);
 				else 
@@ -196,6 +197,19 @@ void GameModule::setCurrentScreen(const Screens& newScreen)
 {
 	currentScreen = newScreen;
 	timeCounter = 0.0f;
+}
+
+void GameModule::handleResize(float x, float y)
+{
+	window.setView(sf::View(sf::FloatRect(0.f,0.f, x, y)));
+	Modules::UI->setViewportSize(x, y);
+
+	// The only thing handleEvent needs is event type to be Resized
+	sf::Event resizeEvent;
+	resizeEvent.type = sf::Event::Resized;
+	for (auto& screen : screens) {
+		screen.second->handleEvent(resizeEvent);
+	}
 }
 
 void GameModule::checkTimeCounter()

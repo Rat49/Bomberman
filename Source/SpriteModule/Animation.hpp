@@ -24,6 +24,9 @@ public:
 
 	//function for updating animation
 	void Update(float deltaTime);
+
+	// For handling resize of screen (changing position, and size of sprite)
+	void handleResize(const sf::Vector2f& scale);
 	
 private:
 	

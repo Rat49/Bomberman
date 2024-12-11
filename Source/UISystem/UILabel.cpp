@@ -64,6 +64,7 @@ void UILabel::setFont(const sf::Font& font)
 void UILabel::setCharacterSize(unsigned int newSize)
 {
 	labelText.setCharacterSize(newSize);
+	shadowText.setCharacterSize(newSize);
 }
 
 // Returns the current text
@@ -95,5 +96,14 @@ bool UILabel::handleEvent(const sf::Event& event)
 	}
 	// Returns false to allow other elements to process the event
 	return false;
+}
+
+void UILabel::handleResize(const sf::Vector2f& scale)
+{
+	setCharacterSize(static_cast<unsigned int>(labelText.getCharacterSize() * scale.x));
+
+	setSize(sf::Vector2f((getSize().x) * scale.x, (getSize().y) * scale.y));
+
+	setPosition(sf::Vector2f((getPosition().x) * scale.x, (getPosition().y) * scale.y));
 }
 
