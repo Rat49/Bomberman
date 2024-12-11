@@ -54,7 +54,7 @@ private:
 
 	PlayerCharacter player;
 
-	std::unique_ptr<LevelController> levelGenerator;
+	std::shared_ptr<LevelController> levelGenerator;
 	 
 	LevelId currentLevel;
 

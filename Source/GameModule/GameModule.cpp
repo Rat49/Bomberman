@@ -83,7 +83,7 @@ bool GameModule::initialize()
 		return false;
 	}
 
-	levelGenerator = std::make_unique<LevelController>();
+	levelGenerator = std::make_shared<LevelController>();
 
 	int levelWidth = 13;
 	int levelHeight = 31;
@@ -98,7 +98,9 @@ bool GameModule::initialize()
 		LOG("Failed to initialize LevelGenerator.");
 	}
 
-	gameStats = std::make_unique<GameStats>(levelGenerator->getEnemies(), levelGenerator->getBoosters(), levelGenerator->getObstacles(), &gameTime);
+	gameStats = std::make_unique<GameStats>();
+
+	gameStats->initialize(levelGenerator, &gameTime);
 
 	return true;
 }
@@ -158,7 +160,7 @@ void GameModule::run()
         Modules::Tests->update(deltaTime, &window);
 #endif
 		updateBoosters();
-		gameStats->updateLevelStats();
+		//gameStats->updateLevelStats();
 		window.clear(screens[currentScreen]->getBackgroundColor());
 		if(currentScreen == Screens::LEVEL) 
 		{
@@ -173,26 +175,6 @@ void GameModule::run()
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
 			levelGenerator->update(window);
-
-			//game stats test begin
-			//for testing purposes can be removed whenever
-			int32_t points = gameStats->getPoints();
-			for(auto& enemy: levelGenerator->getEnemies())
-			{
-				if (enemy.getPosition().x < player.getCurrentPosition().x)
-				{
-					enemy.initializeDeath();
-				}
-			}
-
-			if (levelGenerator->getEnemies().empty() && points == 50)
-			{
-				gameStats->levelChange();
-			}
-
-			std::static_pointer_cast<HUD>(screens[Screens::LEVEL])->setScore(std::to_string(points));
-			//game stats test end
-
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 

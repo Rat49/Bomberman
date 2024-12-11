@@ -1,5 +1,7 @@
 #include "GameModule/Booster.hpp"
 #include <iostream>
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 
 Booster::Booster(BoosterType type) : type(type) {}
 
@@ -38,4 +40,9 @@ void Booster::applyEffect()
 		std::cout << "Unknown boost!" << std::endl;
 		break;
 	}
+}
+
+void Booster::setCallbackID(EventID boosterPickupID)
+{
+	m_boosterPickupID = boosterPickupID;
 }

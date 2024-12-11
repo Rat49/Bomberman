@@ -4,6 +4,7 @@
 #include <vector>
 #include "GameModule/Obstacle.hpp"
 #include "SpriteModule/Animation.hpp"
+#include "EventSystem/EventTypes.hpp"
 
 enum class EnemyType
 {
@@ -29,6 +30,8 @@ public:
 
 	bool isDead() const;
 
+	void setCallbackID(EventID enemyDeathID);
+
 private:
 	EnemyType enemyType;
 	sf::Vector2f position;
@@ -40,4 +43,6 @@ private:
 	int32_t m_rightAnimationId;
 
 	bool isEnemyDead = false;
+
+	EventID m_enemyDeathID = -1;
 };

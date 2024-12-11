@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "EventSystem/EventTypes.hpp"
 
 enum class BoosterType
 {
@@ -24,7 +25,10 @@ public:
 	// A function that applies a booster effect
 	void applyEffect();
 
+	void setCallbackID(EventID boosterPickupID);
+
 private:
 	BoosterType type;
 	sf::Vector2i boosterPosition;
+	EventID m_boosterPickupID = -1;
 };

@@ -2,8 +2,13 @@
 #include <random>
 #include <set>
 #include <utility>
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 
-Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate) {}
+Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate) 
+{
+	m_obstacleDestructionID = Modules::Events->registerEvent();
+}
 
 sf::Vector2i Obstacle::getPosition() const
 {
@@ -27,5 +32,10 @@ void Obstacle::setHasKeyOrGate(bool value)
 
 bool Obstacle::isValidUnbreakablePosition(const sf::Vector2i& position)
 {
-	return position.x % 2 == 0 && position.y % 2 == 0;;
+	return position.x % 2 == 0 && position.y % 2 == 0;
+}
+
+void Obstacle::setCallbackID(EventID obstacleDestructionID)
+{
+	m_obstacleDestructionID = obstacleDestructionID;
 }

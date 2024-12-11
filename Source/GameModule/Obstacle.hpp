@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 
 enum class ObstacleType
 {
@@ -25,10 +26,14 @@ public:
 
 	static bool isValidUnbreakablePosition(const sf::Vector2i& position);
 
+	void setCallbackID(EventID m_obstacleDestructionID);
+
 private:
 	ObstacleType obstacleType;
 	sf::Vector2i obstaclePosition;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
+
+	EventID m_obstacleDestructionID = -1;
 };

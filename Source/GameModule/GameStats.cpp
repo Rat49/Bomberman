@@ -1,44 +1,69 @@
 #include "GameStats.hpp"
-#include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 
-GameStats::GameStats(const std::vector<Enemy>& enemies, const std::vector<Booster>& boosters, const std::vector<Obstacle>& obstacles, int32_t* time)
-	: m_enemies(enemies), m_boosters(boosters), m_obstacles(obstacles), m_time(time)
+void GameStats::initialize(std::shared_ptr<LevelController>& levelController, int32_t* time)
 {
-	m_enemiesSize = static_cast<int32_t>(m_enemies.size());
-	m_boostersSize = static_cast<int32_t>(m_boosters.size());
-	m_obstaclesSize = static_cast<int32_t>(m_obstacles.size());
+	m_enemieDeathID = Modules::Events->registerEvent();
+	m_obstacleDestructionID = Modules::Events->registerEvent();
+	m_boosterCollectID = Modules::Events->registerEvent();
+
+	for (auto& enemie : levelController->getEnemies())
+	{
+		enemie.setCallbackID(m_enemieDeathID);
+	}
+
+	for (auto& obstacle : levelController->getObstacles())
+	{
+		obstacle.setCallbackID(m_obstacleDestructionID);
+	}
+
+	for (auto& booster : levelController->getBoosters())
+	{
+		booster.setCallbackID(m_boosterCollectID);
+	}
+
+	Modules::Events->subscribe(m_enemieDeathID, std::bind(&GameStats::onEnemieDeath, this));
+	Modules::Events->subscribe(m_obstacleDestructionID, std::bind(&GameStats::onObstacleDestroyed, this));
+	Modules::Events->subscribe(m_boosterCollectID, std::bind(&GameStats::onBoosterCollected, this));
+
+	m_time = time;
+
+	m_levelController = levelController;
 }
 
-void GameStats::updateLevelStats()
+void GameStats::onEnemieDeath()
 {
-	if (m_enemiesSize > m_enemies.size())
-	{
-		int32_t currentEnemiesSize = static_cast<int32_t>(m_enemies.size());
-		m_points += ((m_enemiesSize  - currentEnemiesSize) * 10);
-		m_enemiesSize = currentEnemiesSize;
-	}
+	m_points += 10;
+}
 
-	if (m_boostersSize > m_boosters.size())
-	{
-		int32_t currentBoostersSize = static_cast<int32_t>(m_boosters.size());
-		m_points += ((m_boostersSize - currentBoostersSize) * 5);
-		m_boostersSize = currentBoostersSize;
-	}
-
-	if (m_obstaclesSize > m_obstacles.size())
-	{
-		int32_t currentObstaclesSize = static_cast<int32_t>(m_obstacles.size());
-		m_points += ((m_obstaclesSize - currentObstaclesSize) * 3);
-		m_obstaclesSize = currentObstaclesSize;
-	}
+void GameStats::onBoosterCollected()
+{
+	m_points += 5;
+}
+void GameStats::onObstacleDestroyed()
+{
+	m_points += 3;
 }
 
 void GameStats::levelChange()
 {
-	m_enemiesSize = static_cast<int32_t>(m_enemies.size());
-	m_boostersSize = static_cast<int32_t>(m_boosters.size());
-	m_obstaclesSize = static_cast<int32_t>(m_obstacles.size());
-	if (*m_time > 0) 
+	for (auto& enemie : m_levelController->getEnemies())
+	{
+		enemie.setCallbackID(m_enemieDeathID);
+	}
+
+	for (auto& obstacle : m_levelController->getObstacles())
+	{
+		obstacle.setCallbackID(m_obstacleDestructionID);
+	}
+
+	for (auto& booster : m_levelController->getBoosters())
+	{
+		booster.setCallbackID(m_boosterCollectID);
+	}
+
+	if (*m_time > 0)
 	{
 		m_points += static_cast<int32_t>(*m_time);
 	}
