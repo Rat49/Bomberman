@@ -213,8 +213,7 @@ void InputModule::update(float, sf::Window*)
 		{
 		case EActionType::ButtonAction:
 			action.second.State.buttonState = sf::Keyboard::isKeyPressed(action.second.Binding.button.Key);
-			shouldEmit = shouldEmit && action.second.State.buttonState && !action.second.Binding.button.isBeingPressed;
-			action.second.Binding.button.isBeingPressed = action.second.State.buttonState;
+            shouldEmit = shouldEmit && action.second.State.buttonState;
 			params = &action.second.State.buttonState;
 			break;
 
