@@ -26,11 +26,11 @@ public:
 	
 	// Getter methods for private members
 	//std::vector<Obstacle>& getObstacles();
-	std::list<std::shared_ptr<Obstacle>>& getObstacles();
-	std::list<std::shared_ptr<Enemy>>& getEnemies();
-	std::list<std::shared_ptr<Gate>>& getGates();
-	std::list<std::shared_ptr<Key>>& getKeys();
-	std::list<std::shared_ptr<Booster>>& getBoosters();
+    std::vector<std::shared_ptr<Obstacle>>& getObstacles();
+    std::vector<std::shared_ptr<Enemy>>&    getEnemies();
+    std::vector<std::shared_ptr<Gate>>&     getGates();
+    std::vector<std::shared_ptr<Key>>&      getKeys();
+    std::vector<std::shared_ptr<Booster>>&  getBoosters();
 
 	template <typename ObjectType>
 	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
@@ -50,11 +50,11 @@ private:
 	int32_t maxNumOfPatrolPoints = 6;
 
 	//std::vector<Obstacle> obstacles;
-	std::list<std::shared_ptr<Obstacle>> obstacles;
-	std::list<std::shared_ptr<Enemy>> enemies;
-	std::list<std::shared_ptr<Gate>> gates;
-	std::list<std::shared_ptr<Key>> keys;
-	std::list<std::shared_ptr<Booster>> boosters;
+	std::vector<std::shared_ptr<Obstacle>> obstacles;
+    std::vector<std::shared_ptr<Enemy>>    enemies;
+    std::vector<std::shared_ptr<Gate>>     gates;
+    std::vector<std::shared_ptr<Key>>      keys;
+    std::vector<std::shared_ptr<Booster>>  boosters;
 
 	std::vector<sf::Vector2f> breakableObstaclesPositions;
 	std::vector<sf::Vector2f> freePositions;

@@ -627,27 +627,27 @@ void LevelController::generateBoosters(std::mt19937& gen)
 }
 
 // Getter methods
-std::list<std::shared_ptr<Obstacle>>& LevelController::getObstacles()
+std::vector<std::shared_ptr<Obstacle>>& LevelController::getObstacles()
 {
 	return obstacles;
 }
 
-std::list<std::shared_ptr<Enemy>>& LevelController::getEnemies()
+std::vector<std::shared_ptr<Enemy>>& LevelController::getEnemies()
 {
 	return enemies;
 }
 
-std::list<std::shared_ptr<Gate>>& LevelController::getGates()
+std::vector<std::shared_ptr<Gate>>& LevelController::getGates()
 {
 	return gates;
 }
 
-std::list<std::shared_ptr<Booster>>& LevelController::getBoosters()
+std::vector<std::shared_ptr<Booster>>& LevelController::getBoosters()
 {
 	return boosters;
 }
 
-std::list<std::shared_ptr<Key>>& LevelController::getKeys()
+std::vector<std::shared_ptr<Key>>& LevelController::getKeys()
 {
 	return keys;
 }

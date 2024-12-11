@@ -204,7 +204,7 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 		if (hitObstacle)
 		{
 			canChangeObstacleAnim = true;
-			obstaclesHit[hitObstacle] = directionAndPosition;
+            obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
 			hitObstacle->isExploded = true;
 		}
 	}

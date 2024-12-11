@@ -67,7 +67,7 @@ private:
 	bool animExploded = false;
 	bool animExplosionStart = false;
 
-	std::unordered_map<Obstacle*, sf::Vector2f> obstaclesHit;
+    std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	Obstacle* hitObstacle;
 	bool canChangeObstacleAnim = false;
 
