@@ -18,6 +18,7 @@ bool PlayerCharacter::init()
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+    invincibilityDuration = playerConfig.getSection("InvincibeBooster").getValue("invincibilityDuration").getFloat();
 
 	activeBombs.reserve(maxBombs);
 
@@ -195,10 +196,12 @@ void PlayerCharacter::updateInvincibility()
 	if (isInvincible)
 	{
 		auto now = std::chrono::high_resolution_clock::now();
-		if (now - invincibilityStartTime >= invincibilityDuration)
-		{
-			isInvincible = false;
-		}
+        auto duration = std::chrono::duration<float>(invincibilityDuration);
+
+        if (now - invincibilityStartTime >= duration)
+        {
+            isInvincible = false;
+        }
 	}
 }
 

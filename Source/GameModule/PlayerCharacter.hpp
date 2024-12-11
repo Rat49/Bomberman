@@ -63,5 +63,5 @@ private:
 
 	bool isInvincible = false;
 	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
-	const std::chrono::seconds invincibilityDuration = std::chrono::seconds(30);
+    float invincibilityDuration;
 };
