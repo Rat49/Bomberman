@@ -19,6 +19,8 @@ class Obstacle : public sf::Sprite
 public:
 	Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate = false);
 
+	virtual ~Obstacle() = default;
+
 	sf::Vector2f getPosition() const;
 
 	ObstacleType getType() const;
@@ -42,10 +44,12 @@ public:
 private:
 	ObstacleType obstacleType;
 	sf::Vector2f obstaclePosition;
-	std::unique_ptr<CollisionComponent> collisionBox;
+
 	int32_t currentAnimation = -1;
 	int32_t idleBreakableObstacleAnimID;
 	int32_t obstacleDestructionAnimID;
+
+	std::unique_ptr<CollisionComponent> collisionBox;
 
 	CollisionRectangle collision;
 

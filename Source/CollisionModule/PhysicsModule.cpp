@@ -38,6 +38,24 @@ const CollisionComponent* PhysicsModule::rayCast(const sf::Vector2f& origin,
 	return candidate;
 }
 
+std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> PhysicsModule::rayCastAll(
+	const sf::Vector2f& origin,
+	const sf::Vector2f& direction,
+	float maxDistance)
+{
+	std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> hitObjects;
+
+	for (auto& iter : physicsObjects)
+	{
+		sf::Vector2f hitPoint;
+		if (rayIntersectsRectangle(*iter.second, origin, direction, maxDistance, hitPoint)) {
+			hitObjects.emplace_back(iter.second, hitPoint);
+		}
+	}
+
+	return hitObjects;
+}
+
 // Checks if ray intersects with rectangle
 bool PhysicsModule::rayIntersectsRectangle(const CollisionRectangle& rectangle, 
 										const sf::Vector2f& origin,

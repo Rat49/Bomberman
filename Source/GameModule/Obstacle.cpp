@@ -22,7 +22,7 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	collisionBox->setParent(this);
 
-	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(52.5f, 52.5f));
+	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(60.0f, 60.0f));
 }
 
 void Obstacle::changeAnim(sf::Vector2f obsPos)

@@ -4,14 +4,13 @@
 
 Bomb::Bomb()
 {
-	//collision.setParent(static_cast<void*>(this));
+	collision.setParent(static_cast<void*>(this));
 
-	//collisionBox = std::make_unique<CollisionComponent>();
+	collisionBox = std::make_unique<CollisionComponent>();
 
-	//collisionBox->setParent(this);
+	collisionBox->setParent(this);
 
-	//collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize -8.0f));
-
+	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize - 8.0f));
 }
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
@@ -64,7 +63,7 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 // Bomb update
 void Bomb::update(float deltaTime)
 {
-	if (exploded)  //return;
+	if (exploded)
 	{
 		explosionTimer -= deltaTime;
 		if (explosionTimer <= 0.0f)
@@ -86,9 +85,16 @@ void Bomb::draw(sf::RenderWindow& window)
 	if (!Modules::Sprite->getAnimation(bombIdleID)->isPlaying())
 		exploded = true;
 
-	if (isObstacle)
+	if (canChangeObstacleAnim)
 	{
-		parentObstacle->changeAnim(obsPos);
+		for (auto& [obstacle, pos] : obstaclesHit)
+		{
+			if (obstacle)
+			{
+				obstacle->changeAnim(pos);
+			}
+		}
+		canChangeObstacleAnim = false;
 	}
 
 	// Draws a bomb if it hasn't exploded
@@ -150,7 +156,6 @@ void Bomb::explode()
 {
 	if (animExplosionStart) return;
 
-	//exploded = true;
 	auto animation = Modules::Sprite->getAnimation(bombIdleID);
 	animation->Stop();
 
@@ -180,8 +185,6 @@ void Bomb::explode()
 	}
 }
 
-
-
 // Method about what will happen when there is an explosion
 void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
@@ -191,22 +194,19 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	sf::Vector2f alignPos = alignToGrid(position);
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint);
+	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
 
-	if (hitObject)
+	for (const auto& [obj, pos] : hitResults)
 	{
-		parentObstacle = static_cast<Obstacle*>(hitObject->getParent());
-		if (parentObstacle)
+		LOG("Collision detected! Position: $ $", pos.x, pos.y);
+
+		hitObstacle = static_cast<Obstacle*>(obj->getParent());
+		if (hitObstacle)
 		{
-			obsPos = directionAndPosition;
-			isObstacle = true;
-			parentObstacle->isExploded = true;
+			canChangeObstacleAnim = true;
+			obstaclesHit[hitObstacle] = directionAndPosition;
+			hitObstacle->isExploded = true;
 		}
-		LOG("Collision detected! Position: $ $", directionAndPosition.x, directionAndPosition.y);
-	}
-	else 
-	{
-		LOG("NO collision detection! Position: $ $", directionAndPosition.x, directionAndPosition.y);
 	}
 
 	// Activation of direction animation
@@ -215,7 +215,7 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	if (auto animation = Modules::Sprite->getAnimation(animationID))
 	{
 		animation->setPosition(directionAndPosition);
- 		animation->Play();
+		animation->Play();
 	}
 }
 

@@ -30,9 +30,9 @@ public:
 
 	std::shared_ptr<Animation> getCurrentAnimation() const;
 
-	//CollisionComponent& getCollisionBox() const { return *collisionBox; }
+	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	//CollisionRectangle& getCollision() { return collision; }
+	CollisionRectangle& getCollision() { return collision; }
 
 private:
 	int32_t currentAnimation = -1;
@@ -44,26 +44,32 @@ private:
 	int32_t bombRightID;
 	int32_t bombCenterID;
 
-	//std::unique_ptr<CollisionComponent> collisionBox;
+	std::unique_ptr<CollisionComponent> collisionBox;
 
-	//CollisionRectangle collision;
+	CollisionRectangle collision;
 
 	float gridSize = 64.0f;
 
 	// Bomb position
 	sf::Vector2f position;
+
 	// Explosion radius
 	float explosionRadius;
+
 	// Bomb before explosion timer
 	float timer;
+
 	// Explosion timer
 	float explosionTimer = 1000000.0f;
+
 	// Did the bomb explode
 	bool exploded = false;
 	bool animExploded = false;
 	bool animExplosionStart = false;
-	// Graphic representation of a bomb
-	sf::CircleShape bombShape;
+
+	std::unordered_map<Obstacle*, sf::Vector2f> obstaclesHit;
+	Obstacle* hitObstacle;
+	bool canChangeObstacleAnim = false;
 
 	// Method about what will happen when there is an explosion
 	void explosionEffect(const sf::Vector2f& direction);
@@ -73,9 +79,4 @@ private:
 	sf::Vector2f alignToGrid(const sf::Vector2f& newPosition);
 
 	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
-
-	Obstacle* parentObstacle;
-	std::vector<const CollisionComponent*> hits;
-	bool isObstacle = false;
-	sf::Vector2f obsPos;
 };
