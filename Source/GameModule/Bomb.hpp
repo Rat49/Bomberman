@@ -68,7 +68,6 @@ private:
 	bool animExplosionStart = false;
 
     std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
-	Obstacle* hitObstacle;
 	bool canChangeObstacleAnim = false;
 
 	// Method about what will happen when there is an explosion

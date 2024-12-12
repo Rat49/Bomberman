@@ -195,7 +195,7 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
 	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
-
+    Obstacle* hitObstacle;
 	for (const auto& [obj, pos] : hitResults)
 	{
 		LOG("Collision detected! Position: $ $", pos.x, pos.y);
