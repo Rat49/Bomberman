@@ -5,8 +5,10 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "GameModule/Obstacle.hpp"
+#include "CollisionModule/CollisionObject.hpp"
 
-class Bomb
+
+class Bomb : public CollisionObject
 {
 public:
 	Bomb();

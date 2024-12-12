@@ -10,11 +10,11 @@
 
 PlayerCharacter::PlayerCharacter()
 {
-	collisionBox = std::make_unique<CollisionComponent>();
+	/*collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setParent(this);
 
-	collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+	collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));*/
 }
 
 bool PlayerCharacter::init()

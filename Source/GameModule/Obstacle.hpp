@@ -4,6 +4,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "SpriteModule/Animation.hpp"
+#include "CollisionModule/CollisionObject.hpp"
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -14,7 +15,7 @@ enum class ObstacleType
 	Breakable
 };
 
-class Obstacle : public sf::Sprite
+class Obstacle : public sf::Sprite, public CollisionObject
 {
 public:
 	Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate = false);

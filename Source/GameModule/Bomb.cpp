@@ -4,11 +4,11 @@
 
 Bomb::Bomb()
 {
-	collision.setParent(static_cast<void*>(this));
+	collision.setObjectParent(this);
 
 	collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setParent(this);
+	collisionBox->setObjectParent(this);   // setParent(this);
 
 	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize - 8.0f));
 }
@@ -195,19 +195,26 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
 	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
+    
     Obstacle* hitObstacle;
-	for (const auto& [obj, pos] : hitResults)
-	{
-		LOG("Collision detected! Position: $ $", pos.x, pos.y);
 
-		hitObstacle = static_cast<Obstacle*>(obj->getParent());
-		if (hitObstacle)
-		{
-			canChangeObstacleAnim = true;
-            obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
-			hitObstacle->isExploded = true;
-		}
-	}
+    if (hitResults.size() > 0)
+    {
+        for (const auto& [obj, pos] : hitResults)
+        {
+            LOG("Collision detected! Position: $ $", pos.x, pos.y);
+
+            if (obj)
+            {
+                if (hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent()))
+                {
+                    canChangeObstacleAnim = true;
+                    obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
+                    hitObstacle->isExploded = true;
+                }
+            }
+        }
+    }
 
 	// Activation of direction animation
 	int32_t animationID = getExplosionAnimationID(direction);

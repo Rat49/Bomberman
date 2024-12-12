@@ -16,11 +16,11 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	isExploded = false;
 
-	collision.setParent(static_cast<void*>(this));
+	collision.setObjectParent(this);
 
 	collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setParent(this);
+	collisionBox->setObjectParent(this);
 
 	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(60.0f, 60.0f));
 }
