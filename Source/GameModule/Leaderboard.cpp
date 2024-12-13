@@ -14,6 +14,7 @@ namespace
 	const std::string NAME = "Name";
 	const std::string VALUE = "Value";
     const std::string FILE_NAME  = "leaderboardResults";
+    const int32_t numberOfPlayers = 5;   // number of players that are written on leader board screen
     }
 
 Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile) : UIScreen()
@@ -43,7 +44,7 @@ void Leaderboard::readLeaderboard()
 	Modules::Save->loadGameData(FILE_NAME, dataMap);
 
 	int32_t i = 1;
-    while (i <= 5)
+    while (i <= numberOfPlayers)
     {
         std::string playerName = PLAYER + std::to_string(i);
         std::string score      = playerName + VALUE;
@@ -92,7 +93,7 @@ void Leaderboard::addScore(int32_t newScore, const std::string& name)
             std::swap(results[i], newResult);
         
     }
-    if (results.size() < 5)
+    if (results.size() < numberOfPlayers)
         results.push_back(newResult);
 
     int32_t i = 0;

@@ -9,7 +9,6 @@
 
 namespace
 {
-const std::string MENU         = "MENU";
 const std::string SCORE        = "ScoreValue";
 const std::string INITIAL_TEXT = "Enter name";
 } // namespace
@@ -27,7 +26,7 @@ GameOver::GameOver(sf::RenderWindow* renderWindow, const std::string& screenFont
             button->onHover = [button]() { button->dropShadows(Colors::YELLOW, Colors::RED); };
             button->onClick = [button]() { button->dropShadows(Colors::RED, Colors::YELLOW); };
 
-            if (element.first == MENU)
+            if (element.first == Buttons::MENU)
             {
                 button->onRelease = [this]()
                 {

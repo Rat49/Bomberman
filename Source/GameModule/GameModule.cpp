@@ -245,7 +245,7 @@ void GameModule::checkTimeCounter()
 		}
         if (gameTime < 0)
         {
-			// Here should be a check if lives > 0, then if not -> game over screen
+			// Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
         }
 		break;
