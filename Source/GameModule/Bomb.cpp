@@ -8,7 +8,7 @@ Bomb::Bomb()
 
 	collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setObjectParent(this);   // setParent(this);
+	collisionBox->setObjectParent(this);
 
 	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize - 8.0f));
 }
@@ -73,10 +73,10 @@ void Bomb::update(float deltaTime)
 	}
 
 	timer -= deltaTime;
-	if (timer <= 0.0f)
-	{
-		explode();
-	}
+    if (timer < 0.0f && !animExplosionStart)
+    {
+        explode();
+    }
 }
 
 // Drawing a bomb
@@ -108,7 +108,6 @@ void Bomb::draw(sf::RenderWindow& window)
 	// Draws an explosion
 	else if(exploded)
 	{
-		animExplosionStart = true;
 
 		sf::Vector2f directions[] =
 		{
@@ -154,7 +153,10 @@ std::shared_ptr<Animation> Bomb::getCurrentAnimation() const
 // Explosion activation
 void Bomb::explode()
 {
-	if (animExplosionStart) return;
+    if (animExplosionStart)
+        return;
+
+	animExplosionStart = true;
 
 	auto animation = Modules::Sprite->getAnimation(bombIdleID);
 	animation->Stop();
@@ -198,15 +200,14 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
     
     Obstacle* hitObstacle;
 
-    if (hitResults.size() > 0)
+    if (!hitResults.empty())
     {
         for (const auto& [obj, pos] : hitResults)
         {
-            LOG("Collision detected! Position: $ $", pos.x, pos.y);
-
             if (obj)
             {
-                if (hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent()))
+                hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent());
+                if (hitObstacle)
                 {
                     canChangeObstacleAnim = true;
                     obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
