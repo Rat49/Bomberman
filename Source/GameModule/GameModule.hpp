@@ -26,6 +26,10 @@ public:
 
 	bool getIsPaused() const { return isPaused; }
 
+	void addScore(int32_t newScore, const std::string& name);
+
+	void saveResults();
+
 private:
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
 
@@ -58,4 +62,5 @@ private:
 	LevelId currentLevel;
 
 	bool resized = false;
+
 };

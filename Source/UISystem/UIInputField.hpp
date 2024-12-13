@@ -38,6 +38,20 @@ public:
 	//get the current text displayed in the input field
 	std::string getText() const { return m_inputText.getString(); }
 
+	//set the text displayed in the input field
+    void setText(const std::string& newText);
+
+    void setWritable(bool writable);
+
+    bool getWritable() const { return m_isWriteable; }
+
+    void setHasPlaceholder(bool hasPlaceholder) { m_hasPlaceholder = hasPlaceholder; }
+
+    void setInitialText(const std::string& initialText) { m_initialText = initialText; }
+
+    const std::string& getInitialText() const { return m_initialText; }
+
+
 private:
 
 	//method to allow cursor to follow text 
@@ -71,6 +85,8 @@ private:
 
 	//flag for initial text
 	bool m_hasPlaceholder;
+
+	std::string m_initialText;
 
 };
 

@@ -5,7 +5,6 @@ namespace {
 
 	const float INPUT_TEXT_OFFSET = 5.0f;
 	const float CURSOR_OFFSET = 2.0f;
-	const std::string INITIAL_TEXT = "Enter text...";
 }
 
 
@@ -26,7 +25,7 @@ UIInputField::UIInputField(const sf::Font& font, uint32_t characterSize, const s
 	setIsInteractable(true);
 
 	//set initial text
-	m_textBuffer = INITIAL_TEXT;
+	m_textBuffer = m_initialText;
 	m_inputText.setString(m_textBuffer);
 }
 
@@ -55,6 +54,7 @@ void UIInputField::setColor(const sf::Color& fieldColor, const sf::Color& inputT
 {
 	m_fieldBackground.setFillColor(fieldColor);
 	m_inputText.setFillColor(inputTextColor);
+    m_cursor.setFillColor(inputTextColor);
 }
 
 void UIInputField::setMaxCharacters(uint32_t maxChar)
@@ -87,7 +87,7 @@ bool UIInputField::handleEvent(const sf::Event& event)
 		{
 			//create and display cursor (thin vertical line)
 			m_cursor.setSize(sf::Vector2f(CURSOR_OFFSET, static_cast<float>(m_inputText.getCharacterSize())));
-			m_cursor.setFillColor(sf::Color::White);
+            m_cursor.setFillColor(m_inputText.getFillColor());
 
 			//hide initial text
 			if (m_hasPlaceholder)
@@ -106,7 +106,7 @@ bool UIInputField::handleEvent(const sf::Event& event)
 			if (m_textBuffer.empty() && !m_hasPlaceholder)
 			{
 				m_hasPlaceholder = true;
-				m_textBuffer = INITIAL_TEXT;
+                m_textBuffer     = m_initialText;
 				m_inputText.setString(m_textBuffer);
 			}
 		}
@@ -180,4 +180,15 @@ void UIInputField::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(m_cursor, states);
 }
 
+void UIInputField::setText(const std::string& newText)
+{
+    m_inputText.setString(newText);
+    m_textBuffer = newText;
+}
 
+void UIInputField::setWritable(bool writable)
+{
+    m_isWriteable = writable;
+    if (!writable)
+        m_cursor.setSize(sf::Vector2f(0.f, 0.f));
+}
