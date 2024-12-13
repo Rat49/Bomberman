@@ -4,11 +4,13 @@
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
 #include "Leaderboard.hpp"
 #include "PauseMenu.hpp"
+#include "Options.hpp"
 #include "GameOver.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
@@ -16,21 +18,22 @@
 #include "AssetManager/AssetManager.hpp"
 
 namespace {
-	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
-	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
-	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
-	const std::string& PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
-	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
-	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
-    const std::string& PATH_GAMEOVER = "../../Data/Config/gameOver.ini";
-	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
-	const std::string& WINDOW = "Window";
-	const std::string& WIDTH = "width";
-	const std::string& HEIGHT = "height";
-	const std::string& TITLE = "title";
-	const std::string& FONT = "font";
-	const std::string& GAME_TIME = "gameTime";
-	const std::string& STAGE = "stage";
+	const std::string PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
+	const std::string PATH_HUD = "../../Data/Config/HUD.ini";
+	const std::string PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
+	const std::string PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
+	const std::string PATH_STAGE = "../../Data/Config/stageScreen.ini";
+	const std::string PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
+	const std::string PATH_OPTIONS = "../../Data/Config/options.ini";
+	const std::string PATH_GAMEOVER = "../../Data/Config/gameOver.ini";
+	const std::string BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
+	const std::string WINDOW = "Window";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+	const std::string TITLE = "title";
+	const std::string FONT = "font";
+	const std::string GAME_TIME = "gameTime";
+	const std::string STAGE = "stage";
 
 	
 }
@@ -47,6 +50,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_STAGE);
 	Modules::Config->addFile(PATH_LEADERBOARD);
 	Modules::Config->addFile(PATH_PAUSE_MENU);
+	Modules::Config->addFile(PATH_OPTIONS);
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -62,20 +66,21 @@ bool GameModule::initialize()
 
 	int32_t width = windowSection.getValue(WIDTH).getInt32();
 	int32_t height = windowSection.getValue(HEIGHT).getInt32();
-	const std::string& title = windowSection.getValue(TITLE).getString();
+	gameTitle = windowSection.getValue(TITLE).getString();
 	const std::string& font = windowSection.getValue(FONT).getString();
 	gameTime = windowSection.getValue(GAME_TIME).getInt32();
 	currentStage = windowSection.getValue(STAGE).getInt32();
 
 	// Creating Window and HUD
-	window.create(sf::VideoMode(width, height), title);
-
+	window.create(sf::VideoMode(width, height), gameTitle);
+	Modules::UI->setViewportSize((float) width, (float) height);
 	// Creating all screens
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
 	screens[Screens::MAIN_MENU] = std::make_shared<MainMenu>(&window, font, PATH_MAIN_MENU);
 	screens[Screens::STAGE] = std::make_shared<StageScreen>(&window, font, PATH_STAGE);
 	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
 	screens[Screens::PAUSE_MENU] = std::make_shared<PauseMenu>(&window, font, PATH_PAUSE_MENU);
+	screens[Screens::OPTIONS] = std::make_shared<Options>(&window, font, PATH_OPTIONS);
     screens[Screens::GAME_OVER]  = std::make_shared<GameOver>(&window, font, PATH_GAMEOVER);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
@@ -119,8 +124,6 @@ void GameModule::run()
     Time::time_point prevTime = Time::now();
     float deltaTime = 0.0f;
 
-	
-
     while (window.isOpen())
     {
         // handling delta time
@@ -134,11 +137,13 @@ void GameModule::run()
 			switch (event.type)
 			{
 			case sf::Event::Closed:
+				saveResults();
 				window.close();
 				break;
 
 			case sf::Event::Resized: {
-				Modules::UI->setViewportSize((float)(screens[currentScreen]->getWindow()->getSize().x), (float)(screens[currentScreen]->getWindow()->getSize().y));
+				window.setView(sf::View(sf::FloatRect(0.f, 0.f, (float) window.getSize().x, (float) window.getSize().y )));
+				Modules::UI->setViewportSize((float)(window.getSize().x), (float)(window.getSize().y));
 				for (auto& screen : screens) {
 					screen.second->handleEvent(event);
 				}
@@ -147,8 +152,9 @@ void GameModule::run()
 			case sf::Event::MouseMoved:
 			case sf::Event::MouseButtonPressed:
 			case sf::Event::MouseButtonReleased:
-            case sf::Event::TextEntered:
-				if (isPaused)
+			case sf::Event::TextEntered:
+			case sf::Event::KeyReleased:
+				if (isPaused && currentScreen != Screens::OPTIONS)
 					screens[Screens::PAUSE_MENU]->handleEvent(event);
 				else 
 					screens[currentScreen]->handleEvent(event);
@@ -209,7 +215,19 @@ void GameModule::setCurrentScreen(const Screens& newScreen)
 {
 	currentScreen = newScreen;
 	timeCounter = 0.0f;
-	isPaused = false;
+}
+
+void GameModule::handleResize(float x, float y)
+{
+	window.setView(sf::View(sf::FloatRect(0.f,0.f, x, y)));
+	Modules::UI->setViewportSize(x, y);
+
+	// The only thing handleEvent needs is event type to be Resized
+	sf::Event resizeEvent;
+	resizeEvent.type = sf::Event::Resized;
+	for (auto& screen : screens) {
+		screen.second->handleEvent(resizeEvent);
+	}
 }
 
 void GameModule::checkTimeCounter()

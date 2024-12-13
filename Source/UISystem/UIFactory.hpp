@@ -16,5 +16,7 @@ namespace UIFactory
 
 	void makeUIButton(UIScreen* screen, const std::string& screenFont, const ConfigSection& element);
 
+	void makeUISlider(UIScreen* screen, const ConfigSection& element);
+
 	void makeUIInputField(UIScreen* screen, const std::string& screenFont, const ConfigSection& element);
-    };
+};

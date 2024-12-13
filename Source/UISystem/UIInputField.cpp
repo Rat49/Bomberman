@@ -68,6 +68,19 @@ void UIInputField::setCharactersSize(uint32_t charSize)
 	m_inputText.setCharacterSize(charSize);
 }
 
+void UIInputField::setText(const std::string& newText)
+{
+	m_inputText.setString(newText); 
+	m_textBuffer = newText;
+}
+
+void UIInputField::setWritable(bool writable)
+{
+	m_isWriteable = writable;
+	if(!writable)
+		m_cursor.setSize(sf::Vector2f(0.f, 0.f));
+}
+
 void UIInputField::setFont(const sf::Font& font)
 {
 	m_inputText.setFont(font);
@@ -87,7 +100,7 @@ bool UIInputField::handleEvent(const sf::Event& event)
 		{
 			//create and display cursor (thin vertical line)
 			m_cursor.setSize(sf::Vector2f(CURSOR_OFFSET, static_cast<float>(m_inputText.getCharacterSize())));
-            m_cursor.setFillColor(m_inputText.getFillColor());
+			m_cursor.setFillColor(m_inputText.getFillColor());
 
 			//hide initial text
 			if (m_hasPlaceholder)
@@ -106,7 +119,7 @@ bool UIInputField::handleEvent(const sf::Event& event)
 			if (m_textBuffer.empty() && !m_hasPlaceholder)
 			{
 				m_hasPlaceholder = true;
-                m_textBuffer     = m_initialText;
+				m_textBuffer = m_initialText;
 				m_inputText.setString(m_textBuffer);
 			}
 		}
@@ -180,15 +193,11 @@ void UIInputField::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(m_cursor, states);
 }
 
-void UIInputField::setText(const std::string& newText)
-{
-    m_inputText.setString(newText);
-    m_textBuffer = newText;
-}
+void UIInputField::handleResize(const sf::Vector2f& scale) {
 
-void UIInputField::setWritable(bool writable)
-{
-    m_isWriteable = writable;
-    if (!writable)
-        m_cursor.setSize(sf::Vector2f(0.f, 0.f));
+	setCharactersSize(static_cast<uint32_t>(m_inputText.getCharacterSize() * scale.x));
+
+	setSize(sf::Vector2f((getSize().x) * scale.x, (getSize().y) * scale.y));
+
+	setPosition(sf::Vector2f((getPosition().x) * scale.x, (getPosition().y) * scale.y));
 }

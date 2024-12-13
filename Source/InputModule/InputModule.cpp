@@ -237,6 +237,42 @@ void InputModule::update(float, sf::Window*)
 	}
 }
 
+void InputModule::updateBinding(const std::string& actionName, const std::string& actionType, const std::string& newKey, const std::string& actionAxis)
+{
+	// getting ActionData for given actionName
+	auto actionId = GetActionID(actionName);
+	auto actionData = actions.find(actionId)->second;
+
+	// setting new key binding
+	auto button = inputBinder.GetButton(newKey);
+	if (actionAxis == "") {
+		actionData.Binding.button.Key = button;
+	}
+	else if (actionAxis == "axis2D") {
+		if (actionType == "negativeXAxisButton")
+			actionData.Binding.axis2D.Horizontal.negativeAxis.Key = button;
+
+		else if (actionType == "positiveXAxisButton")
+			actionData.Binding.axis2D.Horizontal.positiveAxis.Key = button;
+
+		else if (actionType == "negativeYAxisButton")
+			actionData.Binding.axis2D.Vertical.negativeAxis.Key = button;
+
+		else if (actionType == "positiveYAxisButton")
+			actionData.Binding.axis2D.Vertical.positiveAxis.Key = button;
+	}
+	else if (actionAxis == "axis1D") {
+		if (actionType == "negativeAxisButton") {
+			actionData.Binding.axis1D.negativeAxis.Key = button;
+		}
+		else if (actionType == "positiveAxisButton") {
+			actionData.Binding.axis1D.positiveAxis.Key = button;
+		}
+	}
+
+	actions.insert_or_assign(actionId, std::move(actionData));
+}
+
 void InputModule::terminate()
 {
 	for (auto it = actions.begin(); it != actions.end(); ++it)

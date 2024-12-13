@@ -10,10 +10,10 @@
 
 namespace
 {
-	const std::string& PLAYER = "Player";
-	const std::string& NAME = "Name";
-	const std::string& VALUE = "Value";
-    const std::string& FILE_NAME  = "leaderboardResults";
+	const std::string PLAYER = "Player";
+	const std::string NAME = "Name";
+	const std::string VALUE = "Value";
+    const std::string FILE_NAME  = "leaderboardResults";
     }
 
 Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile) : UIScreen()

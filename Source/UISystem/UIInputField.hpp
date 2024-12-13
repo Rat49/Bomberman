@@ -39,18 +39,19 @@ public:
 	std::string getText() const { return m_inputText.getString(); }
 
 	//set the text displayed in the input field
-    void setText(const std::string& newText);
+	void setText(const std::string& newText);
 
-    void setWritable(bool writable);
+	void setWritable(bool writable);
 
-    bool getWritable() const { return m_isWriteable; }
+	bool getWritable() const { return m_isWriteable; }
 
-    void setHasPlaceholder(bool hasPlaceholder) { m_hasPlaceholder = hasPlaceholder; }
+	void setHasPlaceholder(bool hasPlaceholder) { m_hasPlaceholder = hasPlaceholder; }
 
-    void setInitialText(const std::string& initialText) { m_initialText = initialText; }
+	void setInitialText(const std::string& initialText) { m_initialText = initialText; }
+	
+	const std::string& getInitialText() const { return m_initialText; }
 
-    const std::string& getInitialText() const { return m_initialText; }
-
+	void handleResize(const sf::Vector2f& scale) override;
 
 private:
 
@@ -74,6 +75,8 @@ private:
 	//buffer to store the entered text
 	std::string m_textBuffer;
 
+	std::string m_initialText;
+
 	//max number of characters allowed
 	uint32_t m_maxCharacters;
 
@@ -85,8 +88,6 @@ private:
 
 	//flag for initial text
 	bool m_hasPlaceholder;
-
-	std::string m_initialText;
 
 };
 
