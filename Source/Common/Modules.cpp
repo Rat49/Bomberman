@@ -12,6 +12,7 @@
 #include "AssetManager/AssetManager.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "SaveSystem/SaveSystem.hpp"
 #include "BaseModule/BaseModule.hpp"
 
 
@@ -31,6 +32,7 @@ UISystem* Modules::UI = nullptr;
 AssetManager* Modules::Assets = nullptr;
 PhysicsModule* Modules::Physics = nullptr;
 LevelHandlingModule* Modules::Level = nullptr;
+SaveSystem* Modules::Save = nullptr;
 
 std::vector<std::unique_ptr<BaseModule>> Modules::modules = {};
 
@@ -50,6 +52,8 @@ bool Modules::initialize()
 	Modules::Assets = dynamic_cast<AssetManager*>(modules.emplace_back(std::make_unique<AssetManager>()).get());
 	Modules::Physics = dynamic_cast<PhysicsModule*>(modules.emplace_back(std::make_unique<PhysicsModule>()).get());
 	Modules::Level = dynamic_cast<LevelHandlingModule*>(modules.emplace_back(std::make_unique<LevelHandlingModule>()).get());
+	Modules::Save = dynamic_cast<SaveSystem*>(modules.emplace_back(std::make_unique<SaveSystem>()).get());
+	
 
 	Modules::Game = dynamic_cast<GameModule*>(modules.emplace_back(std::make_unique<GameModule>()).get());
 #ifndef FINAL

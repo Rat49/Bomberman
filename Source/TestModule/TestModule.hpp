@@ -1,9 +1,16 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <map>
+#include <string>
 
 #ifndef FINAL
 
+enum TestsMode
+{
+	RunLast,
+	RunDefined
+};
 
 class TestBase;
 namespace sf {
@@ -19,10 +26,11 @@ public:
 	TestModule();
 	~TestModule();
 
-	static void CreateAllTests();
+	static void CreateTests();
 
 	// Add your implementation of test
 	void addTest(const std::shared_ptr<TestBase>& testRunner);
+
 	// Remove the test if you changed your mind..
 	void removeTest(const std::shared_ptr<TestBase>& testRunner);
 
@@ -33,7 +41,9 @@ public:
 	void update(float deltaTime, sf::RenderWindow* window);
 
 private:
-	std::vector<std::shared_ptr<TestBase>> m_tests;
+	bool m_isLastTestFinished = false;
+	std::vector<int32_t>m_testsIDs;
+ 	std::vector<std::shared_ptr<TestBase>> m_tests;
 };
 
 #endif

@@ -1,9 +1,18 @@
 #include "TestModule.hpp"
 #include "TestBase.hpp"
 #include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
+#include "ConfigSystem/ConfigSection.hpp"
+#include "TestModule/TestRegisty.hpp"
 #include <iostream>
 
 #ifndef FINAL
+
+namespace
+{
+	const std::string TEST_MODULE_CONFIG_PATH = "../../Data/Config/TestModule.ini";
+}
 
 TestModule::TestModule()
 {
@@ -31,12 +40,11 @@ void TestModule::removeTest(const std::shared_ptr<TestBase>& testRunner)
 
 void TestModule::run()
 {
-	CreateAllTests();
-
-	for(const auto& test : m_tests)
+	CreateTests();
+	
+	for (const auto& test : m_tests)
 	{
 		LOG("Test " + test->getName() + " started");
-
 		test->setup();
 		test->run();
 	}
@@ -49,20 +57,58 @@ void TestModule::update(float deltaTime, sf::RenderWindow* window)
 		return;
 	}
 
-	std::vector<std::shared_ptr<TestBase>>::iterator it = m_tests.begin();
-	while(it != m_tests.end())
-	{
-		(*it)->update(deltaTime, window);
+	std::vector<std::shared_ptr<TestBase>>::iterator tests_it = m_tests.begin();
 
-		if ((*it)->isComplete())
+	while (tests_it != m_tests.end())
+	{
+		TestBase* test = tests_it->get();
+		test->update(deltaTime, window);
+		if (test->isComplete())
 		{
-			LOG("Test " + (*it)->getName() + " complete");
-			it = m_tests.erase(it);
+			LOG("Test " + test->getName() + " complete");
+			tests_it = m_tests.erase(tests_it);
 		}
 		else
 		{
-			++it;
+			++tests_it;
 		}
+	}
+}
+
+void TestModule::CreateTests()
+{
+	Modules::Config->addFile(TEST_MODULE_CONFIG_PATH);
+	const ConfigFile& testModuleConfig = Modules::Config->getFile(TEST_MODULE_CONFIG_PATH);
+	const auto& sections = testModuleConfig.getAllSections();
+	int32_t testsMode = testModuleConfig.getSection("TestsMode").getValue("mode").getInt32();
+	std::unique_ptr<TestRegisty> testRegisty = std::make_unique<TestRegisty>();
+
+	if (!testRegisty->initialize())
+	{
+		LOG("Some of the tests have failed to initialize");
+		return;
+	}
+
+	switch (testsMode)
+	{
+	case TestsMode::RunLast:
+		Modules::Tests->addTest(testRegisty->getLastRegisteredTest()());
+		break;
+	case TestsMode::RunDefined:
+		for (const auto& section : sections)
+		{
+			if (section != "TestsMode" && testModuleConfig.getSection(section).isValuePresent("testName"))
+			{
+				Modules::Tests->addTest(testRegisty->createTestByName(testModuleConfig.getSection(section).getValue("testName").getString()));
+			}
+		}
+		break;
+	default:
+		for (const auto& el : testRegisty->getTests()) 
+		{
+			Modules::Tests->addTest(el.second());
+		}
+		break;
 	}
 }
 
