@@ -32,7 +32,7 @@ bool TestRegisty::initialize()
 	// add your tests based on TestBase class here using this preset
 	// isEverythingInitialized &= registerTest<YourTest>("YourTest");
 	// ----------------------------------------------------------------
-	bool isEverythingInitialized = false;
+	bool isEverythingInitialized = true;
 	isEverythingInitialized &= registerTest<SampleTest>("SampleTest");
 	isEverythingInitialized &= registerTest<WindowClosingTest>("WindowClosingTest");
 	isEverythingInitialized &= registerTest<ConfigSystemTest>("ConfigSystemTest");

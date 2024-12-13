@@ -9,8 +9,9 @@
 
 namespace
 {
-const std::string& MENU  = "MENU";
-const std::string& SCORE = "ScoreValue";
+const std::string MENU         = "MENU";
+const std::string SCORE        = "ScoreValue";
+const std::string INITIAL_TEXT = "Enter name";
 } // namespace
 
 GameOver::GameOver(sf::RenderWindow* renderWindow, const std::string& screenFont, const std::string& pathToIniFile)
@@ -33,7 +34,7 @@ GameOver::GameOver(sf::RenderWindow* renderWindow, const std::string& screenFont
                     if (saveResult())
                         Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
                     else
-                        triedBack = true;
+                        invalidClickMenu = true;
                 };
             }
         }
@@ -62,15 +63,15 @@ bool GameOver::handleEvent(const sf::Event& event)
                 inputField->setColor(Colors::WHITE, Colors::RED);
                 playerName = inputField->getText();
             }
-            if (triedBack)
+            if (invalidClickMenu)
             {
                 inputField->setColor(Colors::RED, Colors::WHITE);
 
-                inputField->setText("Enter name");
-                inputField->setInitialText("Enter name");
+                inputField->setText(INITIAL_TEXT);
+                inputField->setInitialText(INITIAL_TEXT);
                 inputField->setHasPlaceholder(true);
 
-                triedBack = false;
+                invalidClickMenu = false;
             }
         }
     }

@@ -6,10 +6,6 @@
 #include "UISlider.hpp"
 #include "UIInputField.hpp"
 #include "SpriteModule/SpriteModule.hpp"
-#include "UIButton.hpp"
-#include "UILabel.hpp"
-#include "UIScreen.hpp"
-#include "UIInputField.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 
 namespace
@@ -85,8 +81,7 @@ void UIFactory::setUIScreen(UIScreen* screen, const ConfigSection& element)
         auto& backgroundColor = element.getValue(BACKGROUND_COLOR).getString();
         screen->setBackgroundColor(sf::Color(std::stoul(backgroundColor, nullptr, 16)));
     }
-    if (element.areValuesPresent({WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT}))
-    {
+    if (element.areValuesPresent({WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT})) {
         int32_t width  = screen->getWindow()->getSize().x;
         int32_t height = screen->getWindow()->getSize().y;
 
@@ -107,8 +102,7 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
     int32_t height = screen->getWindow()->getSize().y;
 
     float factorSize = 1.0f;
-    if (element.isValuePresent(FACTOR_SIZE))
-    {
+    if (element.isValuePresent(FACTOR_SIZE)) {
         factorSize = element.getValue(FACTOR_SIZE).getFloat();
     }
     auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width * factorSize);
@@ -141,16 +135,14 @@ void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, con
 
 void UIFactory::makeAnimation(UIScreen* screen, const ConfigSection& element)
 {
-    if (element.areValuesPresent({PATH, NAME, WIDTH_OFFSET, HEIGHT_OFFSET}))
-    {
+    if (element.areValuesPresent({PATH, NAME, WIDTH_OFFSET, HEIGHT_OFFSET})) {
         auto&   animationPath = element.getValue(PATH).getString();
         auto&   animationName = element.getValue(NAME).getString();
         int32_t animationId   = Modules::Sprite->createAnimation(animationPath);
         float   x             = element.getValue(WIDTH_OFFSET).getFloat();
         float   y             = element.getValue(HEIGHT_OFFSET).getFloat();
 
-        if (const auto& animation = Modules::Sprite->getAnimation(animationId))
-        {
+        if (const auto& animation = Modules::Sprite->getAnimation(animationId)) {
             animation->Play();
 
             auto screenSize = screen->getWindow()->getSize();
@@ -185,8 +177,7 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
         myButton->setPosition(sf::Vector2f(elementWidthOffset * width, elementHeightOffset * height));
 
         // Check if button has shadow
-        if (element.areValuesPresent({TEXT_COLOR, SHADOW_COLOR}))
-        {
+        if (element.areValuesPresent({TEXT_COLOR, SHADOW_COLOR})) {
             auto& textColor   = element.getValue(TEXT_COLOR).getString();
             auto& shadowColor = element.getValue(SHADOW_COLOR).getString();
 
@@ -195,23 +186,20 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
         }
         bool hasSomeColor = false;
         // Check if button has defined default background color (not Black)
-        if (element.isValuePresent(DEFAULT_COLOR))
-        {
+        if (element.isValuePresent(DEFAULT_COLOR)) {
             hasSomeColor       = true;
             auto& defaultColor = element.getValue(DEFAULT_COLOR).getString();
             myButton->setDefaultColor(sf::Color(std::stoul(defaultColor, nullptr, 16)));
         }
 
         // Check if button has defined hover background color (not Black)
-        if (element.isValuePresent(HOVER_COLOR))
-        {
+        if (element.isValuePresent(HOVER_COLOR)) {
             auto& buttonColor = element.getValue(HOVER_COLOR).getString();
             myButton->setHoverColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
         }
 
         // Check if button has defined on pressed background color (not Black)
-        if (element.isValuePresent(PRESSED_COLOR))
-        {
+        if (element.isValuePresent(PRESSED_COLOR)) {
             auto& buttonColor = element.getValue(PRESSED_COLOR).getString();
             myButton->setPressedColor(sf::Color(std::stoul(buttonColor, nullptr, 16)));
         }
