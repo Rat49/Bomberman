@@ -13,23 +13,23 @@
 
 namespace
 {
-	const std::string& AUDIO = "AUDIO";
-	const std::string& VIDEO = "VIDEO";
-	const std::string& KEYS = "KEYS";
-	const std::string& BACK = "BACK";
-	const std::string& MUSIC = "MUSIC_SLIDER";
-	const std::string& SOUNDS = "SOUND_SLIDER";
-	const std::string& RESOLUTION = "RESOLUTION_SLIDER";
-	const std::string& RESOLUTION_LABEL = "SELECTED_RESOLUTION";
-	const std::string& WINDOWED = "WINDOWED";
-	const std::string& FULLSCREEN = "FULLSCREEN";
-	const std::string& ELEMENT = "element";
-	const std::string& TYPE = "type";
-	const std::string& ARROW = "ARROW";
-	const std::string& INPUT_SECTION = "inputSection";
-	const std::string& PATH_SCREENS = "../../Data/Config/optionsScreens.ini";
-	const std::string& PATH_INPUT_BINDINGS = "../../Data/Config/optionsInputBindings.ini";
-	const std::string& PATH_INPUT = "../../Data/Config/input_config.ini";
+	const std::string AUDIO = "AUDIO";
+	const std::string VIDEO = "VIDEO";
+	const std::string KEYS = "KEYS";
+	const std::string BACK = "BACK";
+	const std::string MUSIC = "MUSIC_SLIDER";
+	const std::string SOUNDS = "SOUND_SLIDER";
+	const std::string RESOLUTION = "RESOLUTION_SLIDER";
+	const std::string RESOLUTION_LABEL = "SELECTED_RESOLUTION";
+	const std::string WINDOWED = "WINDOWED";
+	const std::string FULLSCREEN = "FULLSCREEN";
+	const std::string ELEMENT = "element";
+	const std::string TYPE = "type";
+	const std::string ARROW = "ARROW";
+	const std::string INPUT_SECTION = "inputSection";
+	const std::string PATH_SCREENS = "../../Data/Config/optionsScreens.ini";
+	const std::string PATH_INPUT_BINDINGS = "../../Data/Config/optionsInputBindings.ini";
+	const std::string PATH_INPUT = "../../Data/Config/input_config.ini";
 }
 
 Options::Options(sf::RenderWindow* renderWindow, const std::string& optionsFont, const std::string& pathToIniFile)
@@ -287,7 +287,10 @@ void Options::remapKey(std::shared_ptr<UIInputField> inputField, const sf::Event
 				if (binding.isValuePresent("axis")) {
 					Modules::Input->updateBinding(bindingSection, bindingType, inputField->getText(), binding.getValue("axis").getString());
 				}
-				else Modules::Input->updateBinding(bindingSection, bindingType, inputField->getText());
+                else
+                {
+                    Modules::Input->updateBinding(bindingSection, bindingType, inputField->getText());
+                }	
 
 				inputField->setInitialText(inputField->getText());
 			}
@@ -327,9 +330,14 @@ void Options::setResolutionLabel(float value)
 			index = (int32_t)std::distance(allModes.begin(), it);
 		}
 	}
-	else {
+    else if (value == 0.f)
+    {
+        index = (int32_t) (allModes.size() - 1);
+    }
+    else
+	{
 		// getting resolution based on slider value
-		index = (int32_t)((100.f - value) * (allModes.size() - 1) / 100);
+		index = (int32_t)((100.f - value) * allModes.size() / 100.f);
 	}
 	sf::VideoMode newVideoMode = sf::VideoMode::getFullscreenModes()[index];
 	
@@ -341,7 +349,7 @@ void Options::setResolutionLabel(float value)
 
 		// setting slider value
 		if (value == -1.f) {
-			std::dynamic_pointer_cast<UISlider>(getElement(RESOLUTION))->setValue(100.f - 100.f * index / (allModes.size() - 1));
+			std::dynamic_pointer_cast<UISlider>(getElement(RESOLUTION))->setValue(100.f - 100.f * index / allModes.size());
 		}
 	}
 }

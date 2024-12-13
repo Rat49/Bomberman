@@ -9,10 +9,10 @@
 
 namespace
 {
-	const std::string& PATH_LEARDERBOARD = "../../Data/Config/leaderboardResults.ini";
-	const std::string& PLAYER = "Player";
-	const std::string& NAME = "Name";
-	const std::string& VALUE = "Value";
+	const std::string PATH_LEARDERBOARD = "../../Data/Config/leaderboardResults.ini";
+	const std::string PLAYER = "Player";
+	const std::string NAME = "Name";
+	const std::string VALUE = "Value";
 
 }
 

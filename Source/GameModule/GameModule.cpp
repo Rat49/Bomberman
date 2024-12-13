@@ -17,21 +17,21 @@
 #include "AssetManager/AssetManager.hpp"
 
 namespace {
-	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
-	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
-	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
-	const std::string& PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
-	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
-	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
-	const std::string& PATH_OPTIONS = "../../Data/Config/options.ini";
-	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
-	const std::string& WINDOW = "Window";
-	const std::string& WIDTH = "width";
-	const std::string& HEIGHT = "height";
-	const std::string& TITLE = "title";
-	const std::string& FONT = "font";
-	const std::string& GAME_TIME = "gameTime";
-	const std::string& STAGE = "stage";
+	const std::string PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
+	const std::string PATH_HUD = "../../Data/Config/HUD.ini";
+	const std::string PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
+	const std::string PATH_PAUSE_MENU = "../../Data/Config/pauseMenu.ini";
+	const std::string PATH_STAGE = "../../Data/Config/stageScreen.ini";
+	const std::string PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
+	const std::string PATH_OPTIONS = "../../Data/Config/options.ini";
+	const std::string BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
+	const std::string WINDOW = "Window";
+	const std::string WIDTH = "width";
+	const std::string HEIGHT = "height";
+	const std::string TITLE = "title";
+	const std::string FONT = "font";
+	const std::string GAME_TIME = "gameTime";
+	const std::string STAGE = "stage";
 
 	
 }
