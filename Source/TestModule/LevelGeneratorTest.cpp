@@ -1,4 +1,5 @@
 #include "TestModule/LevelGeneratorTest.hpp"
+#include "GameModule/LevelGenerator.hpp"
 #include "Common/Logs.hpp"
 
 const std::string& LevelGeneratorTest::getName() const

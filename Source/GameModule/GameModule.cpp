@@ -4,7 +4,6 @@
 #include "InputModule/InputModule.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
-#include "LevelGeneratorManager.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
@@ -15,7 +14,8 @@
 #include <chrono>
 #include "AssetManager/AssetManager.hpp"
 
-namespace {
+namespace 
+{
 	const std::string& PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
 	const std::string& PATH_HUD = "../../Data/Config/HUD.ini";
 	const std::string& PATH_MAIN_MENU = "../../Data/Config/mainMenu.ini";
@@ -23,7 +23,6 @@ namespace {
 	const std::string& PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string& PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string& BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
-	const std::string& LEVEL_CONFIG = "../../Data/Config/LevelConfig.ini";
 	const std::string& WINDOW = "Window";
 	const std::string& WIDTH = "width";
 	const std::string& HEIGHT = "height";
@@ -31,8 +30,6 @@ namespace {
 	const std::string& FONT = "font";
 	const std::string& GAME_TIME = "gameTime";
 	const std::string& STAGE = "stage";
-
-	
 }
 
 using Time = std::chrono::high_resolution_clock;
@@ -48,8 +45,14 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_LEADERBOARD);
 	Modules::Config->addFile(PATH_PAUSE_MENU);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
+
+	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
+
+	//set elements on level
+	if (!Modules::Level->setUpElementsOnLevel(elementsId))
+		return false;
 
 	if (!windowInfo.isSectionPresent(WINDOW))
 		return false;
@@ -84,13 +87,6 @@ bool GameModule::initialize()
 		LOG("Failed to initialize PlayerCharacter.");
 		return false;
 	}
-
-	levelGeneratorManager = std::make_unique<LevelGeneratorManager>();
-	if (!levelGeneratorManager->initialize(LEVEL_CONFIG))
-		return false;
-	if (!levelGeneratorManager->createLevel(level))
-		return false;
-
 
 	return true;
 }
@@ -164,7 +160,6 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
-			levelGeneratorManager->drawLevel(window);
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 

@@ -1,11 +1,9 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
 #include "UISystem/UIScreen.hpp"
-#include "GameModule/LevelGenerator.hpp"
 #include "UIConstants.hpp"
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
-#include "LevelGeneratorManager.hpp"
 #include "Boosters/BoosterComponent.hpp"
 
 /*
@@ -44,25 +42,23 @@ private:
 
 	PlayerCharacter player;
 	
-	std::unique_ptr<LevelGeneratorManager> levelGeneratorManager;
+	LevelId currentLevel;
 	
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
 	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
-
-	LevelId currentLevel;
 	
 	int32_t currentStage = 0;
 	
 	int32_t gameTime;
 
-	int32_t level = 1;
+	int32_t elementsId = 1;
 
 	float timeCounter = 0.0f;
 
 	bool isPaused = false;
-
+	 
 	bool resized = false;
 };

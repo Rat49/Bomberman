@@ -19,6 +19,9 @@ public:
 	//load multiple levels using config file vector 
 	bool loadLevels(const std::vector<std::string>& configPaths);
 
+	//setUp elements on level
+	bool setUpElementsOnLevel(int32_t levelElementsId);
+
 	//unload level from map
 	bool unloadLevel(LevelId levelId);
 
