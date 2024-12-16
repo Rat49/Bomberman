@@ -1,7 +1,7 @@
 #pragma once
 
 enum class Screens {
-	MAIN_MENU, STAGE, LEVEL, LEADERBOARD, PAUSE_MENU, OPTIONS
+	MAIN_MENU, STAGE, LEVEL, LEADERBOARD, PAUSE_MENU, OPTIONS, GAME_OVER
 };
 
 namespace Colors{

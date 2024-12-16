@@ -11,6 +11,7 @@
 #include "Leaderboard.hpp"
 #include "PauseMenu.hpp"
 #include "Options.hpp"
+#include "GameOver.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -24,6 +25,7 @@ namespace {
 	const std::string PATH_STAGE = "../../Data/Config/stageScreen.ini";
 	const std::string PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string PATH_OPTIONS = "../../Data/Config/options.ini";
+	const std::string PATH_GAMEOVER = "../../Data/Config/gameOver.ini";
 	const std::string BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string WINDOW = "Window";
 	const std::string WIDTH = "width";
@@ -49,6 +51,7 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_LEADERBOARD);
 	Modules::Config->addFile(PATH_PAUSE_MENU);
 	Modules::Config->addFile(PATH_OPTIONS);
+    Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
@@ -78,9 +81,14 @@ bool GameModule::initialize()
 	screens[Screens::LEADERBOARD] = std::make_shared<Leaderboard>(&window, font, PATH_LEADERBOARD);
 	screens[Screens::PAUSE_MENU] = std::make_shared<PauseMenu>(&window, font, PATH_PAUSE_MENU);
 	screens[Screens::OPTIONS] = std::make_shared<Options>(&window, font, PATH_OPTIONS);
+    screens[Screens::GAME_OVER]  = std::make_shared<GameOver>(&window, font, PATH_GAMEOVER);
 
 	auto screenStage = (std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]));
 	screenStage->setStage(currentStage);
+
+	auto hudScreen = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
+    hudScreen->setTime(std::to_string(gameTime));
+
 
 	if (!player.init())
 	{
@@ -129,6 +137,7 @@ void GameModule::run()
 			switch (event.type)
 			{
 			case sf::Event::Closed:
+				saveResults();
 				window.close();
 				break;
 
@@ -234,6 +243,11 @@ void GameModule::checkTimeCounter()
 			auto hud = (std::dynamic_pointer_cast<HUD>(screens[currentScreen]));
 			hud->setTime(std::to_string(gameTime));
 		}
+        if (gameTime < 0)
+        {
+			// Changing screen to game over, for now here
+            setCurrentScreen(Screens::GAME_OVER);
+        }
 		break;
 	case Screens::STAGE:
 		// Checking if 2 seconds has passed for updating Screen
@@ -259,6 +273,16 @@ void GameModule::updateBoosters()
 		}
 		++boostersIterator;
 	}
+}
+
+void GameModule::addScore(int32_t newScore, const std::string& name)
+{
+    (std::dynamic_pointer_cast<Leaderboard>(screens[Screens::LEADERBOARD]))->addScore(newScore, name);
+}
+
+void GameModule::saveResults()
+{
+    (std::dynamic_pointer_cast<Leaderboard>(screens[Screens::LEADERBOARD]))->saveResults();
 }
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
