@@ -4,12 +4,13 @@
 
 namespace
 {
-	const std::string ATLAS_PATH = "atlasPath";
-	const std::string LEVEL_PATH = "levelPath";
-	const std::string TILESET_PATH = "tilesetPath";
-	const std::string TILE_WIDTH = "tileWidth";
-	const std::string TILE_HEIGHT = "tileHeight";
-	const std::string ASSETS_CONFIG = "tilesetAssetsConfig";
+	const std::string ATLAS_PATH	= "atlasPath";
+	const std::string LEVEL_PATH	= "levelPath";
+	const std::string TILESET_PATH	= "tilesetPath";
+	const std::string TILE_WIDTH	= "tileWidth";
+	const std::string TILE_HEIGHT	= "tileHeight";
+	const std::string LEVEL_CONFIG	= "levelConfig";
+	const std::string ASSETS_CONFIG	= "tilesetAssetsConfig";
 	const std::string ID = "id";
 }
 
@@ -46,6 +47,9 @@ bool LevelData::loadLevelConfigData(const std::string& configLevelPath)
 
 		//load tileAssetsConfig
 		m_tilesAssetsConfig = mySection.getValue(ASSETS_CONFIG).getString();
+		
+		//load level config pat
+		m_levelElementsConfigPath = mySection.getValue(LEVEL_CONFIG).getString();
 
 		//load tile width
 		m_tileWidth = mySection.getValue(TILE_WIDTH).getInt32();

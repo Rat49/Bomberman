@@ -1,27 +1,41 @@
 #include "Level.hpp"
-#include "Tile.hpp"
-#include "LevelData.hpp"
+#include "AssetManager/AssetManager.hpp"
+#include "ConfigSystem/ConfigSystem.hpp"
+#include "GameModule/ElementsGenerator.hpp"
+#include "GameModule/Gate.hpp"
+#include "GameModule/Obstacle.hpp"
+#include "GameModule/Key.hpp"
+#include "GameModule/Enemy.hpp"
+#include "GameModule/Booster.hpp"
+#include "Common/Modules.hpp"
 #include "SFML/Graphics.hpp"
+#include <Common/Logs.hpp>
+#include "LevelData.hpp"
+#include "Tile.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <algorithm>
-#include <Common/Logs.hpp>
-#include "Common/Modules.hpp"
-#include "AssetManager/AssetManager.hpp"
-#include "ConfigSystem/ConfigSystem.hpp"
 
 namespace
 {
+	//atlas
 	const std::string ID = "id";
 	const std::string X_COORD = "x";
 	const std::string Y_COORD = "y";
 	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
 	const int8_t ATLAS_SPRITE_SIZE = 64;
+
+	//levelConfig
+	const std::string ID_CONFIG = "id";
+	const std::string LEVEL_TYPE = "levelType";
+	const std::string ENEMY_COUNT = "enemyCount";
+	const std::string BREAKABLE_COUNT = "breakableCount";
+	const std::string BOOSTERS_COUNT = "boostersCount";
 }
 
-Level::Level(const std::string levelConfigPath)
-	:m_configPath(levelConfigPath)
+Level::Level(const std::string baseLevelConfigPath)
+	:m_configPath(baseLevelConfigPath)
 {}
 
 bool Level::initialize()
@@ -54,11 +68,19 @@ bool Level::initialize()
 		return false;
 	}
 
+	//initialize levelElementsConfig for generating elements on level
+	if (!loadConfig(m_levelData.getLevelElementsConfigPath()))
+	{
+		LOG("Failed to load level config from file [$]:", m_levelData.getLevelElementsConfigPath());
+		return false;
+	}
+
 	// Setting Viewport so that HUD is always shown at the top of the window
 	m_view.setViewport(sf::FloatRect(0.0f, 0.1f, 1.f, 0.9f));
 
 	return true;
 }
+
 
 bool Level::loadTiles() 
 {
@@ -86,6 +108,7 @@ bool Level::loadTiles()
 
 	return true;
 }
+
 
 bool Level::loadLevel(const std::string& levelPath)
 {
@@ -131,6 +154,185 @@ bool Level::loadLevel(const std::string& levelPath)
 	return true;
 }
 
+bool Level::loadConfig(const std::string levelConfigPath)
+{
+	//init config file
+	Modules::Config->addFile(levelConfigPath);
+	const ConfigFile& LevelManagerFile = Modules::Config->getFile(levelConfigPath);
+
+	bool valuesFound = false;
+	std::vector<std::string> configNames = { ID_CONFIG, LEVEL_TYPE, ENEMY_COUNT, BREAKABLE_COUNT, BOOSTERS_COUNT };
+
+	//check all sections
+	const auto& sections = LevelManagerFile.getAllSections();
+	for (const auto& sectionName : sections)
+	{
+
+		if (!LevelManagerFile.isSectionPresent(sectionName))
+			break;
+
+		if (LevelManagerFile.getSection(sectionName).areValuesPresent(configNames))
+		{
+			const ConfigSection& mySection = LevelManagerFile.getSection(sectionName);
+
+			//store values in map
+			m_levelConfig.levelType = static_cast<GameLevelType>(mySection.getValue(LEVEL_TYPE).getInt32());
+			m_levelConfig.enemyCount = mySection.getValue(ENEMY_COUNT).getInt32();
+			m_levelConfig.breakableCount = mySection.getValue(BREAKABLE_COUNT).getInt32();
+			m_levelConfig.boostersCount = mySection.getValue(BOOSTERS_COUNT).getInt32();
+
+			m_levelConfigData[mySection.getValue(ID_CONFIG).getInt32()] = m_levelConfig;
+
+			valuesFound = true;
+		}
+	}
+
+	return valuesFound;
+}
+
+bool Level::setUpElements(int32_t levelElementsId)
+{
+	auto it = m_levelConfigData.find(levelElementsId);
+	if (it == m_levelConfigData.end())
+	{
+		LOG("Level with id [$] not found (not initialized from file).", levelElementsId);
+		return false;
+	}
+
+	//walkable positions
+	const std::vector<sf::Vector2f>& walkablePositions = getWalkablePositions();
+
+	//initialize elements generator
+	m_elementsGenerator = std::make_unique<ElementsGenerator>();
+	if (!m_elementsGenerator->initialize(it->second))
+	{
+		LOG("Failed to initialize elements generator with id [$]" , levelElementsId);
+		return false;
+	}
+
+	//generate elements
+	const auto& generatedElements = m_elementsGenerator->generateElements(walkablePositions, *m_atlasTexture);
+
+	//store generated elements on level
+	addObstacles(generatedElements.obstacles);
+	addKeys(generatedElements.keys);
+	addEnemies(generatedElements.enemies);
+	addGates(generatedElements.gates);
+	addBoosters(generatedElements.boosters);
+
+	return true;
+}
+
+void Level::addObstacles(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
+{
+	for (const auto& obstacle : obstacles)
+	{
+		m_generatedElements.obstacles.push_back(obstacle);
+	}
+}
+
+void Level::addEnemies(const std::vector<std::shared_ptr<Enemy>>& enemies)
+{
+	for (const auto& enemy : enemies)
+	{
+		m_generatedElements.enemies.push_back(enemy);
+	}
+}
+
+void Level::addGates(const std::vector<std::shared_ptr<Gate>>& gates)
+{
+	for (const auto& gate : gates)
+	{
+		m_generatedElements.gates.push_back(gate);
+	}
+}
+
+void Level::addKeys(const std::vector<std::shared_ptr<Key>>& keys)
+{
+	for (const auto& key : keys)
+	{
+		m_generatedElements.keys.push_back(key);
+	}
+}
+
+void Level::addBoosters(const std::vector<std::shared_ptr<Booster>>& boosters)
+{
+	for (const auto& booster : boosters)
+	{
+		m_generatedElements.boosters.push_back(booster);
+	}
+}
+
+
+void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.setView(m_view);
+
+	for (std::size_t row = 0; row < m_fields.size(); ++row) {
+		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
+			const FieldInfo& fieldInfo = m_fields[row][col];
+
+			Tile drawableTile = *fieldInfo.tile;
+			drawableTile.setPosition(fieldInfo.tilePosition);
+
+			target.draw(drawableTile, states);
+		}
+	}
+
+	for (const auto& key : m_generatedElements.keys)
+	{
+		target.draw(*key, states);
+	}
+
+	
+	for (const auto& gate: m_generatedElements.gates)
+	{
+		target.draw(*gate, states);
+	}
+	
+	
+	for (const auto& booster : m_generatedElements.boosters)
+	{
+		target.draw(*booster, states);
+	}
+
+	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
+    {
+        if (!(*it)->isExploded)
+        {
+            target.draw(*(*it)->getCurrentAnimation());
+            ++it; 
+        }
+        else
+        {
+            target.draw(*(*it)->getCurrentAnimation());
+
+            if (!(*it)->getCurrentAnimation()->isPlaying())
+            {
+                it = m_generatedElements.obstacles.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+	
+    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
+    {
+        if ((*enemy_it)->isDead())
+        {
+            enemy_it = m_generatedElements.enemies.erase(enemy_it);
+        }
+        else
+        {
+            target.draw(*(*enemy_it), states);
+            ++enemy_it;
+        }
+    }
+}
+
+
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
 	//set it to the window size
@@ -172,20 +374,6 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 	}
 }
 
-void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	target.setView(m_view);
-	for (std::size_t row = 0; row < m_fields.size(); ++row) {
-		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
-			const FieldInfo& fieldInfo = m_fields[row][col];
-
-			Tile drawableTile = *fieldInfo.tile;
-			drawableTile.setPosition(fieldInfo.tilePosition);
-
-			target.draw(drawableTile, states);
-		}
-	}
-}
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
@@ -208,6 +396,7 @@ TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 
 	return TileInfo();
 }
+
 
 std::vector<sf::Vector2f> Level::getWalkablePositions() const
 {
