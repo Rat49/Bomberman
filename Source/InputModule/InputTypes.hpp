@@ -8,6 +8,7 @@ using ActionID = int32_t;
 struct Button
 {
 	sf::Keyboard::Key Key = sf::Keyboard::Unknown;
+	bool previousButtonState = false;
 };
 
 struct Axis1D

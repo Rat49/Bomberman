@@ -54,6 +54,7 @@ void UIInputField::setColor(const sf::Color& fieldColor, const sf::Color& inputT
 {
 	m_fieldBackground.setFillColor(fieldColor);
 	m_inputText.setFillColor(inputTextColor);
+    m_cursor.setFillColor(inputTextColor);
 }
 
 void UIInputField::setMaxCharacters(uint32_t maxChar)

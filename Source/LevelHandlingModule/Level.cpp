@@ -19,8 +19,8 @@ namespace
 	const std::string Y_COORD = "y";
 	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
 	const int8_t ATLAS_SPRITE_SIZE = 64;
-	const int32_t numberOfTilesWidth = 13;
-	const int32_t numberOfTilesHeight = 10;
+	const int32_t numberOfTilesWidth = 14;	// number of tiles by width that player can see in one moment
+	const int32_t numberOfTilesHeight = 11;	// 16 x 13 in the original game
 } // namespace
 
 Level::Level(const std::string levelConfigPath)
@@ -56,6 +56,10 @@ bool Level::initialize()
 		LOG("Failed to load level from : " + m_levelData.getLevelPath());
 		return false;
 	}
+
+    // Setting view to be defined size
+    sf::Vector2f viewSize(numberOfTilesWidth * ATLAS_SPRITE_SIZE, numberOfTilesHeight * ATLAS_SPRITE_SIZE);
+    m_view.setSize(viewSize);
 
 	return true;
 }
@@ -133,10 +137,6 @@ bool Level::loadLevel(const std::string& levelPath)
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
-    sf::Vector2f viewSize(numberOfTilesWidth * ATLAS_SPRITE_SIZE, numberOfTilesHeight * ATLAS_SPRITE_SIZE);
-    //set it to the window size
-    m_view.setSize(viewSize);
-
     //calculate the total level width and height in pixels
     float levelPixelWidth  = static_cast<float>(m_fields[0].size() * m_levelData.getTileWidth());
     float levelPixelHeight = static_cast<float>(m_fields.size() * m_levelData.getTileHeight());
@@ -157,8 +157,12 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
     //set view center
     m_view.setCenter(viewCenter);
 
-	float hudPercentage = Modules::Game->getHUDHeigth() / window.getSize().y;
-    float factor = ((window.getSize().y + 0.f) * numberOfTilesWidth/numberOfTilesHeight) / window.getSize().x;
+	// setting viewport of the view to be:
+	// height maximum possible (window.y - HUD.y)
+	// width based on height so that proportion stays the same
+
+	float hudPercentage = Modules::Game->getHUDHeight() / window.getSize().y;
+    float factor = (((window.getSize().y - Modules::Game->getHUDHeight()) * numberOfTilesWidth / numberOfTilesHeight) / window.getSize().x);
 	
     m_view.setViewport(sf::FloatRect((1.0f - factor) / 2, hudPercentage, factor, 1.f - hudPercentage));
     
@@ -167,26 +171,38 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.setView(m_view);
-	for (std::size_t row = 0; row < m_fields.size(); ++row) {
-		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
-			const FieldInfo& fieldInfo = m_fields[row][col];
+    const auto& center = m_view.getCenter();
+    const auto& size = m_view.getSize();
 
-			Tile drawableTile = *fieldInfo.tile;
+    const float halfWidth = size.x / 2.f;
+    const float halfHeight = size.y / 2.f;
 
+	// getting all edges of view
+    const float viewLeft = center.x - halfWidth;
+    const float viewTop  = center.y - halfHeight;
+    const float viewRight  = center.x + halfWidth;
+    const float viewBottom = center.y + halfHeight;
+
+    // getting visible tile range
+    auto startRow = std::max(0, static_cast<int>(viewTop / ATLAS_SPRITE_SIZE));
+    auto endRow = std::min(m_fields.size(), static_cast<std::size_t>(viewBottom / ATLAS_SPRITE_SIZE) + 1);
+
+    auto startCol = std::max(0, static_cast<int>(viewLeft / ATLAS_SPRITE_SIZE));
+    auto endCol = std::min(m_fields[0].size(), static_cast<std::size_t>(viewRight / ATLAS_SPRITE_SIZE) + 1);
+
+    // iterating only through visible tiles
+    for (auto row = startRow; row < endRow; ++row)
+    {
+        for (auto col = startCol; col < endCol; ++col)
+        {
+            const FieldInfo& fieldInfo = m_fields[row][col];
+
+            Tile drawableTile = *fieldInfo.tile;
             drawableTile.setPosition(fieldInfo.tilePosition);
-            
-			auto centar = m_view.getCenter();
-            auto size   = m_view.getSize();
-			
-            sf::RectangleShape rec(sf::Vector2f(size.x*1.2f, size.y*1.2f));
-            rec.setPosition(centar.x - size.x* 1.2f / 2, centar.y - size.y*1.2f / 2);
-            if (rec.getGlobalBounds().contains(fieldInfo.tilePosition))
-            {
-                target.draw(drawableTile, states);
-            }
 
-		}
-	}
+            target.draw(drawableTile, states);
+        }
+    }
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const

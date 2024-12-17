@@ -30,8 +30,11 @@ public:
 	void handleResize(float x, float y);
 
 	const std::string& getGameTitle() const { return gameTitle; }
+	
+	// Add new score into leader board
+	void addScore(int32_t newScore, const std::string& name);
 
-	float getHUDHeigth();
+	float getHUDHeight();
 
 private:
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
@@ -39,6 +42,9 @@ private:
 	void removeAllBoosters();
 
 	void updateBoosters();
+
+	// Save leader board results into save file
+	void saveResults();
 
 	sf::RenderWindow window;
 
@@ -66,4 +72,7 @@ private:
 	// RenderWindow doesn't have method getTitle
 	// We need this for creating new windows (changing resolution)
 	std::string gameTitle;
+	
+	bool resized = false;
+
 };
