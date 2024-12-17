@@ -27,6 +27,12 @@ public:
 
 	sf::Vector2f getCurrentPosition() const;
 
+	void startPassThroughBombs();
+
+	void stopPassThroughBombs();
+
+    bool getPassThroughBombs() {return canPassThroughBombs;}
+
 	void updateVelocity(float deltaTime);
 
 	void updateBombs(float deltaTime);
@@ -40,6 +46,8 @@ private:
 	float speed = 0.f;
 	int32_t maxBombs;
 	float velocity = 0.f;
+    bool canPassThroughBombs = false;
+
 
 	ActionID playerMovement;
 	FunctionHandle playerMovementHandle;
