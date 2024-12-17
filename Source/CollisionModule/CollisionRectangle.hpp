@@ -1,8 +1,10 @@
 #pragma once
 
+#include "CollisionModule/CollisionObject.hpp"
 #include <SFML/Graphics.hpp>
 
-class CollisionRectangle {
+class CollisionRectangle
+{
 public:
 	CollisionRectangle() = default;
 	// Constructor that initializes the rectangle shape
@@ -31,8 +33,12 @@ public:
 	// Getter for the parent
 	void* getParent() const { return parentComponent; }
 
+    CollisionObject* getObjectParent() const { return parent; }
+
 	// Setter for the parent
-	void setParent(void* parent) { this->parentComponent = parent; }
+    void setParent(void* nParent) {  this->parentComponent = nParent; }
+
+	void setObjectParent(CollisionObject* newParent) { parent = newParent; }
 
 	// Setter for Rectangle Properties
 	void setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size);
@@ -54,6 +60,7 @@ protected:
 
 	//pointer to the parent object/component
 	void* parentComponent;
-private:
 
+	CollisionObject* parent;
+private:
 };

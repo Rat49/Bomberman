@@ -1,7 +1,7 @@
 #include "GameModule/Gate.hpp"
 #include "Common/Logs.hpp"
 
-Gate::Gate(const sf::Vector2i& position, bool isLocked, Key* key) : gatePosition(position), locked(isLocked), associatedKey(key) {}
+Gate::Gate(const sf::Vector2i& position, bool isLocked, std::shared_ptr<Key> key) : gatePosition(position), locked(isLocked), associatedKey(key) {}
 
 sf::Vector2i Gate::getGatePosition() const
 {
@@ -13,7 +13,7 @@ bool Gate::isLocked() const
 	return locked;
 }
 
-void Gate::unlock(Key* key)
+void Gate::unlock(std::shared_ptr<Key> key)
 {
 	// If the key is collected, unlock the door
 	if (key && (key->isCollected()))

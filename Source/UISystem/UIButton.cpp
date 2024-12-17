@@ -82,6 +82,7 @@ void UIButton::setFont(const sf::Font& font)
 void UIButton::setCharacterSize(unsigned int characterSize)
 {
 	buttonText.setCharacterSize(characterSize);
+	shadowText.setCharacterSize(characterSize);
 }
 
 void UIButton::setPosition(const sf::Vector2f& pos)
@@ -164,4 +165,13 @@ void UIButton::dropShadows(const sf::Color& labelColor, const sf::Color& shadowC
 	shadowText.setFillColor(shadowColor);
 
 	hasShadow = true;
+}
+
+void UIButton::handleResize(const sf::Vector2f& scale)
+{
+	setCharacterSize(static_cast<unsigned int>(buttonText.getCharacterSize() * scale.x));
+
+	setSize(sf::Vector2f((getSize().x)*scale.x, (getSize().y)*scale.y));
+
+	setPosition(sf::Vector2f((getPosition().x) * scale.x, (getPosition().y) * scale.y));
 }

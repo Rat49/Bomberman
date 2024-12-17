@@ -25,11 +25,12 @@ public:
 	void update(sf::RenderTarget& target);
 	
 	// Getter methods for private members
-	const std::vector<Obstacle>& getObstacles() const;
-	std::vector<Enemy>& getEnemies();
-	const std::vector<Gate>& getGates() const;
-	const std::vector<Key>& getKeys() const;
-	const std::vector<Booster>& getBoosters() const;
+	//std::vector<Obstacle>& getObstacles();
+    std::vector<std::shared_ptr<Obstacle>>& getObstacles();
+    std::vector<std::shared_ptr<Enemy>>&    getEnemies();
+    std::vector<std::shared_ptr<Gate>>&     getGates();
+    std::vector<std::shared_ptr<Key>>&      getKeys();
+    std::vector<std::shared_ptr<Booster>>&  getBoosters();
 
 	template <typename ObjectType>
 	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
@@ -48,11 +49,12 @@ private:
 	int32_t minNumOfPatrolPoints = 2;
 	int32_t maxNumOfPatrolPoints = 6;
 
-	std::vector<Obstacle> obstacles;
-	std::vector<Enemy> enemies;
-	std::vector<Gate> gates;
-	std::vector<Key> keys;
-	std::vector<Booster> boosters;
+	//std::vector<Obstacle> obstacles;
+	std::vector<std::shared_ptr<Obstacle>> obstacles;
+    std::vector<std::shared_ptr<Enemy>>    enemies;
+    std::vector<std::shared_ptr<Gate>>     gates;
+    std::vector<std::shared_ptr<Key>>      keys;
+    std::vector<std::shared_ptr<Booster>>  boosters;
 
 	std::vector<sf::Vector2f> breakableObstaclesPositions;
 	std::vector<sf::Vector2f> freePositions;
@@ -70,7 +72,7 @@ private:
 	std::set<std::pair<int32_t, int32_t>> generateSafetyZone() const;
 	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const;
 
-	void draw(sf::RenderTarget& target) const;
+	void draw(sf::RenderTarget& target);
 
 	void generateObstacles(std::mt19937& gen);
 	void generateEnemies(std::mt19937& gen);
