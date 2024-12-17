@@ -25,6 +25,7 @@ namespace
 	const std::string& BAR_VALUE = "barValue";
 	const std::string& REICTANGLE_HEIGHT = "rectangleHeight";
 	const std::string& BACKGROUND_COLOR = "backgroundColor";
+    const std::string& RECTANGLE_COLOR   = "rectangleColor";
 	const std::string& BAR_COLOR = "barColor";
 	const std::string& KNOB_COLOR = "knobColor";
 	const std::string& UISCREEN = "UIScreen";
@@ -81,7 +82,7 @@ void UIFactory::setUIScreen(UIScreen* screen, const ConfigSection& element)
 		auto& backgroundColor = element.getValue(BACKGROUND_COLOR).getString();
 		screen->setBackgroundColor(sf::Color(std::stoul(backgroundColor, nullptr, 16)));
 	}
-	if (element.areValuesPresent({ WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT })) {
+	if (element.areValuesPresent({ WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT, RECTANGLE_COLOR })) {
 		int32_t width = screen->getWindow()->getSize().x;
 		int32_t height = screen->getWindow()->getSize().y;
 
@@ -89,8 +90,10 @@ void UIFactory::setUIScreen(UIScreen* screen, const ConfigSection& element)
 		float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
 		float elementWidth = element.getValue(RECTANGLE_WIDTH).getFloat();
 		float elementHeight = element.getValue(REICTANGLE_HEIGHT).getFloat();
+        auto& rectangleColor = element.getValue(RECTANGLE_COLOR).getString();
 
-		screen->setBackground(elementWidthOffset * width, elementHeightOffset * height, elementWidth, elementHeight);
+		screen->setBackground(elementWidthOffset * width, elementHeightOffset * height, elementWidth, elementHeight, 
+			sf::Color(std::stoul(rectangleColor, nullptr, 16)));
 	}
 }
 

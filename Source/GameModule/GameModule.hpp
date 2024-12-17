@@ -31,6 +31,8 @@ public:
 
 	const std::string& getGameTitle() const { return gameTitle; }
 
+	float getHUDHeigth();
+
 private:
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
 
