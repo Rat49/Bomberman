@@ -29,6 +29,8 @@ public:
 
 	bool isSoundPlaying(int32_t soundID) const;
 
+	void setSoundsVolume(float volume);
+
 
 	// MUSIC: used to play compressed music that lasts several minutes
 
@@ -43,6 +45,8 @@ public:
 	bool isMusicPlaying() const;
 
 	void terminate() override;
+
+	void setMusicVolume(float volume);
 
 private:
 	//SOUNDS
@@ -61,5 +65,8 @@ private:
 
 	// Shared pointer for the currently playing music
 	std::shared_ptr<sf::Music> currentMusic;
+
+	float soundsVolume = 50.f;
+	float musicVolume = 50.f;
 
 };

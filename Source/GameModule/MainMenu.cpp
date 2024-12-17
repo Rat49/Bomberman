@@ -29,6 +29,11 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 					Modules::Game->setCurrentScreen(Screens::LEADERBOARD);
 					};
 			}
+			else if (element.first == Buttons::OPTIONS) {
+				button->onRelease = []() {
+					Modules::Game->setCurrentScreen(Screens::OPTIONS);
+					};
+			}
 		}
 	}
 }

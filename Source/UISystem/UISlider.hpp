@@ -24,9 +24,12 @@ public:
 	// Handle events for dragging the knob
 	bool handleEvent(const sf::Event& event) override;
 
+	void handleResize(const sf::Vector2f& scale) override;
+
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	std::function<void(float)> onValueChanged;
+	std::function<void()> onReleased;
 
 private:
 	sf::RectangleShape bar;

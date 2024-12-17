@@ -102,6 +102,144 @@ const GeneratedElements& ElementsGenerator::generateElements(const std::vector<s
 	return m_generatedElements;
 }
 
+void LevelController::generateEnemies(std::mt19937& gen)
+{
+	// Generate a safety zone around the player to prevent placing obstacles too close
+	std::set<std::pair<int32_t, int32_t>> usedPositions = generateSafetyZone();
+
+	// Enemy types based on game level
+	std::vector<EnemyType> availableTypes = getAvailableEnemyTypes(gameLevelType);
+
+	// Remove positions that overlap with the safety zone
+	freePositions.erase(std::remove_if(freePositions.begin(), freePositions.end(), [&usedPositions](const sf::Vector2f& pos)
+		{
+			std::pair<int32_t, int32_t> positionPair = std::make_pair(static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y));
+			return usedPositions.find(positionPair) != usedPositions.end();
+		}), freePositions.end());
+
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(freePositions.begin(), freePositions.end(), gen);
+
+	// Counter to track how many enemies have been placed
+	int32_t placedEnemies = 0;
+
+	// Iterate through the shuffled free positions
+	for (auto it = freePositions.begin(); it != freePositions.end();)
+	{
+		// Stop if the required number of enemies have been placed
+		if (placedEnemies >= enemyCount)
+		{
+			break;
+		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Generate patrolling points with busy check
+		//std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), freePositions, enemyRange);
+
+		// Increment the counter for placed enemy
+		++placedEnemies;
+
+		// Create a new enemy at the current position
+		//Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
+		auto enemy = std::make_shared<Enemy>(EnemyType::Basic, sf::Vector2f((float)x, (float)y));
+
+		//load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
+		enemy->setTexture(*m_atlasTexture);
+		enemy->setTextureRect(getTextureRect(ENEMY_RECT_NAME));
+		enemy->setPosition((float)x, (float)y);
+
+		// Add the enemy to the list of all enemies
+		//enemies.emplace_back(std::move(enemy));
+		enemies.push_back(enemy);
+
+		// Remove the used position from the free positions list
+		it = freePositions.erase(it);
+	}
+}
+
+void LevelController::draw(sf::RenderTarget& target)
+{
+	for (const auto& enemy : enemies)
+	{
+		target.draw(*enemy->getCurrentAnimation());
+	}
+
+	for (const auto& key : keys)
+	{
+		target.draw(*key);
+	}
+
+	for (const auto& gate : gates)
+	{
+		target.draw(*gate);
+	}
+
+	for (const auto& booster : boosters)
+	{
+		target.draw(*booster);
+	}
+
+	//for (auto& obstacle : obstacles)
+	//{
+	//	if (!obstacle->isExploded)
+	//	{
+	//		target.draw(*obstacle->getCurrentAnimation());
+	//	}
+	//	else
+	//	{
+	//		target.draw(*obstacle->getCurrentAnimation());
+	//		if(!obstacle->getCurrentAnimation()->isPlaying())
+	//		{
+	//			obstacles.erase(obstacle);
+	//		}
+	//	}
+	//}
+
+	for (auto it = obstacles.begin(); it != obstacles.end(); )
+	{
+		if (!(*it)->isExploded)
+		{
+			target.draw(*(*it)->getCurrentAnimation());
+			++it;
+		}
+		else
+		{
+			target.draw(*(*it)->getCurrentAnimation());
+			if (!(*it)->getCurrentAnimation()->isPlaying())
+			{
+				it = obstacles.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
+}
+
+void LevelController::update(sf::RenderTarget& target)
+{
+	auto enemy_it = enemies.begin();
+	while (enemy_it != enemies.end())
+	{
+		if ((*enemy_it)->isDead())
+		{
+			enemy_it = enemies.erase(enemy_it);
+		}
+		else
+		{
+			++enemy_it;
+		}
+	}
+	draw(target);
+}
 
 // Generate obstacles
 std::vector <std::shared_ptr<Obstacle>> ElementsGenerator::generateObstacles(std::mt19937& gen, const sf::Texture& atlasTexture)
@@ -158,7 +296,8 @@ std::vector <std::shared_ptr<Obstacle>> ElementsGenerator::generateObstacles(std
 		breakableObstaclesPositions.emplace_back(obstacle->getPosition());
 
 		// Add the obstacle to the list of all obstacles
-		obstacles.emplace_back(std::move(obstacle));
+		//obstacles.emplace_back(std::move(obstacle));
+		obstacles.push_back(obstacle);
 
 		// Remove the used position from the free positions list
 		it = freePositions.erase(it);
@@ -522,6 +661,29 @@ void ElementsGenerator::draw(sf::RenderTarget& target) const
 		target.draw(gate);
 	}
 
+		// Create a new breakable obstacle at the current position
+		std::shared_ptr<Gate> gate = std::make_shared<Gate>(sf::Vector2i(x, y), false, getKeys().empty() ? nullptr : getKeys().front());
+
+		//load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
+		gate->setTexture(*m_atlasTexture);
+		gate->setTextureRect(getTextureRect(GATE_RECT_NAME));
+		gate->setPosition((float)x, (float)y);
+
+		// Add the gate to the list of all gates
+		gates.emplace_back(std::move(gate));
+
+		if (found != breakableObstaclesPositions.end())
+		{
+			// The gate is hidden under a brick
+			std::shared_ptr<Gate> hiddenGate = std::make_shared<Gate>(sf::Vector2i(x, y), true, getKeys().empty() ? nullptr : getKeys().front());
+			gates.push_back(hiddenGate);
+
+			it = breakableObstaclesPositions.erase(it);
+		}
 	for (const auto& booster : boosters)
 	{
 		target.draw(booster);
@@ -542,12 +704,126 @@ void ElementsGenerator::update(sf::RenderTarget& target)
 		{
 			enemy_it = enemies.erase(enemy_it);
 		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Check if the position is under a breakable object
+		auto found = std::find_if(
+			breakableObstaclesPositions.begin(),
+			breakableObstaclesPositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
+
+		// Create a new key at the current position
+		std::shared_ptr<Key> key = std::make_shared<Key>(sf::Vector2i(x, y));
+
+		// Load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the key in the game world
+		key->setTexture(*m_atlasTexture);
+		key->setTextureRect(getTextureRect(KEY_RECT_NAME));
+		key->setPosition((float)x, (float)y);
+
+		// Add the gate to the list of all keys
+		keys.emplace_back(key);
+
+		if (found != breakableObstaclesPositions.end())
+		{
+			// The key is hidden under a brick
+			it = breakableObstaclesPositions.erase(it);
 		else
 		{
 			++enemy_it;
+		}
+		else 
+		{
+			++it;
 		}
 	}
 	draw(target);
 }
 
-*/
+void LevelController::generateBoosters(std::mt19937& gen)
+{
+	// Shuffle the remaining positions to randomize obstacle placement
+	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
+
+	// Iterate through the shuffled free positions
+	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end();)
+	{
+		// Stop if the required number of boosters have been placed
+		if (boosters.size() >= boostersNum)
+		{
+			break;
+		}
+
+		// Extract the x and y coordinates from the current position
+		int32_t x = static_cast<int32_t>(it->x);
+		int32_t y = static_cast<int32_t>(it->y);
+
+		// Check if the position is under a obstacle
+		auto found = std::find_if(
+			breakableObstaclesPositions.begin(),
+			breakableObstaclesPositions.end(),
+			[x, y](const sf::Vector2f& pos) {
+				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+			});
+
+		std::shared_ptr<Booster> booster = std::make_shared<Booster>(BoosterType::Speed);
+
+		// Load atlas texture
+		m_atlasTexture = std::make_shared<sf::Texture>();
+		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
+
+		// Define, load, assign and set the specific texture and set the position of the booster in the game world
+		booster->setTexture(*m_atlasTexture);
+		booster->setTextureRect(getTextureRect(SPEED_BOOSTER_RECT_NAME));
+		booster->setPosition((float)x, (float)y);
+
+		// Add the booster to the list of all gates
+		boosters.emplace_back(booster);
+
+		if (found != breakableObstaclesPositions.end())
+		{
+			// The booster is hidden under a brick
+			 it = breakableObstaclesPositions.erase(it);
+			
+			//boosters.push_back(BoosterType::Speed);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+// Getter methods
+std::vector<std::shared_ptr<Obstacle>>& LevelController::getObstacles()
+{
+	return obstacles;
+}
+
+std::vector<std::shared_ptr<Enemy>>& LevelController::getEnemies()
+{
+	return enemies;
+}
+
+std::vector<std::shared_ptr<Gate>>& LevelController::getGates()
+{
+	return gates;
+}
+
+std::vector<std::shared_ptr<Booster>>& LevelController::getBoosters()
+{
+	return boosters;
+}
+
+std::vector<std::shared_ptr<Key>>& LevelController::getKeys()
+{
+	return keys;
+}
