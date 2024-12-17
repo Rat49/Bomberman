@@ -1,6 +1,7 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
+#include "CollisionModule/CollisionComponent.hpp"
 
 class Animation;
 
@@ -39,12 +40,15 @@ public:
 
 	void drawBombs(sf::RenderWindow& window);
 
+	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;
 	float y = 70.f;
 	float speed = 0.f;
 	int32_t maxBombs;
+	float bombDuration;
 	float velocity = 0.f;
     bool canPassThroughBombs = false;
 
@@ -58,7 +62,7 @@ private:
 	int32_t upId;
 	int32_t downId;
 
-	//Bomb bomb;
+	std::unique_ptr<CollisionComponent> collisionBox;
 
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 

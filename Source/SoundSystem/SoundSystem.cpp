@@ -124,7 +124,7 @@ void SoundSystem::playSoundFromBuffer(const std::shared_ptr<sf::SoundBuffer>& bu
 {
 	auto sound = std::make_unique<sf::Sound>();
 	sound->setBuffer(*buffer);
-	sound->setVolume(100.f);
+	sound->setVolume(soundsVolume);
 	sound->play();
 
 	// Saving active sounds
@@ -206,6 +206,14 @@ bool SoundSystem::isSoundPlaying(int32_t soundID) const
 	return false;
 }
 
+void SoundSystem::setSoundsVolume(float volume)
+{
+	soundsVolume = volume;
+	for (auto& sound : activeSounds) {
+		sound.second->setVolume(volume);
+	}
+}
+
 // MUSIC
 // Load music from file and store it
 bool SoundSystem::addMusic(int32_t musicID, const std::string& filePath)
@@ -238,7 +246,7 @@ void SoundSystem::playMusic(int32_t musicID)
 	if (it != musicTracks.end())
 	{
 		currentMusic = it->second;
-		currentMusic->setVolume(100.f);
+		currentMusic->setVolume(musicVolume);
 		currentMusic->play();
 		LOG("Playing music: $", musicID);
 	}
@@ -279,4 +287,12 @@ bool SoundSystem::isMusicPlaying() const
 
 void SoundSystem::terminate()
 {
+}
+
+void SoundSystem::setMusicVolume(float volume)
+{
+	musicVolume = volume;
+	for (auto& music : musicTracks) {
+		music.second->setVolume(volume);
+	}
 }

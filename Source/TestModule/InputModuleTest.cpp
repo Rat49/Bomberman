@@ -29,7 +29,7 @@ void InputModuleTest::setup()
 {
 	LOG("InputModuleTest: setup()");
 
-	Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
+	Modules::Input->LoadInputSettings("../../Data/Config/test_input_config.ini");
 
 
 	ActionID buttonActionID     = Modules::Input->GetActionID("PlantBomb");

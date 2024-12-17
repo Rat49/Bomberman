@@ -36,6 +36,8 @@ public:
 
 	void update(float deltaTime, sf::Window* window) override;
 
+	void updateBinding(const std::string& actionName, const std::string& actionType, const std::string& newKey, const std::string& actionAxis="");
+
 	void terminate() override;
 
 private:
