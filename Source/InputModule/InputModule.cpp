@@ -215,9 +215,9 @@ void InputModule::update(float, sf::Window*)
 
 			action.second.State.buttonState = sf::Keyboard::isKeyPressed(action.second.Binding.button.Key);
 
-            shouldEmit                                       = ((shouldEmit && action.second.State.buttonState &&
-                           !action.second.Binding.button.previousButtonState) ||
-                          shouldEmit && !action.second.State.buttonState && action.second.Binding.button.previousButtonState);
+            shouldEmit = ((shouldEmit && action.second.State.buttonState && !action.second.Binding.button.previousButtonState)  ||
+                          (shouldEmit && !action.second.State.buttonState && action.second.Binding.button.previousButtonState));
+
             action.second.Binding.button.previousButtonState = action.second.State.buttonState;
             params                                           = &action.second.State.buttonState;
 			break;
