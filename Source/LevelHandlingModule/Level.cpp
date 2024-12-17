@@ -295,17 +295,41 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		target.draw(*booster, states);
 	}
-	
-	
-	for (const auto& obstacle : m_generatedElements.obstacles)
-	{
-		target.draw(*obstacle, states);
-	}
 
-	for (const auto& enemy : m_generatedElements.enemies)
-	{
-		target.draw(*enemy, states);
-	}
+	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
+    {
+        if (!(*it)->isExploded)
+        {
+            target.draw(*(*it)->getCurrentAnimation());
+            ++it; 
+        }
+        else
+        {
+            target.draw(*(*it)->getCurrentAnimation());
+
+            if (!(*it)->getCurrentAnimation()->isPlaying())
+            {
+                it = m_generatedElements.obstacles.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+    }
+	
+    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
+    {
+        if ((*enemy_it)->isDead())
+        {
+            enemy_it = m_generatedElements.enemies.erase(enemy_it);
+        }
+        else
+        {
+            target.draw(*(*enemy_it), states);
+            ++enemy_it;
+        }
+    }
 }
 
 

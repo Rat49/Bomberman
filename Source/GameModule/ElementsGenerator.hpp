@@ -31,7 +31,7 @@ private:
 
 	//core functions for various level elements
 
-	std::vector<std::shared_ptr<Obstacle>> generateObstacles(std::mt19937& gen, const sf::Texture& atlasTexture);
+	std::vector<std::shared_ptr<Obstacle>> generateObstacles(std::mt19937& gen);
 
 	std::vector<std::shared_ptr<Enemy>> generateEnemies(std::mt19937& gen, const sf::Texture& atlasTexture);
 	
@@ -40,8 +40,6 @@ private:
 	std::vector<std::shared_ptr<Key>> generateKeys(std::mt19937& gen, const sf::Texture& atlasTexture);
 	
 	std::vector<std::shared_ptr<Booster>> generateBoosters(std::mt19937& gen, const sf::Texture& atlasTexture);
-
-	std::vector<sf::Vector2i> generatePatrollingPoints(std::mt19937& gen, const sf::Vector2i& enemyPosition, std::vector<sf::Vector2f>& newFreePositions, int32_t range) const;
 
 	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType levelType) const;
 	
@@ -56,7 +54,7 @@ private:
 	LevelConfigs m_levelConfig;
 
 	GeneratedElements m_generatedElements;
-
+    
 	std::vector<sf::Vector2f> breakableObstaclesPositions;
 	std::vector<sf::Vector2f> freePositions;
 	std::set<std::pair<int32_t, int32_t>> safePositions;

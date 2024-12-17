@@ -70,8 +70,6 @@ private:
 	float timeCounter = 0.0f;
 
 	bool isPaused = false;
-	 
-	LevelId currentLevel;
 
 	// RenderWindow doesn't have method getTitle
 	// We need this for creating new windows (changing resolution)
