@@ -8,6 +8,8 @@ class GameStats
 public:
 	GameStats() = default;
 
+	~GameStats();
+
 	void initialize(std::shared_ptr<LevelController>& levelController, int32_t* time);
 
 	void onEnemieDeath();
@@ -26,11 +28,23 @@ private:
 
 	int32_t m_points = 0;
 
+	int32_t m_enemieKillPoints = 0;
+
+	int32_t m_obstacleDestructionPoints = 0;
+
+	int32_t m_boosterCollectPoints = 0;
+
 	EventID m_enemieDeathID = -1;
 
 	EventID m_obstacleDestructionID = -1;
 
 	EventID m_boosterCollectID = -1;
+
+	FunctionHandle m_enemieDeathHandle = -1;
+
+	FunctionHandle m_obstacleDestructionHandle = -1;
+
+	FunctionHandle m_boosterCollectHandle = -1;
 
 	std::shared_ptr<LevelController> m_levelController;
 };
