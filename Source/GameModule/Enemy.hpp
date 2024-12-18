@@ -48,5 +48,7 @@ private:
 
     CollisionRectangle collision;
 
+	int32_t collisionBoxID;
+
 	bool isEnemyDead = false;
 };
