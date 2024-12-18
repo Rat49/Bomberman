@@ -53,8 +53,14 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_OPTIONS);
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
+
+	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
 	Modules::Level->setCurrentLevel(currentLevel);
+
+	//set elements on level
+	if (!Modules::Level->setUpElementsOnLevel(elementsId))
+		return false;
 
 	if (!windowInfo.isSectionPresent(WINDOW))
 		return false;
@@ -72,7 +78,7 @@ bool GameModule::initialize()
 	currentStage = windowSection.getValue(STAGE).getInt32();
 
 	// Creating Window and HUD
-	window.create(sf::VideoMode(width, height), gameTitle);
+	window.create(sf::VideoMode(width, height), gameTitle, sf::Style::Close);
 	Modules::UI->setViewportSize((float) width, (float) height);
 	// Creating all screens
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
@@ -94,21 +100,6 @@ bool GameModule::initialize()
 	{
 		LOG("Failed to initialize PlayerCharacter.");
 		return false;
-	}
-
-	levelGenerator = std::make_unique<LevelController>();
-
-	int levelWidth = 13;
-	int levelHeight = 31;
-	GameLevelType gameLevel = GameLevelType::Easy;
-	int enemyCount = 5;
-	int breakableCount = 50;
-	sf::Vector2i playerStartPosition(1, 1);
-	int numBoosters = 3;
-
-	if (!levelGenerator->Initialize(levelWidth, levelHeight, gameLevel, enemyCount, breakableCount, playerStartPosition, numBoosters))
-	{
-		LOG("Failed to initialize LevelGenerator.");
 	}
 
 	return true;
@@ -185,16 +176,6 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
-			levelGenerator->update(window);
-
-			//for testing purposes can be removed whenever
-			for(auto& enemy: levelGenerator->getEnemies())
-			{
-				if (enemy->getPosition().x < player.getCurrentPosition().x)
-				{
-					enemy->initializeDeath();
-				}
-			}
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 
@@ -283,6 +264,12 @@ void GameModule::addScore(int32_t newScore, const std::string& name)
 void GameModule::saveResults()
 {
     (std::dynamic_pointer_cast<Leaderboard>(screens[Screens::LEADERBOARD]))->saveResults();
+}
+
+float GameModule::getHUDHeight()
+{
+    auto hud = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
+    return hud->getBackgroundHeigth();
 }
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
