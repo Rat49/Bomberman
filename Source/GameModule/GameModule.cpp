@@ -78,7 +78,7 @@ bool GameModule::initialize()
 	currentStage = windowSection.getValue(STAGE).getInt32();
 
 	// Creating Window and HUD
-	window.create(sf::VideoMode(width, height), gameTitle);
+	window.create(sf::VideoMode(width, height), gameTitle, sf::Style::Close);
 	Modules::UI->setViewportSize((float) width, (float) height);
 	// Creating all screens
 	screens[Screens::LEVEL] = std::make_shared<HUD>(&window, font, PATH_HUD);
@@ -264,6 +264,12 @@ void GameModule::addScore(int32_t newScore, const std::string& name)
 void GameModule::saveResults()
 {
     (std::dynamic_pointer_cast<Leaderboard>(screens[Screens::LEADERBOARD]))->saveResults();
+}
+
+float GameModule::getHUDHeight()
+{
+    auto hud = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
+    return hud->getBackgroundHeigth();
 }
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)

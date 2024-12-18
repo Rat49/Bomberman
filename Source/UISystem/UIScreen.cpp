@@ -93,7 +93,6 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	sf::RectangleShape tempBackground = background;
-	tempBackground.setFillColor(backgroundColor);
 
 	// Draw the background
 	target.draw(tempBackground, states);
@@ -176,10 +175,11 @@ void UIScreen::updateUIElementPositions()
 		animation.second->handleResize(scale);
 	}
 	setBackground(background.getPosition().x * scale.x, background.getPosition().y * scale.y,
-		background.getSize().x * scale.x, background.getSize().y * scale.y );
+		background.getSize().x * scale.x, background.getSize().y * scale.y, background.getFillColor() );
 }
 
-void UIScreen::setBackground(float positionX, float positionY, float sizeX, float sizeY) {
+void UIScreen::setBackground(float positionX, float positionY, float sizeX, float sizeY, const sf::Color& color) {
 	background.setPosition(sf::Vector2f(positionX, positionY));
 	background.setSize(sf::Vector2f(sizeX, sizeY));
+    background.setFillColor(color);
 }

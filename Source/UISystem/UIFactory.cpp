@@ -23,8 +23,9 @@ namespace
 	const std::string HEIGHT_OFFSET = "heightOffset";
 	const std::string RECTANGLE_WIDTH = "rectangleWidth";
 	const std::string BAR_VALUE = "barValue";
-	const std::string REICTANGLE_HEIGHT = "rectangleHeight";
+	const std::string RECTANGLE_HEIGHT = "rectangleHeight";
 	const std::string BACKGROUND_COLOR = "backgroundColor";
+    const std::string RECTANGLE_COLOR  = "rectangleColor";
 	const std::string BAR_COLOR = "barColor";
 	const std::string KNOB_COLOR = "knobColor";
 	const std::string UISCREEN = "UIScreen";
@@ -76,22 +77,24 @@ void UIFactory::makeScreen(const std::string& path, UIScreen* screen, const std:
 
 void UIFactory::setUIScreen(UIScreen* screen, const ConfigSection& element)
 {
-    if (element.isValuePresent(BACKGROUND_COLOR))
-    {
-        auto& backgroundColor = element.getValue(BACKGROUND_COLOR).getString();
-        screen->setBackgroundColor(sf::Color(std::stoul(backgroundColor, nullptr, 16)));
-    }
-    if (element.areValuesPresent({WIDTH_OFFSET, HEIGHT_OFFSET, REICTANGLE_HEIGHT, REICTANGLE_HEIGHT})) {
-        int32_t width  = screen->getWindow()->getSize().x;
-        int32_t height = screen->getWindow()->getSize().y;
+	if (element.isValuePresent(BACKGROUND_COLOR))
+	{
+		auto& backgroundColor = element.getValue(BACKGROUND_COLOR).getString();
+		screen->setBackgroundColor(sf::Color(std::stoul(backgroundColor, nullptr, 16)));
+	}
+	if (element.areValuesPresent({ WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_HEIGHT, RECTANGLE_WIDTH, RECTANGLE_COLOR })) {
+		int32_t width = screen->getWindow()->getSize().x;
+		int32_t height = screen->getWindow()->getSize().y;
 
-        float elementWidthOffset  = element.getValue(WIDTH_OFFSET).getFloat();
-        float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
-        float elementWidth        = element.getValue(RECTANGLE_WIDTH).getFloat();
-        float elementHeight       = element.getValue(REICTANGLE_HEIGHT).getFloat();
+		float elementWidthOffset = element.getValue(WIDTH_OFFSET).getFloat();
+		float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
+		float elementWidth = element.getValue(RECTANGLE_WIDTH).getFloat();
+		float elementHeight = element.getValue(RECTANGLE_HEIGHT).getFloat();
+        auto& rectangleColor = element.getValue(RECTANGLE_COLOR).getString();
 
-        screen->setBackground(elementWidthOffset * width, elementHeightOffset * height, elementWidth, elementHeight);
-    }
+		screen->setBackground(elementWidthOffset * width, elementHeightOffset * height, elementWidth, elementHeight, 
+			sf::Color(std::stoul(rectangleColor, nullptr, 16)));
+	}
 }
 
 void UIFactory::makeUILabel(UIScreen* screen, const std::string& screenFont, const ConfigSection& element)
@@ -163,14 +166,14 @@ void UIFactory::makeUIButton(UIScreen* screen, const std::string& screenFont, co
     auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width);
 
     // Check if necessary values are present
-    if (element.areValuesPresent({NAME, VALUE, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, REICTANGLE_HEIGHT}))
+    if (element.areValuesPresent({NAME, VALUE, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, RECTANGLE_HEIGHT}))
     {
         auto& elementName         = element.getValue(NAME).getString();
         auto& elementValue        = element.getValue(VALUE).getString();
         float elementWidthOffset  = element.getValue(WIDTH_OFFSET).getFloat();
         float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
         float elementWidth        = element.getValue(RECTANGLE_WIDTH).getFloat();
-        float elementHeight       = element.getValue(REICTANGLE_HEIGHT).getFloat();
+        float elementHeight       = element.getValue(RECTANGLE_HEIGHT).getFloat();
 
         auto myButton = std::make_shared<UIButton>(elementValue, font, characterSize, sf::Vector2f(elementWidth, elementHeight));
 
@@ -215,13 +218,13 @@ void UIFactory::makeUISlider(UIScreen* screen, const ConfigSection& element)
 	int32_t height = screen->getWindow()->getSize().y;
 
 	// Check if necessary values are present
-	if (element.areValuesPresent({ NAME, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, REICTANGLE_HEIGHT, BAR_VALUE}))
+	if (element.areValuesPresent({ NAME, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, RECTANGLE_HEIGHT, BAR_VALUE}))
 	{
 		auto& elementName = element.getValue(NAME).getString();
 		float elementWidthOffset = element.getValue(WIDTH_OFFSET).getFloat();
 		float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
 		float elementWidth = element.getValue(RECTANGLE_WIDTH).getFloat();
-		float elementHeight = element.getValue(REICTANGLE_HEIGHT).getFloat();
+		float elementHeight = element.getValue(RECTANGLE_HEIGHT).getFloat();
 
 		float bar_value = element.getValue(BAR_VALUE).getFloat();
 
@@ -255,13 +258,13 @@ void UIFactory::makeUIInputField(UIScreen* screen, const std::string& screenFont
 	auto characterSize = static_cast<unsigned int>(FACTOR_WIDTH * width * factorSize);
 
 	// Check if necessary values are present
-	if (element.areValuesPresent({ NAME, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, REICTANGLE_HEIGHT }))
+	if (element.areValuesPresent({ NAME, WIDTH_OFFSET, HEIGHT_OFFSET, RECTANGLE_WIDTH, RECTANGLE_HEIGHT }))
 	{
 		auto& elementName = element.getValue(NAME).getString();
 		float elementWidthOffset = element.getValue(WIDTH_OFFSET).getFloat();
 		float elementHeightOffset = element.getValue(HEIGHT_OFFSET).getFloat();
 		float elementWidth = element.getValue(RECTANGLE_WIDTH).getFloat();
-		float elementHeight = element.getValue(REICTANGLE_HEIGHT).getFloat();
+		float elementHeight = element.getValue(RECTANGLE_HEIGHT).getFloat();
 
 		auto myInputField = std::make_shared<UIInputField>(font, characterSize, sf::Vector2f(elementWidth, elementHeight));
 		myInputField->setPosition(sf::Vector2f(elementWidthOffset * width, elementHeightOffset * height));

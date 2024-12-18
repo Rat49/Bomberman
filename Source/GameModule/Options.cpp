@@ -81,8 +81,8 @@ Options::Options(sf::RenderWindow* renderWindow, const std::string& optionsFont,
 				button->onRelease = [this, element]() {
 					if (fullscreen) {
 						// creating window with sf::Style::Default
-						window->create(sf::VideoMode(currentWindowSize.first, currentWindowSize.second), 
-							Modules::Game->getGameTitle(), sf::Style::Default);
+                        window->create(sf::VideoMode(currentWindowSize.first, currentWindowSize.second, sf::Style::Close), 
+							Modules::Game->getGameTitle(), sf::Style::Close);
 
 						Modules::Game->handleResize((float)(currentWindowSize.first), (float)(currentWindowSize.second));
 						
@@ -126,7 +126,8 @@ Options::Options(sf::RenderWindow* renderWindow, const std::string& optionsFont,
 							window->create(sf::VideoMode(currentWindowSize.first, currentWindowSize.second),
 								Modules::Game->getGameTitle(), sf::Style::Fullscreen);
 						else
-							window->create(sf::VideoMode(currentWindowSize.first, currentWindowSize.second), Modules::Game->getGameTitle());
+                            window->create(sf::VideoMode(currentWindowSize.first, currentWindowSize.second),
+                                           Modules::Game->getGameTitle(), sf::Style::Close);
 
 						Modules::Game->handleResize((float)(window->getSize().x), (float)(window->getSize().y));
 					}
