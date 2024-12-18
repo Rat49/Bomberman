@@ -1,7 +1,7 @@
 #pragma once
-#include "LevelController.hpp"
 #include <memory>
 #include "EventSystem/EventTypes.hpp"
+#include "LevelHandlingModule/Level.hpp"
 
 class GameStats
 {
@@ -10,7 +10,7 @@ public:
 
 	~GameStats();
 
-	void initialize(std::shared_ptr<LevelController>& levelController, int32_t* time);
+	void initialize(std::shared_ptr<Level>& levelController, int32_t* time);
 
 	void onEnemieDeath();
 
@@ -46,6 +46,6 @@ private:
 
 	FunctionHandle m_boosterCollectHandle = -1;
 
-	std::shared_ptr<LevelController> m_levelController;
+	std::shared_ptr<Level> m_level;
 };
 

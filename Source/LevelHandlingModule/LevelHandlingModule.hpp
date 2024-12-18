@@ -19,6 +19,9 @@ public:
 	//load multiple levels using config file vector 
 	bool loadLevels(const std::vector<std::string>& configPaths);
 
+	//setUp elements on level
+	bool setUpElementsOnLevel(int32_t levelElementsId);
+
 	//unload level from map
 	bool unloadLevel(LevelId levelId);
 
@@ -26,7 +29,9 @@ public:
 	void setCurrentLevel(LevelId levelId);
 
 	//get level 
-	LevelId getCurrentLevel();
+	LevelId getCurrentLevelID() const;
+
+	std::shared_ptr<Level>& getCurrentLevel();
 
 	//check if level is loaded 
 	bool isLevelLoaded(LevelId levelId) const;
@@ -51,7 +56,7 @@ private:
 	std::unordered_map<LevelId, std::shared_ptr<Level>> m_levels;
 
 	//id of current level
-	LevelId m_currentLevel = -1;
+	LevelId m_currentLevelID = -1;
 
 	//temp Level id
 	LevelId m_levelId = -1;

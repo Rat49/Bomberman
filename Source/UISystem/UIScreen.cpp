@@ -93,7 +93,6 @@ void UIScreen::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 
 	sf::RectangleShape tempBackground = background;
-	tempBackground.setFillColor(backgroundColor);
 
 	// Draw the background
 	target.draw(tempBackground, states);
@@ -158,40 +157,10 @@ bool UIScreen::handleEvent(const sf::Event& event)
 
 	if (event.type == sf::Event::Resized)
 	{
-		view.setSize(static_cast<float>(window->getSize().x), static_cast<float>(window->getSize().y));
-
 		updateUIElementPositions();
 	}
 
-	// A variable to track whether the event has been processed
-	bool eventHandled = false;
-
-	for (const auto& element : elements)
-	{
-		// Check if the element is visible and interactive
-		if (element.second->isVisible() && element.second->getIsInteractable())
-		{
-			// Convert mouse coordinates to virtual coordinates
-			sf::Vector2f virtualPos = window->mapPixelToCoords({ event.mouseButton.x, event.mouseButton.y }, view);
-
-			// Check if the virtual coordinates are within the element
-			if (element.second->containsPoint(virtualPos))
-			{
-				// Pass the event to the element and save the result
-				eventHandled = element.second->handleEvent(event);
-
-				// If the event has been processed, stop further processing
-				if (eventHandled)
-				{
-					break;
-				}
-
-				break;
-			}
-		}
-	}
-	// Returns whether the event was processed
-	return eventHandled;
+	return true;
 }
 
 void UIScreen::updateUIElementPositions()
@@ -201,9 +170,16 @@ void UIScreen::updateUIElementPositions()
 	{
 		element.second->handleResize(scale);
 	}
+	for (auto& animation : animations)
+	{
+		animation.second->handleResize(scale);
+	}
+	setBackground(background.getPosition().x * scale.x, background.getPosition().y * scale.y,
+		background.getSize().x * scale.x, background.getSize().y * scale.y, background.getFillColor() );
 }
 
-void UIScreen::setBackground(float positionX, float positionY, float sizeX, float sizeY) {
+void UIScreen::setBackground(float positionX, float positionY, float sizeX, float sizeY, const sf::Color& color) {
 	background.setPosition(sf::Vector2f(positionX, positionY));
 	background.setSize(sf::Vector2f(sizeX, sizeY));
+    background.setFillColor(color);
 }

@@ -2,6 +2,9 @@
 #include "Common/Modules.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "Enemy.hpp"
+#include "Booster.hpp"
+#include "Obstacle.hpp"
 
 #include "Common/Logs.hpp"
 
@@ -14,8 +17,9 @@ namespace
 	const std::string OBSTACLE = "ObstacleDestroy";
 }
 
-void GameStats::initialize(std::shared_ptr<LevelController>& levelController, int32_t* time)
+void GameStats::initialize(std::shared_ptr<Level>& level, int32_t* time)
 {
+    m_level = level;
 	Modules::Config->addFile(PATH_WALKING_ANIMATION);
 	const ConfigFile& walkingAnimations = Modules::Config->getFile(PATH_WALKING_ANIMATION);
 	
@@ -27,19 +31,19 @@ void GameStats::initialize(std::shared_ptr<LevelController>& levelController, in
 	m_obstacleDestructionID = Modules::Events->registerEvent();
 	m_boosterCollectID = Modules::Events->registerEvent();
 
-	for (auto& enemie : levelController->getEnemies())
+	for (auto& enemy : m_level->getEnemies())
 	{
-		enemie.setCallbackID(m_enemieDeathID);
+        enemy->setCallbackID(m_enemieDeathID);
 	}
 
-	for (auto& obstacle : levelController->getObstacles())
+	for (auto& obstacle : m_level->getObstacles())
 	{
-		obstacle.setCallbackID(m_obstacleDestructionID);
+		obstacle->setCallbackID(m_obstacleDestructionID);
 	}
 
-	for (auto& booster : levelController->getBoosters())
+	for (auto& booster : m_level->getBoosters())
 	{
-		booster.setCallbackID(m_boosterCollectID);
+		booster->setCallbackID(m_boosterCollectID);
 	}
 
 	m_enemieDeathHandle = Modules::Events->subscribe(m_enemieDeathID, std::bind(&GameStats::onEnemieDeath, this));
@@ -47,8 +51,6 @@ void GameStats::initialize(std::shared_ptr<LevelController>& levelController, in
 	m_boosterCollectHandle = Modules::Events->subscribe(m_boosterCollectID, std::bind(&GameStats::onBoosterCollected, this));
 
 	m_time = time;
-
-	m_levelController = levelController;
 }
 
 GameStats::~GameStats()
@@ -74,19 +76,19 @@ void GameStats::onObstacleDestroyed()
 
 void GameStats::levelChange()
 {
-	for (auto& enemie : m_levelController->getEnemies())
+    for (auto& enemie : m_level->getEnemies())
 	{
-		enemie.setCallbackID(m_enemieDeathID);
+		enemie->setCallbackID(m_enemieDeathID);
 	}
 
-	for (auto& obstacle : m_levelController->getObstacles())
+	for (auto& obstacle : m_level->getObstacles())
 	{
-		obstacle.setCallbackID(m_obstacleDestructionID);
+		obstacle->setCallbackID(m_obstacleDestructionID);
 	}
 
-	for (auto& booster : m_levelController->getBoosters())
+	for (auto& booster : m_level->getBoosters())
 	{
-		booster.setCallbackID(m_boosterCollectID);
+		booster->setCallbackID(m_boosterCollectID);
 	}
 
 	if (*m_time > 0)
