@@ -15,5 +15,5 @@ public:
 private:
     int32_t m_boosterId;
 
-    bool m_isEffectDone = false;
+    bool isApplied = false;
 };
