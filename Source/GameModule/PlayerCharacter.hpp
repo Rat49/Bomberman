@@ -28,9 +28,7 @@ public:
 
 	sf::Vector2f getCurrentPosition() const;
 
-	void startPassThroughBombs();
-
-	void stopPassThroughBombs();
+	void PassThroughBombs(bool pass);
 
     bool getPassThroughBombs() {return canPassThroughBombs;}
 

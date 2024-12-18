@@ -95,7 +95,6 @@ bool GameModule::initialize()
 	auto hudScreen = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
     hudScreen->setTime(std::to_string(gameTime));
 
-
 	if (!player.init())
 	{
 		LOG("Failed to initialize PlayerCharacter.");
@@ -239,22 +238,6 @@ void GameModule::checkTimeCounter()
 	}
 }
 
-void GameModule::updateBoosters()
-{
-	auto boostersIterator = m_boosters.begin();
-	while (boostersIterator != m_boosters.end())
-	{
-		if (boostersIterator->second->shoulRemoveEffect())
-		{
-			if (boostersIterator->second->removeEffect(player))
-			{
-				boostersIterator = m_boosters.erase(boostersIterator);
-				continue;
-			}
-		}
-		++boostersIterator;
-	}
-}
 
 void GameModule::addScore(int32_t newScore, const std::string& name)
 {
@@ -288,4 +271,20 @@ void GameModule::removeAllBoosters()
 	m_boosters.clear();
 }
 
+void GameModule::updateBoosters()
+{
+	auto boostersIterator = m_boosters.begin();
+	while (boostersIterator != m_boosters.end())
+	{
+		if (boostersIterator->second->shoulRemoveEffect())
+		{
+			if (boostersIterator->second->removeEffect(player))
+			{
+				boostersIterator = m_boosters.erase(boostersIterator);
+				continue;
+			}
+		}
+		++boostersIterator;
+	}
+}
 

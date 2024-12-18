@@ -2,7 +2,7 @@
 #include "BoosterComponent.hpp"
 #include <chrono>
 
-class BombPasBooster : public BoosterComponent
+class PassBombBooster : public BoosterComponent
 {
 public:
 
@@ -18,9 +18,9 @@ private:
 
     int32_t m_boosterId;
 
-    bool m_isEffectDone;
-
     float m_duration = 10.f;
+    
+    bool m_isEffectDone;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 };

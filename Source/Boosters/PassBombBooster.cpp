@@ -1,29 +1,29 @@
-#include "BombPasBooster.hpp"
+#include "PassBombBooster.hpp"
 
-int32_t BombPasBooster::getBoosterID()
+int32_t PassBombBooster::getBoosterID()
 {
     return m_boosterId;
 }
 
-void BombPasBooster::applyEffect(PlayerCharacter& playerCharacter)
+void PassBombBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-    playerCharacter.startPassThroughBombs();
+    playerCharacter.PassThroughBombs(true);
     m_isEffectDone = false;
     startTime      = std::chrono::high_resolution_clock::now();
 }
 
-bool BombPasBooster::removeEffect(PlayerCharacter& playerCharacter)
+bool PassBombBooster::removeEffect(PlayerCharacter& playerCharacter)
 {
     auto now = std::chrono::high_resolution_clock::now();
     if (std::chrono::duration<float>(now - startTime).count() >= m_duration)
     {
-        playerCharacter.stopPassThroughBombs();
+        playerCharacter.PassThroughBombs(false);
         m_isEffectDone = true;
     }
     return m_isEffectDone;
 }
 
-bool BombPasBooster::shoulRemoveEffect()
+bool PassBombBooster::shoulRemoveEffect()
 {
     return m_isEffectDone;
 }

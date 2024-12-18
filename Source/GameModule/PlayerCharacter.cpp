@@ -182,14 +182,9 @@ sf::Vector2f PlayerCharacter::getCurrentPosition() const
 	return { x, y };
 }
 
-void PlayerCharacter::startPassThroughBombs()
+void PlayerCharacter::PassThroughBombs(bool pass)
 {
-    canPassThroughBombs = true;
-}
-
-void PlayerCharacter::stopPassThroughBombs()
-{
-    canPassThroughBombs = false;
+    canPassThroughBombs = pass;
 }
 
 void PlayerCharacter::updateVelocity(float deltaTime)
