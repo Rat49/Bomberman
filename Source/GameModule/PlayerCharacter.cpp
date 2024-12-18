@@ -10,15 +10,22 @@
 
 PlayerCharacter::PlayerCharacter()
 {
-	/*collisionBox = std::make_unique<CollisionComponent>();
+	collision.setObjectParent(this);
 
-	collisionBox->setParent(this);
+    collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));*/
+    collisionBox->setObjectParent(this);
+
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+
+	collisionBox->setColor(sf::Color::Red);
 }
 
 bool PlayerCharacter::init()
 {
+    collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
+    Modules::Physics->addObject(collisionBox.get());
+
 	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
 
@@ -87,25 +94,112 @@ bool PlayerCharacter::init()
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-	if (!Modules::Game->getIsPaused()) {
-		sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
-		if (state.x == 1 && state.y == 0) { //RIGHT
-			x += velocity;
-			updateAnimation(rightId);
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+    LOG("collision: $", collisionBox->getIsOverlapped());
+    if (!Modules::Game->getIsPaused())
+    {
+        sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
+        globalStats = state;
+
+		if (state.x == 1 && state.y == 0)
+        { //RIGHT
+            if (canMoveRight)
+            {
+                x += velocity;
+                updateAnimation(rightId);
+            }
+            else
+            {
+                x += 0.0f;
+                updateAnimation(rightId);
+            }
+        }
+        else if (state.x == 0 && state.y == -1)
+        { //DOWN
+            if (canMoveDown)
+            {
+                y += velocity;
+                updateAnimation(downId);
+            }
+			else
+			{
+                y += 0.0f;
+                updateAnimation(downId);
+			}
+        }
+
+        else if (state.x == -1 && state.y == 0)
+        { //LEFT
+            if (canMoveLeft)
+            {
+                x -= velocity;
+                updateAnimation(leftId);
+            }
+            else
+            {
+                x -= 0.0f;
+                updateAnimation(leftId);
+			}
+        }
+
+        else if (state.x == 0 && state.y == 1)
+        { //UP
+            if (canMoveUp)
+            {
+                y -= velocity;
+                updateAnimation(upId);
+            }
+            else
+            {
+                y -= 0.0f;
+                updateAnimation(upId);
+			}
+        }
+    }
+}
+
+void PlayerCharacter::onCollision(CollisionComponent* other)
+{
+    if (other)
+    {
+        sf::Vector2f  playerPos = getCurrentPosition();
+        sf::Vector2f otherPos  = other->getRectangle().getPosition();
+        if (otherPos.x > playerPos.x && (globalStats.x == 1 && globalStats.y == 0))
+        {
+            canMoveRight = false;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.y > playerPos.y && (globalStats.x == 0 && globalStats.y == -1))
+        {
+            canMoveDown = false;
+            canMoveRight = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.x < playerPos.x && (globalStats.x == -1 && globalStats.y == 0))
+        {
+            canMoveLeft = false;
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.y < playerPos.y && (globalStats.x == 0 && globalStats.y == 1))
+        {
+            canMoveUp = false;
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+        }
+        else
+        {
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
 		}
-		else if (state.x == 0 && state.y == -1) { //DOWN
-			y += velocity;
-			updateAnimation(downId);
-		}
-		else if (state.x == -1 && state.y == 0) { //LEFT
-			x -= velocity;
-			updateAnimation(leftId);
-		}
-		else if (state.x == 0 && state.y == 1) { //UP 
-			y -= velocity;
-			updateAnimation(upId);
-		}
-	}
+    }
 }
 
 void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
@@ -189,6 +283,8 @@ void PlayerCharacter::updateVelocity(float deltaTime)
 
 PlayerCharacter::~PlayerCharacter()
 {
+    Modules::Physics->unRegisterObject(collisionBoxID);
+
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
 	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }

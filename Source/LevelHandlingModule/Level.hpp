@@ -45,6 +45,9 @@ public:
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	//return all unbreakable obstacle positions on level
+    std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.

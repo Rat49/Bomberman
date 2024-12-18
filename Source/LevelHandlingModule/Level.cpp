@@ -415,3 +415,21 @@ std::vector<sf::Vector2f> Level::getWalkablePositions() const
 
 	return walkablePositions;
 }
+
+std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
+{
+    std::vector<sf::Vector2f> unbreakablePositions;
+
+    for (std::size_t y = 0; y < m_fields.size(); ++y)
+    {
+        for (std::size_t x = 0; x < m_fields[y].size(); ++x)
+        {
+            if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Undestroyable")
+            {
+                unbreakablePositions.push_back(m_fields[y][x].tilePosition);
+            }
+        }
+    }
+
+    return unbreakablePositions;
+}

@@ -5,6 +5,7 @@
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "SpriteModule/Animation.hpp"
 #include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -53,6 +54,8 @@ private:
 	std::unique_ptr<CollisionComponent> collisionBox;
 
 	CollisionRectangle collision;
+
+	int32_t collisionBoxID;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;

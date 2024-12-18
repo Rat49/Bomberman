@@ -22,7 +22,11 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	collisionBox->setObjectParent(this);
 
-	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(60.0f, 60.0f));
+	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(52.0f, 52.0f));
+
+	collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
+
+	 Modules::Physics->addObject(collisionBox.get());
 }
 
 void Obstacle::changeAnim(sf::Vector2f obsPos)

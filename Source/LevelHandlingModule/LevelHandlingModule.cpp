@@ -132,6 +132,19 @@ std::vector<sf::Vector2f> LevelHandlingModule::getWalkablePositions() const
 	return std::vector<sf::Vector2f>();
 }
 
+std::vector<sf::Vector2f> LevelHandlingModule::getUnbreakableObstaclePositions() const
+{
+    auto it = m_levels.find(m_currentLevel);
+
+    if (it != m_levels.end())
+    {
+        return it->second->getUnbreakableObstaclePositions();
+    }
+
+    LOG("Level not found");
+    return std::vector<sf::Vector2f>();
+}
+
 
 void LevelHandlingModule::update(float, sf::Window* window)
 {

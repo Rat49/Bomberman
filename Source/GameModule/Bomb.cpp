@@ -1,6 +1,8 @@
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
 #include "Common/Logs.hpp"
+#include "GameModule/PlayerCharacter.hpp"
+#include "GameModule/Enemy.hpp"
 
 Bomb::Bomb()
 {
@@ -199,6 +201,8 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
     
     Obstacle* hitObstacle;
+    PlayerCharacter* hitPlayer;
+    Enemy* hitEnemy;
 
     if (!hitResults.empty())
     {
@@ -207,12 +211,32 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
             if (obj)
             {
                 hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent());
-                if (hitObstacle)
+                if (dynamic_cast<Obstacle*>(obj->getObjectParent()))
                 {
-                    canChangeObstacleAnim = true;
-                    obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
-                    hitObstacle->isExploded = true;
+                    hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent());
+                    if (hitObstacle)
+                    {
+                        canChangeObstacleAnim = true;
+                        obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
+                        hitObstacle->isExploded = true;
+                    }
                 }
+				else if (dynamic_cast<PlayerCharacter*>(obj->getObjectParent()))
+				{
+                    hitPlayer = dynamic_cast<PlayerCharacter*>(obj->getObjectParent());
+                    if (hitPlayer)
+                    {
+                        LOG("PLAYER!");
+					}
+				}
+				else if (dynamic_cast<Enemy*>(obj->getObjectParent()))
+				{
+                    hitEnemy = dynamic_cast<Enemy*>(obj->getObjectParent());
+					if (hitEnemy)
+					{
+                        LOG("ENEMY!");
+					}
+				}
             }
         }
     }

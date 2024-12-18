@@ -2,10 +2,13 @@
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
+#include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
+
 
 class Animation;
 
-class PlayerCharacter
+class PlayerCharacter : public CollisionObject
 {
 public:
 	PlayerCharacter();
@@ -36,6 +39,10 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
+    CollisionRectangle& getCollision() { return collision; }
+
+	void onCollision(CollisionComponent* other);
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;
@@ -56,7 +63,20 @@ private:
 
 	std::unique_ptr<CollisionComponent> collisionBox;
 
+    CollisionRectangle collision;
+
+	int32_t collisionBoxID;
+
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
+
+	float gridSize = 64.0f;
+
+	bool canMoveLeft  = true;
+    bool canMoveRight = true;
+    bool canMoveUp    = true;
+    bool canMoveDown  = true;
+
+	sf::Vector2f globalStats;
 };
