@@ -2,8 +2,15 @@
 #include <random>
 #include <set>
 #include <utility>
+#include "Common/Logs.hpp"
 
-Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate) {}
+Obstacle::Obstacle(ObstacleType type, sf::Vector2i position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate) {
+    collisionBox = std::make_unique<CollisionComponent>();
+    collisionBox->setParent(this);
+    
+    collisionBox->setRectangleProperties({static_cast<float>(position.x + 2), static_cast<float>(position.y + 2)}, {60.f,60.f});
+    collisionBox->setColor(sf::Color::Blue);
+}
 
 sf::Vector2i Obstacle::getPosition() const
 {

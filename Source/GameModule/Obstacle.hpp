@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "CollisionModule/CollisionComponent.hpp"
 
 enum class ObstacleType
 {
@@ -31,4 +32,6 @@ private:
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
+    std::unique_ptr<CollisionComponent> collisionBox;
+
 };

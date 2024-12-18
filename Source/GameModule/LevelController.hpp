@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/System.hpp>
-#include "GameModule/Enemy.hpp"
+//#include "GameModule/Enemy.hpp"
 #include "GameModule/Obstacle.hpp"
 #include "GameModule/Booster.hpp"
 #include "GameModule/Gate.hpp"
@@ -12,6 +12,7 @@
 #include <vector>
 #include <random>
 #include <set>
+#include "EnemyBase.hpp"
 
 class LevelController
 {
@@ -22,11 +23,11 @@ public:
 
 	void generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters);
 
-	void update(sf::RenderTarget& target);
+	void update(sf::RenderTarget& target, float deltaTIme);
 	
 	// Getter methods for private members
 	const std::vector<Obstacle>& getObstacles() const;
-	std::vector<Enemy>& getEnemies();
+    std::vector<std::shared_ptr<EnemyBase>>& getEnemies();
 	const std::vector<Gate>& getGates() const;
 	const std::vector<Key>& getKeys() const;
 	const std::vector<Booster>& getBoosters() const;
@@ -49,7 +50,7 @@ private:
 	int32_t maxNumOfPatrolPoints = 6;
 
 	std::vector<Obstacle> obstacles;
-	std::vector<Enemy> enemies;
+	std::vector<std::shared_ptr<EnemyBase>> enemies;
 	std::vector<Gate> gates;
 	std::vector<Key> keys;
 	std::vector<Booster> boosters;

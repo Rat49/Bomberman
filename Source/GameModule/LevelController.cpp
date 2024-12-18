@@ -9,6 +9,7 @@
 #include <sstream>
 #include <filesystem>
 #include <iostream>
+#include "EnemyFactory.hpp"
 
 namespace
 {
@@ -79,6 +80,7 @@ bool LevelController::Initialize(int32_t levelWidth, int32_t levelHeight, GameLe
 
 void LevelController::generateLevel(int32_t newWidth, int32_t newHeight, GameLevelType gameLevel, int32_t enemyCountNew, int32_t breakableCountNew, const sf::Vector2i& playerStartPositionNew, int32_t newNumOfBoosters)
 {
+  /*  enemyCountNew = 20;*/
 	if (!parseConfigFile(OBSTACLE_PATH))
 	{
 		LOG("Failed to parse file: $", OBSTACLE_PATH);
@@ -126,11 +128,11 @@ void LevelController::generateLevel(int32_t newWidth, int32_t newHeight, GameLev
 	std::mt19937 gen(rd());
 
 	// Generate all level components
-	generateObstacles(gen);
-	generateEnemies(gen);
+    generateObstacles(gen);
 	generateKeys(gen);
 	generateGates(gen);
 	generateBoosters(gen);
+    generateEnemies(gen);
 }
 
 void LevelController::generateEnemies(std::mt19937& gen)
@@ -168,26 +170,29 @@ void LevelController::generateEnemies(std::mt19937& gen)
 		int32_t y = static_cast<int32_t>(it->y);
 
 		// Generate patrolling points with busy check
-		//std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), freePositions, enemyRange);
+		std::vector<sf::Vector2i> patrollingPoints = generatePatrollingPoints(gen, sf::Vector2i(x, y), freePositions, enemyRange);
 
 		// Increment the counter for placed enemy
 		++placedEnemies;
 
 		// Create a new enemy at the current position
-		Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
+		//Enemy enemy(EnemyType::Basic, { (float)x, (float)y }); // , patrollingPoints);
 
 		//load atlas texture
 		m_atlasTexture = std::make_shared<sf::Texture>();
 		m_atlasTexture = Modules::Assets->getTexture(m_atlasPath);
 
+		std::shared_ptr<EnemyBase> enemy = EnemyFactory::createEnemy(EnemyType::Basic, sf::Vector2f(static_cast<float>(x), static_cast<float>(y)), patrollingPoints);
+
 		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
-		enemy.setTexture(*m_atlasTexture);
-		enemy.setTextureRect(getTextureRect(ENEMY_RECT_NAME));
-		enemy.setPosition((float)x, (float)y);
+        enemy->setTexture(*m_atlasTexture);
+        enemy->setTextureRect(getTextureRect(ENEMY_RECT_NAME));
+        enemy->setPosition({(float)x, (float)y});
 
 		// Add the enemy to the list of all enemies
-		enemies.emplace_back(std::move(enemy));
 
+		enemies.emplace_back(std::move(enemy));
+        
 		// Remove the used position from the free positions list
 		it = freePositions.erase(it);
 	}
@@ -197,7 +202,7 @@ void LevelController::draw(sf::RenderTarget& target) const
 {
 	for (const auto& enemy : enemies)
 	{
-		target.draw(*enemy.getCurrentAnimation());
+		target.draw(*enemy->getCurrentAnimation());
 	}
 
 	for (const auto& key : keys)
@@ -221,12 +226,16 @@ void LevelController::draw(sf::RenderTarget& target) const
 	}
 }
 
-void LevelController::update(sf::RenderTarget& target)
+void LevelController::update(sf::RenderTarget& target, float deltaTIme)
 {
+
 	auto enemy_it = enemies.begin();
 	while (enemy_it != enemies.end())
 	{
-		if (enemy_it->isDead())
+
+        (*enemy_it)->getAIController().fsm->Update();
+        (*enemy_it)->updateVelocity(deltaTIme);
+		if ((*enemy_it)->isDead())
 		{
 			enemy_it = enemies.erase(enemy_it);
 		}
@@ -393,7 +402,9 @@ std::vector<sf::Vector2i> LevelController::generatePatrollingPoints(std::mt19937
 {
 	std::vector<sf::Vector2i> patrollingPoints;
 	
+	// for random
 	std::uniform_int_distribution<> distX(enemyPosition.x - range, enemyPosition.x + range);
+
 	std::uniform_int_distribution<> distY(enemyPosition.y - range, enemyPosition.y + range);
 
 	// Define a random distribution for the number of points between min and max
@@ -402,19 +413,18 @@ std::vector<sf::Vector2i> LevelController::generatePatrollingPoints(std::mt19937
 	// Generate a random number of patrol points
 	int32_t numPatrolPoints = distNumPatrolPoints(gen);
 
-	int32_t maxAttempts = 10;
-	int32_t attempts = 0;
+	//int32_t maxAttempts = 200;
+	//int32_t attempts = 0;
 
-	while (patrollingPoints.size() < numPatrolPoints && attempts < maxAttempts)
+	while (patrollingPoints.size() < numPatrolPoints/* && attempts < maxAttempts*/)
 	{
 		int32_t x = distX(gen);
 		int32_t y = distY(gen);
-
 		auto it = std::find_if(
 			newFreePositions.begin(),
 			newFreePositions.end(),
 			[x, y](const sf::Vector2f& pos) {
-				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
+				return static_cast<int32_t>(pos.x) == x || static_cast<int32_t>(pos.y) == y;
 			});
 
 		// Check if the position is free
@@ -422,8 +432,9 @@ std::vector<sf::Vector2i> LevelController::generatePatrollingPoints(std::mt19937
 		{
 			patrollingPoints.emplace_back(x, y);
 		}
-		++attempts;
+		//++attempts;
 	}
+
 	return patrollingPoints;
 }
 
@@ -589,7 +600,7 @@ const std::vector<Obstacle>& LevelController::getObstacles() const
 	return obstacles;
 }
 
-std::vector<Enemy>& LevelController::getEnemies()
+std::vector<std::shared_ptr<EnemyBase>>& LevelController::getEnemies()
 {
 	return enemies;
 }
