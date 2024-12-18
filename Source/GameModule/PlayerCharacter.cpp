@@ -25,6 +25,7 @@ bool PlayerCharacter::init()
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+    bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
 	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
 
 	activeBombs.reserve(maxBombs);
@@ -139,6 +140,14 @@ void PlayerCharacter::updateBombs(float deltaTime)
 			++it;
 		}
 	}
+}
+
+void PlayerCharacter::addMaxBombs()
+{
+    if (maxBombs<bombCapacity)
+    {
+        maxBombs++;
+    }
 }
 
 void PlayerCharacter::drawBombs(sf::RenderWindow& window)
