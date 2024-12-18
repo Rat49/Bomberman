@@ -92,6 +92,7 @@ bool PlayerCharacter::init()
 	return true;
 }
 
+// I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onMove(void* axis2DState)
 {
     collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
@@ -158,6 +159,7 @@ void PlayerCharacter::onMove(void* axis2DState)
     }
 }
 
+// For this too: I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onCollision(CollisionComponent* other)
 {
     if (other)
