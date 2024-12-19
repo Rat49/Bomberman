@@ -17,7 +17,7 @@ namespace
 	const std::string OBSTACLE = "ObstacleDestroy";
 }
 
-void GameStats::initialize(std::shared_ptr<Level>& level, int32_t* time)
+void GameStats::initialize(std::shared_ptr<Level> level, int32_t* time)
 {
     m_level = level;
 	Modules::Config->addFile(PATH_WALKING_ANIMATION);

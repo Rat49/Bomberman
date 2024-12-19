@@ -10,7 +10,7 @@ public:
 
 	~GameStats();
 
-	void initialize(std::shared_ptr<Level>& levelController, int32_t* time);
+	void initialize(std::shared_ptr<Level> levelController, int32_t* time);
 
 	void onEnemieDeath();
 

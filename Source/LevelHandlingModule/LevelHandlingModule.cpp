@@ -94,7 +94,7 @@ LevelId LevelHandlingModule::getCurrentLevelID() const
 	return m_currentLevelID;
 }
 
-std::shared_ptr<Level>& LevelHandlingModule::getCurrentLevel()
+std::shared_ptr<Level> LevelHandlingModule::getCurrentLevel() const
 {
     return m_levels[m_currentLevelID];
 }

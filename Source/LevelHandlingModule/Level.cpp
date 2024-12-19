@@ -324,18 +324,19 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
     {
-        if (!(*it)->isExploded)
+        auto& obstacle = *it;
+        if (!obstacle->isExploded)
         {
-            target.draw(*(*it)->getCurrentAnimation());
+            target.draw(*obstacle->getCurrentAnimation());
             ++it; 
         }
         else
         {
-            target.draw(*(*it)->getCurrentAnimation());
+            target.draw(*obstacle->getCurrentAnimation());
 
-            if (!(*it)->getCurrentAnimation()->isPlaying())
+            if (!obstacle->getCurrentAnimation()->isPlaying())
             {
-                (*it)->emitCallback();
+                obstacle->emitCallback();
                 it = m_generatedElements.obstacles.erase(it);
             }
             else
@@ -347,13 +348,14 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	
     for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
     {
-        if ((*enemy_it)->isDead())
+        auto& enemy = *enemy_it;
+        if (enemy->isDead())
         {
             enemy_it = m_generatedElements.enemies.erase(enemy_it);
         }
         else
         {
-            target.draw(*(*enemy_it), states);
+            target.draw(*enemy, states);
             ++enemy_it;
         }
     }
