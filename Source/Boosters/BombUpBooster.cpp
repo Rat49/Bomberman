@@ -15,7 +15,7 @@ bool BombUpBooster::removeEffect(PlayerCharacter& )
     return isEffectDone;
 }
 
-bool BombUpBooster::shoulRemoveEffect()
+bool BombUpBooster::shouldRemoveEffect()
 {
     return isEffectDone;
 }
