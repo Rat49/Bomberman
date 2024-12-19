@@ -4,6 +4,7 @@
 #include "GameModule/ElementsGenerator.hpp"
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
+#include "GameModule/UnbreakableObstacle.hpp"
 #include "GameModule/Key.hpp"
 #include "GameModule/Enemy.hpp"
 #include "GameModule/Booster.hpp"
@@ -202,6 +203,8 @@ bool Level::setUpElements(int32_t levelElementsId)
 	//walkable positions
 	const std::vector<sf::Vector2f>& walkablePositions = getWalkablePositions();
 
+	initializeUnbreakableObstacle();
+
 	//initialize elements generator
 	m_elementsGenerator = std::make_unique<ElementsGenerator>();
 	if (!m_elementsGenerator->initialize(it->second))
@@ -221,6 +224,18 @@ bool Level::setUpElements(int32_t levelElementsId)
 	addBoosters(generatedElements.boosters);
 
 	return true;
+}
+
+void Level::initializeUnbreakableObstacle()
+{
+    const std::vector<sf::Vector2f>& unbreakablePositions = getUnbreakableObstaclePositions();
+
+    for (const auto& position : unbreakablePositions)
+    {
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(position, sf::Vector2f(52.0f, 52.0f));
+
+		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
+    }
 }
 
 void Level::addObstacles(const std::vector<std::shared_ptr<Obstacle>>& obstacles)

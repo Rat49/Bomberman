@@ -48,6 +48,8 @@ public:
 	//return all unbreakable obstacle positions on level
     std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
 
+	void initializeUnbreakableObstacle();
+
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.

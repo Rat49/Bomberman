@@ -96,8 +96,8 @@ bool PlayerCharacter::init()
 void PlayerCharacter::onMove(void* axis2DState)
 {
     collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
-    LOG("collision: $", collisionBox->getIsOverlapped());
-    if (!Modules::Game->getIsPaused())
+
+	if (!Modules::Game->getIsPaused())
     {
         sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
         globalStats = state;
