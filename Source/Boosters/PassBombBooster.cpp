@@ -23,7 +23,7 @@ bool PassBombBooster::removeEffect(PlayerCharacter& playerCharacter)
     return m_isEffectDone;
 }
 
-bool PassBombBooster::shoulRemoveEffect()
+bool PassBombBooster::shouldRemoveEffect()
 {
     return m_isEffectDone;
 }
