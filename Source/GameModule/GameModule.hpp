@@ -34,6 +34,8 @@ public:
 	// Add new score into leader board
 	void addScore(int32_t newScore, const std::string& name);
 
+	float getHUDHeight();
+
 private:
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);

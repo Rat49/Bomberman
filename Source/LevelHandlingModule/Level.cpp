@@ -2,6 +2,7 @@
 #include "AssetManager/AssetManager.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "GameModule/ElementsGenerator.hpp"
+#include "GameModule/GameModule.hpp"
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
 #include "GameModule/UnbreakableObstacle.hpp"
@@ -33,7 +34,10 @@ namespace
 	const std::string ENEMY_COUNT = "enemyCount";
 	const std::string BREAKABLE_COUNT = "breakableCount";
 	const std::string BOOSTERS_COUNT = "boostersCount";
-}
+
+	const int32_t numberOfTilesWidth = 14;	// number of tiles by width that player can see in one moment
+	const int32_t numberOfTilesHeight = 11;	// 16 x 13 in the original game
+} // namespace
 
 Level::Level(const std::string baseLevelConfigPath)
 	:m_configPath(baseLevelConfigPath)
@@ -76,8 +80,9 @@ bool Level::initialize()
 		return false;
 	}
 
-	// Setting Viewport so that HUD is always shown at the top of the window
-	m_view.setViewport(sf::FloatRect(0.0f, 0.1f, 1.f, 0.9f));
+    // Setting view to be defined size
+    sf::Vector2f viewSize(numberOfTilesWidth * ATLAS_SPRITE_SIZE, numberOfTilesHeight * ATLAS_SPRITE_SIZE);
+    m_view.setSize(viewSize);
 
 	return true;
 }
@@ -281,18 +286,39 @@ void Level::addBoosters(const std::vector<std::shared_ptr<Booster>>& boosters)
 
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.setView(m_view);
+    target.setView(m_view);
+    const auto& center = m_view.getCenter();
+    const auto& size   = m_view.getSize();
 
-	for (std::size_t row = 0; row < m_fields.size(); ++row) {
-		for (std::size_t col = 0; col < m_fields[row].size(); ++col) {
-			const FieldInfo& fieldInfo = m_fields[row][col];
+    const float halfWidth  = size.x / 2.f;
+    const float halfHeight = size.y / 2.f;
 
-			Tile drawableTile = *fieldInfo.tile;
-			drawableTile.setPosition(fieldInfo.tilePosition);
+    // getting all edges of view
+    const float viewLeft   = center.x - halfWidth;
+    const float viewTop    = center.y - halfHeight;
+    const float viewRight  = center.x + halfWidth;
+    const float viewBottom = center.y + halfHeight;
 
-			target.draw(drawableTile, states);
-		}
-	}
+    // getting visible tile range
+    auto startRow = std::max(0, static_cast<int>(viewTop / ATLAS_SPRITE_SIZE));
+    auto endRow   = std::min(m_fields.size(), static_cast<std::size_t>(viewBottom / ATLAS_SPRITE_SIZE) + 1);
+
+    auto startCol = std::max(0, static_cast<int>(viewLeft / ATLAS_SPRITE_SIZE));
+    auto endCol   = std::min(m_fields[0].size(), static_cast<std::size_t>(viewRight / ATLAS_SPRITE_SIZE) + 1);
+
+    // iterating only through visible tiles
+    for (auto row = startRow; row < endRow; ++row)
+    {
+        for (auto col = startCol; col < endCol; ++col)
+        {
+            const FieldInfo& fieldInfo = m_fields[row][col];
+
+            Tile drawableTile = *fieldInfo.tile;
+            drawableTile.setPosition(fieldInfo.tilePosition);
+
+            target.draw(drawableTile, states);
+        }
+    }
 
 	for (const auto& key : m_generatedElements.keys)
 	{
@@ -351,45 +377,36 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
-	//set it to the window size
-	if (m_view.getSize().x == 0 || m_view.getSize().y == 0)
-	{
-		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
-	}
+    //calculate the total level width and height in pixels
+    float levelPixelWidth  = static_cast<float>(m_fields[0].size() * m_levelData.getTileWidth());
+    float levelPixelHeight = static_cast<float>(m_fields.size() * m_levelData.getTileHeight());
 
-	//calculate the total level width and height in pixels
-	float levelPixelWidth = static_cast<float>(m_fields[0].size() * m_levelData.getTileWidth());
-	float levelPixelHeight = static_cast<float>(m_fields.size() * m_levelData.getTileHeight());
+    //initialize view center to the target offset position
+    sf::Vector2f viewCenter = offset;
 
-	//initialize view center to the target offset position
-	sf::Vector2f viewCenter = offset;
+    //define minimum and maximum bounds
+    float minX = m_view.getSize().x / 2.f;
+    float maxX = std::max(levelPixelWidth - m_view.getSize().x / 2.f, minX);
+    float minY = m_view.getSize().y / 2.f;
+    float maxY = std::max(levelPixelHeight - m_view.getSize().y / 2.f, minY);
 
-	//define minimum and maximum bounds
-	float minX = m_view.getSize().x / 2.f;
-	float maxX = std::max(levelPixelWidth - m_view.getSize().x / 2.f, minX);
-	float minY = m_view.getSize().y / 2.f;
-	float maxY = std::max(levelPixelHeight - m_view.getSize().y / 2.f, minY);
+    //clamp the view center coordinates to ensure they remain within level bounds
+    viewCenter.x = std::clamp(viewCenter.x, minX, maxX);
+    viewCenter.y = std::clamp(viewCenter.y, minY, maxY);
 
-	//clamp the view center coordinates to ensure they remain within level bounds
-	viewCenter.x = std::clamp(viewCenter.x, minX, maxX);
-	viewCenter.y = std::clamp(viewCenter.y, minY, maxY);
+    //set view center
+    m_view.setCenter(viewCenter);
 
-	//set view center
-	m_view.setCenter(viewCenter); 
+	// setting viewport of the view to be:
+	// height maximum possible (window.y - HUD.y)
+	// width based on height so that proportion stays the same
 
-	//adjust the view size
-	if (levelPixelWidth > window.getSize().x || levelPixelHeight > window.getSize().y)
-	{
-		//level is larger than the window
-		m_view.setSize(static_cast<float>(window.getSize().x), static_cast<float>(window.getSize().y));
-	}
-	else
-	{
-		//level is smaller than the window
-		m_view.setSize(levelPixelWidth, levelPixelHeight); 
-	}
+	float hudPercentage = Modules::Game->getHUDHeight() / window.getSize().y;
+    float factor = (((window.getSize().y - Modules::Game->getHUDHeight()) * numberOfTilesWidth / numberOfTilesHeight) / window.getSize().x);
+	
+    m_view.setViewport(sf::FloatRect((1.0f - factor) / 2, hudPercentage, factor, 1.f - hudPercentage));
+    
 }
-
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
