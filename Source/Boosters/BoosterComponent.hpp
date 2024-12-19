@@ -7,5 +7,5 @@ public:
 	virtual int32_t getBoosterID() = 0;
 	virtual void applyEffect(PlayerCharacter& playerCharacter) = 0;
 	virtual bool removeEffect(PlayerCharacter& playerCharacter) = 0;
-	virtual bool shoulRemoveEffect() = 0;
+	virtual bool shouldRemoveEffect() = 0;
 };
