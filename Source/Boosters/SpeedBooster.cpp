@@ -5,7 +5,7 @@
 namespace
 {
 const int32_t BOOSTER_ENABLED_STAGE = 4;   // speed booster works only on this stage
-const int32_t SPEED_FACTOR = 1.1;          // slightly increasing speed value (10%)
+const float SPEED_FACTOR = 1.1f;          // slightly increasing speed value (10%)
 }
 
 void SpeedBooster::applyEffect(PlayerCharacter& playerCharacter)
