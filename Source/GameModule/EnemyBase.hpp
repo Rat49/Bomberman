@@ -16,12 +16,12 @@ enum class EnemyType
     Hard
 };
 
-class EnemyBase : public sf::Sprite
+class EnemyBase
 {
 public:
     EnemyBase() = default;
 
-    virtual void initialize(EnemyType type, sf::Vector2f spawnPosition, std::vector<sf::Vector2i> patrollingPoints) = 0;
+    virtual void initialize(EnemyType type, sf::Vector2f spawnPosition) = 0;
 
     EnemyType getType() const;
 
@@ -63,12 +63,12 @@ public:
         return m_patrolligPoints;
     }
 
-    	void updateVelocity(float deltaTime);
+    void updateVelocity(float deltaTime);
 
-        const float& getVelocity() const
-        {
-            return velocity;
-        }
+    const float& getVelocity() const
+    {
+        return velocity;
+    }
 
 protected:
     EnemyType                 enemyType;

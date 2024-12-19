@@ -5,7 +5,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "SpriteModule/Sprite.hpp"
 
-void Ballom::initialize(EnemyType type, sf::Vector2f spawnPosition, std::vector<sf::Vector2i>)
+void Ballom::initialize(EnemyType type, sf::Vector2f spawnPosition)
 {
     position             = spawnPosition;
     enemyType            = type;

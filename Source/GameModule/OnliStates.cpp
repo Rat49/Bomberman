@@ -18,6 +18,7 @@ namespace
  */
 void PatrollingState::Enter(AIController* ai)
 {
+
     auto parent = static_cast<EnemyBase*>(ai->getParent());
     parent->playRightAnimation();
     startTime = std::chrono::steady_clock::now();
@@ -38,6 +39,7 @@ void PatrollingState::Enter(AIController* ai)
         isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
                                                      parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkable";
 
+
         if (isNotColiding)
         {
             m_currentDirection = newDirection;
@@ -49,6 +51,7 @@ void PatrollingState::Enter(AIController* ai)
 
 void PatrollingState::Update(AIController* ai)
 {
+
     auto parent  = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f endPoint;
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();

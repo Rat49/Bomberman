@@ -8,7 +8,7 @@
 // can be deleted when finish
 #include "Common/Logs.hpp"    
 
-void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition, std::vector<sf::Vector2i>)
+void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition)
 {
     position  = spawnPosition;
     enemyType = type;

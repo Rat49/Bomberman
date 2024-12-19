@@ -9,7 +9,7 @@ class Onli : public EnemyBase
 public:
     Onli() = default;
 
-    void initialize(EnemyType type, sf::Vector2f spawnPosition, std::vector<sf::Vector2i> patrollingPoints) override;
+    void initialize(EnemyType type, sf::Vector2f spawnPosition) override;
 
 private:
     std::shared_ptr<PatrollingState> patrollingState;

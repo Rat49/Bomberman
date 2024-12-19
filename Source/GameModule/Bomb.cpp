@@ -4,9 +4,14 @@
 
 Bomb::Bomb()
 {
+	collision.setObjectParent(this);
 
+	collisionBox = std::make_unique<CollisionComponent>();
+
+	collisionBox->setObjectParent(this);
+
+	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize - 8.0f));
 }
-
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
 {
@@ -18,9 +23,11 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 	bombCenterID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionCenterAnimation.ini");
 
 	currentAnimation = bombIdleID;
+	sf::Vector2f pos = alignToGrid(newPosition);
 
 	if (const auto& animation = Modules::Sprite->getAnimation(bombIdleID))
 	{
+		getCurrentAnimation()->setPosition(pos);
 		animation->Play();
 	}
 	else
@@ -46,11 +53,9 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 		return false;
 	}
 
-	this->position = newPosition;
+	this->position = pos;
 	this->explosionRadius = newExplosionRadius;
 	this->timer = newTimer;
-
-	getCurrentAnimation()->setPosition(newPosition);
 
 	return true;
 }
@@ -58,32 +63,52 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 // Bomb update
 void Bomb::update(float deltaTime)
 {
-	if (exploded) return;
+	if (exploded)
+	{
+		explosionTimer -= deltaTime;
+		if (explosionTimer <= 0.0f)
+		{
+			animExploded = true;
+		}
+	}
 
 	timer -= deltaTime;
-	if (timer <= 0.0f)
-	{
-		explode();
-	}
+    if (timer < 0.0f && !animExplosionStart)
+    {
+        explode();
+    }
 }
 
 // Drawing a bomb
 void Bomb::draw(sf::RenderWindow& window)
 {
+	if (!Modules::Sprite->getAnimation(bombIdleID)->isPlaying())
+		exploded = true;
+
+	if (canChangeObstacleAnim)
+	{
+		for (auto& [obstacle, pos] : obstaclesHit)
+		{
+			if (obstacle)
+			{
+				obstacle->changeAnim(pos);
+			}
+		}
+		canChangeObstacleAnim = false;
+	}
+
 	// Draws a bomb if it hasn't exploded
 	if (!exploded)
 	{
 		if (auto animation = Modules::Sprite->getAnimation(bombIdleID))
 		{
-			animation->setPosition(position);
-			animation->Play();
-
 			window.draw(*animation);
 		}
 	}
 	// Draws an explosion
-	else
+	else if(exploded)
 	{
+
 		sf::Vector2f directions[] =
 		{
 			// Right
@@ -95,20 +120,27 @@ void Bomb::draw(sf::RenderWindow& window)
 			// Up
 			{0, -1}
 		};
+		
+		sf::Vector2f animPos;
 
 		for (const auto& direction : directions)
 		{
 			int32_t animationID = getExplosionAnimationID(direction);
+			animPos = directionToPosition(direction);
 			if (auto animation = Modules::Sprite->getAnimation(animationID))
 			{
-				animation->Play();
+				sf::Vector2f pos = alignToGrid(position + (animPos * explosionRadius));
+				animation->setPosition(pos);
+				window.draw(*animation);
 			}
 		}
 
 		// Draw the center of the explosion
 		if (auto animation = Modules::Sprite->getAnimation(bombCenterID))
 		{
-			animation->Play();
+			sf::Vector2f pos = alignToGrid(position);
+			animation->setPosition(pos);
+			window.draw(*animation);
 		}
 	}
 }
@@ -121,9 +153,21 @@ std::shared_ptr<Animation> Bomb::getCurrentAnimation() const
 // Explosion activation
 void Bomb::explode()
 {
-	if (exploded) return;
+    if (animExplosionStart)
+        return;
 
-	exploded = true;
+	animExplosionStart = true;
+
+	auto animation = Modules::Sprite->getAnimation(bombIdleID);
+	animation->Stop();
+
+	int32_t animationID = getExplosionAnimationID(sf::Vector2f(-1, 0));
+	currentAnimation = animationID;
+	if (animation = Modules::Sprite->getAnimation(bombCenterID))
+	{
+		animation->setPosition(sf::Vector2f(64.0f, 64.0f));
+		animation->Play();
+	}
 
 	sf::Vector2f directions[] =
 	{
@@ -141,47 +185,47 @@ void Bomb::explode()
 	{
 		explosionEffect(direction);
 	}
-
-	LOG("The bomb exploded at the position: $", position.x, ", $", position.y);
 }
 
 // Method about what will happen when there is an explosion
 void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
 	sf::Vector2f endPoint;
-	const CollisionComponent* hitObject = Modules::Physics->rayCast(position, direction, explosionRadius, endPoint);
 
-	if (hitObject)
-	{
-		// TODO
-		// Add code here for detecting objects with collisions and applying the effect that the bomb will have,
-		// or won't have, on the object depending on whether it is breakable or not.
+	sf::Vector2f newDirection = directionToPosition(direction);
+	sf::Vector2f alignPos = alignToGrid(position);
+	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-		
-		//if (hitObject-> check if object is destructable)
-		//{
-		//	LOG("The explosion destroyed the obstacle on: $", endPoint.x, ", $", endPoint.y);
-		//	hitObject->destroy();
-		//}
-		//else
-		//{
-		//	LOG("The explosion stopped at an indestructible barrier at: $", endPoint.x, ", $", endPoint.y);
-		//}
-	}
-	else
-	{
-		LOG("The explosion spread to: $", endPoint.x, ", $", endPoint.y);
-	}
+	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
+    
+    Obstacle* hitObstacle;
+
+    if (!hitResults.empty())
+    {
+        for (const auto& [obj, pos] : hitResults)
+        {
+            if (obj)
+            {
+                hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent());
+                if (hitObstacle)
+                {
+                    canChangeObstacleAnim = true;
+                    obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
+                    hitObstacle->isExploded = true;
+                }
+            }
+        }
+    }
 
 	// Activation of direction animation
 	int32_t animationID = getExplosionAnimationID(direction);
+	currentAnimation = animationID;
 	if (auto animation = Modules::Sprite->getAnimation(animationID))
 	{
-		animation->setPosition(position + direction * explosionRadius);
+		animation->setPosition(directionAndPosition);
 		animation->Play();
 	}
 }
-
 
 int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 {
@@ -194,7 +238,18 @@ int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 	return 0;
 }
 
-Bomb::~Bomb()
+sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection)
 {
+	sf::Vector2f dir = sf::Vector2f(newDirection.x * 64.0f, newDirection.y * 64.0f);
 
+	return dir;
 }
+
+sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)
+{
+	float alignedX = std::floor(newPosition.x / gridSize) * gridSize;
+	float alignedY = std::floor(newPosition.y / gridSize) * gridSize;
+	return { alignedX, alignedY };
+}
+
+Bomb::~Bomb() {}

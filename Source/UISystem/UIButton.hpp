@@ -30,8 +30,6 @@ public:
 	// Returns the current text of the button
 	std::string getText() const;
 
-	sf::Vector2f UIButton::getSize() const { return buttonBackground.getSize(); }
-
 	// Override the draw method to render the button
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -46,6 +44,8 @@ public:
 	void dropShadows(const sf::Color& labelColor, const sf::Color& shadowColor);
 
 	void removeShadow() { hasShadow = false; }
+
+	void handleResize(const sf::Vector2f& scale) override;
 
 private:
 	sf::Text buttonText;

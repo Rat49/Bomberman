@@ -4,15 +4,15 @@
 #include "Level.hpp"
 #include <Common/Logs.hpp>
 
-LevelId LevelHandlingModule::loadLevel(const std::string& configPath)
+LevelId LevelHandlingModule::loadLevel(const std::string& baseLevelConfigPath)
 {
 	//create a new level and store it in the vector
-	auto newLevel = std::make_shared<Level>(configPath);
+	auto newLevel = std::make_shared<Level>(baseLevelConfigPath);
 
 	//initialize level
 	if (!newLevel->initialize())
 	{
-		LOG("Failed to initialize level from path : " + configPath);
+		LOG("Failed to initialize level from path : " + baseLevelConfigPath);
 		return INVALID_LEVEL_ID;
 	}
 
@@ -49,6 +49,14 @@ bool LevelHandlingModule::loadLevels(const std::vector<std::string>& configPaths
 		loadedLevelIds.push_back(id);
 	}
 	return true;
+}
+
+bool LevelHandlingModule::setUpElementsOnLevel(int32_t levelElementsId)
+{
+	if (isLevelLoaded(m_currentLevel))
+		return m_levels[m_currentLevel]->setUpElements(levelElementsId);
+
+	return false;
 }
 
 bool LevelHandlingModule::unloadLevel(LevelId levelId)
@@ -125,13 +133,13 @@ std::vector<sf::Vector2f> LevelHandlingModule::getWalkablePositions() const
 }
 
 
-void LevelHandlingModule::update(float, sf::Window* window)
+void LevelHandlingModule::update(float deltaTime, sf::Window* window)
 {
 	if (isLevelLoaded(m_currentLevel))
 	{
 		//draw level on screen
 		auto* renderWindow = dynamic_cast<sf::RenderWindow*>(window);
-		m_levels[m_currentLevel]->draw(*renderWindow, sf::RenderStates::Default);
+		m_levels[m_currentLevel]->update(renderWindow, deltaTime);
 	}
 }
 

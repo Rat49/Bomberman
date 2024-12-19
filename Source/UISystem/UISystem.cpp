@@ -1,13 +1,6 @@
 #include "UISystem/UISystem.hpp"
 #include "UISystem/UIScreen.hpp"
 
-// Constructor: initializes the UISystem with viewport dimensions
-UISystem::UISystem()
-{
-	setViewportSize(800.0f, 600.0f);
-	updateViewportSettings();
-}
-
 // Updates the viewport size to handle dynamic resizing
 void UISystem::setViewportSize(float width, float height) 
 {
