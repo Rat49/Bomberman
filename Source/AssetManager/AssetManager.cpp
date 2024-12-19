@@ -4,6 +4,7 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "Common/Logs.hpp"
 #include <fstream>
+#include <SaveSystem/FileReader.hpp>
 
 namespace 
 {
@@ -238,14 +239,15 @@ std::shared_ptr<std::vector<char>> AssetManager::getLevel(const RelativeAssetPat
 
 bool AssetManager::loadMetadata()
 {
-	std::ifstream metadataFile(METADATA_FILE, std::ios::beg);
-	if (!metadataFile)
-	{
-		LOG("Unable to open file [$]", METADATA_FILE);
-		return false;
-	}
+	 FileReader fileReader;
+    if (!fileReader.open(METADATA_FILE))
+    {
+        LOG("Unable to open file [$]", METADATA_FILE);
+        return false;
+    }
 
-	std::string metadata((std::istreambuf_iterator<char>(metadataFile)), std::istreambuf_iterator<char>());
+    auto metadata = fileReader.readAll();
+
 	StringUtils::cipherText(metadata, CIPHER_KEY);
 	std::istringstream ss(metadata);
 	std::string line;
@@ -270,25 +272,26 @@ bool AssetManager::loadMetadata()
 
 bool AssetManager::loadData(const RelativeAssetPath& assetName, const std::string& fileToOpen, std::vector<char>& outputData)
 {
-	std::ifstream file(fileToOpen, std::ios::binary | std::ios::beg);
-	if (!file) {
-		LOG("Could not read file [$]", fileToOpen);
-		return false;
+	FileReader reader;
+	if (!reader.open(fileToOpen))
+	{
+        LOG("Failed to open file: [$]", fileToOpen);
+        return false;
 	}
 
  	if(usePackage)
 	{
-		file.seekg(assetsMetadata[assetName].offset);
+		reader.seek(assetsMetadata[assetName].offset);
 		outputData.resize(assetsMetadata[assetName].size);
 	}
 	else
 	{
-		file.seekg(0, std::ios::end);
-		outputData.resize(file.tellg());
-		file.seekg(0, std::ios::beg);
+        reader.seek(0);
+		outputData.resize(reader.getSize());
 	}
 
-	if (!file.read(outputData.data(), outputData.size())) {
+	if (!reader.read(outputData.data(), outputData.size()))
+    {
 		LOG("Failed to read data from file: [$]", fileToOpen);
 		return false;
 	}

@@ -1,6 +1,8 @@
 #include "SaveSystem.hpp"
 #include "Common/Logs.hpp"
 #include "Common/StringUtils.hpp"
+#include "FileWriter.hpp"
+#include "FileReader.hpp"
 #include <fstream>
 #include <filesystem>
 #include <iostream>
@@ -37,11 +39,11 @@ bool SaveSystem::saveGameData(const std::string& fileName, const std::unordered_
 	const std::string filePath = ROOT_SAVE_FOLDER + '/' + fileName + FILE_EXTENSION;
 
 	//open file for writing
-	std::ofstream outFile(filePath, std::ios::binary | std::ios::trunc);
-	if (!outFile)
+    FileWriter writer;
+	if (!writer.open(filePath))
 	{
-		LOG("Failed to open file [$] for writing", fileName);
-		return false;
+        LOG("Failed to opet file [$] for writing", filePath);
+        return false;
 	}
 
 	//store data in string
@@ -52,12 +54,11 @@ bool SaveSystem::saveGameData(const std::string& fileName, const std::unordered_
 	}
 
 	//encrypt data
-	std::string encryptedData = serializedData;
-	StringUtils::cipherText(encryptedData, CIPHER_KEY);
+    StringUtils::cipherText(serializedData, CIPHER_KEY);
 
 	//write data to file
-	outFile.write(encryptedData.c_str(), encryptedData.size());
-	outFile.close();
+    writer.write(serializedData);
+    writer.close();
 	return true;
 }
 
@@ -67,24 +68,15 @@ bool SaveSystem::loadGameData(const std::string& fileName, std::unordered_map <s
 	const std::string filePath = ROOT_SAVE_FOLDER + '/' + fileName + FILE_EXTENSION;
 
 	//open file for reading
-	std::ifstream inFile(filePath, std::ios::binary | std::ios::ate);
-	if (!inFile)
+    FileReader reader;
+	if (!reader.open(filePath))
 	{
-		LOG("Failed to open file [$] for reading", fileName);
-		return false;
+        LOG("Failed to open file [$] fro reading", filePath);
+        return false;
 	}
 
 	//read data
-	std::streamsize size = inFile.tellg();
-	inFile.seekg(0, std::ios::beg);
-	std::string data(size, '\0');
-	if (!inFile.read(&data[0], size))
-	{
-		LOG("Failed to read file: [$]", fileName);
-		return false;
-	}
-
-	inFile.close();
+    auto data = reader.readAll();
 
 	//decrypt data
 	StringUtils::cipherText(data, CIPHER_KEY);
