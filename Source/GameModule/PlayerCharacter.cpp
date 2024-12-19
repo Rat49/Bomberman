@@ -16,9 +16,7 @@ PlayerCharacter::PlayerCharacter()
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
-
-	collisionBox->setColor(sf::Color::Red);
+    collisionBox->setRectangleProperties(sf::Vector2f(getCurrentPosition().x, getCurrentPosition().y+5.0f), sf::Vector2f(48.0f, 48.0f));
 }
 
 bool PlayerCharacter::init()
@@ -95,7 +93,7 @@ bool PlayerCharacter::init()
 // I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onMove(void* axis2DState)
 {
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+    collisionBox->setRectangleProperties(sf::Vector2f(getCurrentPosition().x, getCurrentPosition().y+5.0f), sf::Vector2f(52.0f, 48.0f));
 
 	if (!Modules::Game->getIsPaused())
     {

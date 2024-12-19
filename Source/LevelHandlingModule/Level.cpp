@@ -232,7 +232,7 @@ void Level::initializeUnbreakableObstacle()
 
     for (const auto& position : unbreakablePositions)
     {
-        auto collisionObject = std::make_unique<UnbreakableObstacle>(position, sf::Vector2f(52.0f, 52.0f));
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(sf::Vector2f(position.x + 5.0f, position.y	+ 5.0f), sf::Vector2f(58.0f, 58.0f));
 
 		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
     }

@@ -45,8 +45,6 @@ void PhysicsModule::updateCollision()
 				{
                     obje->onCollision(registeredObjects[i]);
 				}
-
-                LOG("CCCCCCCCCCCCCCOOOOOOOOOOOOOOLLLLLLLLLLLLLLLLLLLLLIIIIIIIIIIIIISSSSSSSSIIIIIIIIIIIOOOOOOOOOOOOOONNNNNNNNNNN");
             }
         }
     }
