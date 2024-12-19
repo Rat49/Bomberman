@@ -8,9 +8,9 @@ class GameStats
 public:
 	GameStats() = default;
 
-	~GameStats();
+	void initialize(std::shared_ptr<Level> levelController);
 
-	void initialize(std::shared_ptr<Level> levelController, int32_t* time);
+	void terminate() const;
 
 	void onEnemieDeath();
 
@@ -22,10 +22,8 @@ public:
 
 	void resetPoints() { m_points = 0; } // reset when player looses all of the lives
 
-	void levelChange(); // updates callbacks and applies remaining time  score += m_time
+	void levelChange(int32_t time); // updates callbacks and applies remaining time  score += m_time
 private:
-	int32_t* m_time;
-
 	int32_t m_points = 0;
 
 	int32_t m_enemieKillPoints = 0;

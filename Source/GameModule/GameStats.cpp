@@ -17,7 +17,7 @@ namespace
 	const std::string OBSTACLE = "ObstacleDestroy";
 }
 
-void GameStats::initialize(std::shared_ptr<Level> level, int32_t* time)
+void GameStats::initialize(std::shared_ptr<Level> level)
 {
     m_level = level;
 	Modules::Config->addFile(PATH_WALKING_ANIMATION);
@@ -49,15 +49,13 @@ void GameStats::initialize(std::shared_ptr<Level> level, int32_t* time)
 	m_enemieDeathHandle = Modules::Events->subscribe(m_enemieDeathID, std::bind(&GameStats::onEnemieDeath, this));
 	m_obstacleDestructionHandle = Modules::Events->subscribe(m_obstacleDestructionID, std::bind(&GameStats::onObstacleDestroyed, this));
 	m_boosterCollectHandle = Modules::Events->subscribe(m_boosterCollectID, std::bind(&GameStats::onBoosterCollected, this));
-
-	m_time = time;
 }
 
-GameStats::~GameStats()
+void GameStats::terminate() const
 {
-	Modules::Events->unsubscribe(m_enemieDeathID, m_enemieDeathHandle);
-	Modules::Events->unsubscribe(m_obstacleDestructionID, m_obstacleDestructionHandle);
-	Modules::Events->unsubscribe(m_boosterCollectID, m_boosterCollectHandle);
+    Modules::Events->unsubscribe(m_enemieDeathID, m_enemieDeathHandle);
+    Modules::Events->unsubscribe(m_obstacleDestructionID, m_obstacleDestructionHandle);
+    Modules::Events->unsubscribe(m_boosterCollectID, m_boosterCollectHandle);
 }
 
 void GameStats::onEnemieDeath()
@@ -74,7 +72,7 @@ void GameStats::onObstacleDestroyed()
 	m_points += m_obstacleDestructionPoints;
 }
 
-void GameStats::levelChange()
+void GameStats::levelChange(int32_t time)
 {
     for (auto& enemie : m_level->getEnemies())
 	{
@@ -91,9 +89,9 @@ void GameStats::levelChange()
 		booster->setCallbackID(m_boosterCollectID);
 	}
 
-	if (*m_time > 0)
+	if (time > 0)
 	{
-		m_points += static_cast<int32_t>(*m_time);
+		m_points += time;
 	}
 }
 

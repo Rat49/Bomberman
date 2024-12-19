@@ -103,7 +103,7 @@ bool GameModule::initialize()
 	}
 
 	gameStats = std::make_unique<GameStats>();
-    gameStats->initialize(Modules::Level->getCurrentLevel(), &gameTime);
+    gameStats->initialize(Modules::Level->getCurrentLevel());
 
 	return true;
 }
@@ -194,6 +194,7 @@ void GameModule::run()
 
 void GameModule::terminate()
 {
+    gameStats->terminate();
 }
 
 void GameModule::setCurrentScreen(const Screens& newScreen)
