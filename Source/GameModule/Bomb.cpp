@@ -263,8 +263,8 @@ sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection)
 
 sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)
 {
-	float alignedX = std::floor(newPosition.x / gridSize) * gridSize;
-	float alignedY = std::floor(newPosition.y / gridSize) * gridSize;
+    float alignedX = std::round(newPosition.x / gridSize) * gridSize;
+    float alignedY = std::round(newPosition.y / gridSize) * gridSize;
 	return { alignedX, alignedY };
 }
 
