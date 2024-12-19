@@ -16,7 +16,7 @@ enum class EnemyType
     Hard
 };
 
-class EnemyBase
+class EnemyBase : public CollisionObject
 {
 public:
     EnemyBase() = default;

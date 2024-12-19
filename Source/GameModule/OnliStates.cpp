@@ -32,13 +32,11 @@ void PatrollingState::Enter(AIController* ai)
     for (const auto& direction : directions)
     {
         sf::Vector2f endPoint;
-        sf::Vector2f raycastStartingPos = {collisionCenter.x + (direction.x * RAYCAST_OFFSET),
-                                           collisionCenter.y + (direction.y * RAYCAST_OFFSET)};
+        sf::Vector2f raycastStartingPos = collisionCenter + direction * static_cast<float>(RAYCAST_OFFSET);
 
         bool isNotColiding = Modules::Physics->rayCast(raycastStartingPos, direction, RAYCAST_LENGTH, endPoint) == nullptr;
         isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
                                                      parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkable";
-
 
         if (isNotColiding)
         {

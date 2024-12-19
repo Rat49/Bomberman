@@ -14,7 +14,7 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 	getCurrentAnimation()->setPosition((float)position.x, (float)position.y);
 	getCurrentAnimation()->Play();
 
-	isExploded = false;
+	m_hasExploded = false;
 
 	collision.setObjectParent(this);
 
@@ -64,4 +64,25 @@ bool Obstacle::isValidUnbreakablePosition(const sf::Vector2f& position)
 std::shared_ptr<Animation> Obstacle::getCurrentAnimation() const
 {
 	return Modules::Sprite->getAnimation(currentAnimation);
+}
+
+void Obstacle::initializeDestruction()
+{
+    if (!m_hasExploded)
+    {
+        Modules::Sprite->getAnimation(currentAnimation)->Stop();
+        currentAnimation = obstacleDestructionAnimID;
+        Modules::Sprite->getAnimation(currentAnimation)->Play();
+        Modules::Sprite->getAnimation(currentAnimation)->setPosition(obstaclePosition);
+        m_hasExploded = true;
+    }
+}
+
+bool Obstacle::hasExploded() const
+{
+    if (!Modules::Sprite->getAnimation(currentAnimation)->isPlaying() && m_hasExploded)
+    {
+        return true;
+    }
+    return false;
 }

@@ -41,7 +41,9 @@ public:
 
 	CollisionRectangle& getCollision() { return collision; }
 
-	bool isExploded;
+	void initializeDestruction();
+
+	bool hasExploded() const;
 
 private:
 	ObstacleType obstacleType;
@@ -56,5 +58,7 @@ private:
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
     std::unique_ptr<CollisionComponent> collisionBox;
+
+    bool m_hasExploded;
 
 };

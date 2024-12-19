@@ -36,9 +36,6 @@ public:
 	//level view config
 	void setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window);
 
-	//draws all the tiles in the level to the specified render target
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
 	void update(sf::RenderWindow* window, float deltaTime);
 
 	//get information of tile based on position and return TileInfo
@@ -48,6 +45,8 @@ public:
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
 private:
+    //draws all the tiles in the level to the specified render target
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	//loads the level configuration from a file and creates tiles with IDs.
 	bool loadLevel(const std::string& levelPath);
@@ -91,7 +90,6 @@ private:
 	std::vector<std::vector<FieldInfo>> m_fields;
 
 	std::string m_configPath;
-
 };
 
 

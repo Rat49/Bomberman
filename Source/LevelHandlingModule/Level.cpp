@@ -311,44 +311,36 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		target.draw(*key, states);
 	}
 
-	
 	for (const auto& gate: m_generatedElements.gates)
 	{
 		target.draw(*gate, states);
 	}
-	
 	
 	for (const auto& booster : m_generatedElements.boosters)
 	{
 		target.draw(*booster, states);
 	}
 
-	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
-    {
-        if (!(*it)->isExploded)
-        {
-            target.draw(*(*it)->getCurrentAnimation());
-            ++it; 
-        }
-        else
-        {
-            target.draw(*(*it)->getCurrentAnimation());
+	for (const auto& obstacle : m_generatedElements.obstacles)
+	{
+        target.draw(*obstacle->getCurrentAnimation(), states);
+	}
 
-            if (!(*it)->getCurrentAnimation()->isPlaying())
-            {
-                it = m_generatedElements.obstacles.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-    }
-	
-    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
-    {
-        target.draw(*(*enemy_it)->getCurrentAnimation(), states);
-        if ((*enemy_it)->isDead())
+	for (const auto& enemy : m_generatedElements.enemies)
+	{
+        target.draw(*enemy->getCurrentAnimation(), states);
+	}	
+}
+
+void Level::update(sf::RenderWindow* window, float deltaTime)
+{
+    auto enemy_it = m_generatedElements.enemies.begin();
+	while (enemy_it != m_generatedElements.enemies.end())
+	{
+        auto* enemy = enemy_it->get();
+        enemy->getAIController().fsm->Update();
+        enemy->updateVelocity(deltaTime);
+        if (enemy->isDead())
         {
             enemy_it = m_generatedElements.enemies.erase(enemy_it);
         }
@@ -356,17 +348,21 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
         {
             ++enemy_it;
         }
-    }
-}
-
-void Level::update(sf::RenderWindow* window, float deltaTime)
-{
-    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
-    {
-        (*enemy_it)->getAIController().fsm->Update();
-        (*enemy_it)->updateVelocity(deltaTime);
-        ++enemy_it;
-    }
+	}
+	
+	auto obstacle_it = m_generatedElements.obstacles.begin();
+	while (obstacle_it != m_generatedElements.obstacles.end())
+	{
+        auto* obstacle = obstacle_it->get();
+		if (obstacle->hasExploded())
+		{
+            obstacle_it = m_generatedElements.obstacles.erase(obstacle_it);
+		}
+		else
+		{
+            ++obstacle_it;
+		}
+	}
 
 	draw(*window, sf::RenderStates::Default);
 }
