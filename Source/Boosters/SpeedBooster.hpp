@@ -14,6 +14,4 @@ public:
 
 private:
     int32_t m_boosterId;
-
-    bool isApplied = false;
 };

@@ -58,6 +58,20 @@ bool PlayerCharacter::init()
 		return false;
 	}
 
+	detonateBomb = Modules::Input->GetActionID("DetonateBomb");
+    if (detonateBomb < 0)
+    {
+        LOG("Failed to get DetonateBomb action ID.");
+        return false;
+    }
+
+    detonateBombHandle = Modules::Input->RegisterEvent(detonateBomb, std::bind(&PlayerCharacter::onBombDetonate, this, std::placeholders::_1));
+    if (plantBombHandle < 0)
+    {
+        LOG("Failed to register DetonateBomb event.");
+        return false;
+    }
+
 	// Loading animations
 	leftId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationLeft.ini");
 	rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
@@ -123,23 +137,45 @@ void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 	activeBombs.push_back(bomb);
 }
 
+void PlayerCharacter::onBombDetonate(void*)
+{
+    if (activeBombs.size() > 0 && !isDetonating && canDetonate)
+    {
+        isDetonating = true;
+
+        bombsToDetonate = (int32_t) activeBombs.size();
+        for (int32_t i = 0; i < bombsToDetonate; i++)
+        {
+            activeBombs[i]->setTimer(i);
+        }
+	}
+}
+
 void PlayerCharacter::updateBombs(float deltaTime)
 {
 	for (auto it = activeBombs.begin(); it != activeBombs.end();)
 	{
 		auto& bomb = *it;
-		bomb->update(deltaTime);
+        bomb->update(deltaTime, canDetonate);
 
 		if (bomb->hasExploded() && bomb->hasAnimExploded())
-		{
-			// Remove bomb if inactive
-			it = activeBombs.erase(it);
+        {
+            // Remove bomb if inactive
+            it = activeBombs.erase(it);
+            if (isDetonating)
+            {
+                if (--bombsToDetonate == 0)
+                {
+                    isDetonating = false;
+                }
+            }
 		}
 		else
 		{
 			++it;
 		}
 	}
+        
 }
 
 void PlayerCharacter::addMaxBombs()
