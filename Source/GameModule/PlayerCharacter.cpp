@@ -16,7 +16,7 @@ PlayerCharacter::PlayerCharacter()
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(sf::Vector2f(getCurrentPosition().x, getCurrentPosition().y+5.0f), sf::Vector2f(48.0f, 48.0f));
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
 }
 
 bool PlayerCharacter::init()
@@ -94,14 +94,14 @@ bool PlayerCharacter::init()
 // I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onMove(void* axis2DState)
 {
-    collisionBox->setRectangleProperties(sf::Vector2f(getCurrentPosition().x, getCurrentPosition().y+5.0f), sf::Vector2f(52.0f, 48.0f));
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
 
 	if (!Modules::Game->getIsPaused())
     {
         sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
         globalStats = state;
 
-		if (state.x == 1 && state.y == 0)
+		if (state == rightDirection)
         { //RIGHT
             if (canMoveRight)
             {
@@ -114,7 +114,7 @@ void PlayerCharacter::onMove(void* axis2DState)
                 updateAnimation(rightId);
             }
         }
-        else if (state.x == 0 && state.y == -1)
+        else if (state == downDirection)
         { //DOWN
             if (canMoveDown)
             {
@@ -127,8 +127,7 @@ void PlayerCharacter::onMove(void* axis2DState)
                 updateAnimation(downId);
 			}
         }
-
-        else if (state.x == -1 && state.y == 0)
+        else if (state == leftDirection)
         { //LEFT
             if (canMoveLeft)
             {
@@ -142,7 +141,7 @@ void PlayerCharacter::onMove(void* axis2DState)
 			}
         }
 
-        else if (state.x == 0 && state.y == 1)
+        else if (state == upDirection)
         { //UP
             if (canMoveUp)
             {
@@ -165,28 +164,28 @@ void PlayerCharacter::onCollision(CollisionComponent* other)
     {
         sf::Vector2f  playerPos = getCurrentPosition();
         sf::Vector2f otherPos  = other->getRectangle().getPosition();
-        if (otherPos.x > playerPos.x && (globalStats.x == 1 && globalStats.y == 0))
+        if (otherPos.x > playerPos.x && (globalStats == rightDirection))
         {
             canMoveRight = false;
             canMoveDown  = true;
             canMoveLeft  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.y > playerPos.y && (globalStats.x == 0 && globalStats.y == -1))
+        else if (otherPos.y > playerPos.y && (globalStats == downDirection))
         {
             canMoveDown = false;
             canMoveRight = true;
             canMoveLeft  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.x < playerPos.x && (globalStats.x == -1 && globalStats.y == 0))
+        else if (otherPos.x < playerPos.x && (globalStats == leftDirection))
         {
             canMoveLeft = false;
             canMoveRight = true;
             canMoveDown  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.y < playerPos.y && (globalStats.x == 0 && globalStats.y == 1))
+        else if (otherPos.y < playerPos.y && (globalStats == upDirection))
         {
             canMoveUp = false;
             canMoveRight = true;

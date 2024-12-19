@@ -44,7 +44,7 @@ Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), posi
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(64.0f, 64.0f));
+    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
 
     collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
 

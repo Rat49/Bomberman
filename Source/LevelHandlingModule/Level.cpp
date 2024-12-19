@@ -237,7 +237,7 @@ void Level::initializeUnbreakableObstacle()
 
     for (const auto& position : unbreakablePositions)
     {
-        auto collisionObject = std::make_unique<UnbreakableObstacle>(sf::Vector2f(position.x + 5.0f, position.y	+ 5.0f), sf::Vector2f(58.0f, 58.0f));
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(position + sf::Vector2f(5.0f, 5.0f), sf::Vector2f(58.0f, 58.0f));
 
 		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
     }
@@ -453,11 +453,11 @@ std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
 {
     std::vector<sf::Vector2f> unbreakablePositions;
 
-    for (std::size_t y = 0; y < m_fields.size(); ++y)
+    for (int32_t y = 0; y < m_fields.size(); ++y)
     {
-        for (std::size_t x = 0; x < m_fields[y].size(); ++x)
+        for (int32_t x = 0; x < m_fields[y].size(); ++x)
         {
-            if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Undestroyable")
+            if (getTileInfos(x, y) == "Undestroyable")
             {
                 unbreakablePositions.push_back(m_fields[y][x].tilePosition);
             }
