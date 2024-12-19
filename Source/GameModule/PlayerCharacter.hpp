@@ -30,6 +30,8 @@ public:
 
 	void updateVelocity(float deltaTime);
 
+	void updateSpeed(float factor);
+
 	void updateBombs(float deltaTime);
 
 	void addMaxBombs();

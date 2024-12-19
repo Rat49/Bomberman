@@ -193,7 +193,12 @@ sf::Vector2f PlayerCharacter::getCurrentPosition() const
 
 void PlayerCharacter::updateVelocity(float deltaTime)
 {
-	velocity = speed * deltaTime;
+    velocity = speed * deltaTime;
+}
+
+void PlayerCharacter::updateSpeed(float factor)
+{
+    speed *= factor;
 }
 
 PlayerCharacter::~PlayerCharacter()

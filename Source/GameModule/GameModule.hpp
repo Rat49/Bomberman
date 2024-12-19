@@ -36,6 +36,8 @@ public:
 
 	float getHUDHeight();
 
+	int32_t getCurrentStage() const { return currentStage; }
+
 private:
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
@@ -48,8 +50,6 @@ private:
 	void saveResults();
 	
 	void checkTimeCounter();
-
-private:
 
 	sf::RenderWindow window;
 
