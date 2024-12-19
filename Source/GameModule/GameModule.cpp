@@ -252,7 +252,7 @@ void GameModule::updateBoosters()
 	auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
-		if (boostersIterator->second->shoulRemoveEffect())
+		if (boostersIterator->second->shouldRemoveEffect())
 		{
 			if (boostersIterator->second->removeEffect(player))
 			{
