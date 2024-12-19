@@ -16,7 +16,7 @@ enum class EnemyType
 class Enemy : public sf::Sprite, public CollisionObject
 {
 public:
-	Enemy(EnemyType type, sf::Vector2f spawnPosition); // , const std::vector<sf::Vector2i>& patrollingPoints = {});
+	Enemy(EnemyType type, sf::Vector2f spawnPosition);
 
 	EnemyType getType() const;
 

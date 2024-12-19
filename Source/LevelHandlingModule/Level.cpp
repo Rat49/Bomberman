@@ -309,6 +309,7 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
             if (!(*it)->getCurrentAnimation()->isPlaying())
             {
+                Modules::Physics->deleteObject(&(*it)->getCollisionBox());
                 it = m_generatedElements.obstacles.erase(it);
             }
             else
