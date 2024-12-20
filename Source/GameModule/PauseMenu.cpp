@@ -21,6 +21,7 @@ PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFon
 			button->onClick = [button]() {
 				button->dropShadows(Colors::RED, Colors::YELLOW);
 				};
+			
 			if (element.first == Buttons::RESUME) {
 				button->onRelease = []() {
 					Modules::Game->setIsPaused(false);
@@ -28,8 +29,14 @@ PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFon
 			}
 			else if (element.first == Buttons::MENU) {
 				button->onRelease = []() {
+					Modules::Game->setIsPaused(false);
 					Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
 				};
+			}
+			else if (element.first == Buttons::OPTIONS) {
+				button->onRelease = []() {
+					Modules::Game->setCurrentScreen(Screens::OPTIONS);
+					};
 			}
 		}
 	}

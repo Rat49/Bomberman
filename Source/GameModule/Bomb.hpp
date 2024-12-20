@@ -3,8 +3,12 @@
 #include "Common/Modules.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 #include "SpriteModule/SpriteModule.hpp"
+#include "CollisionModule/CollisionRectangle.hpp"
+#include "GameModule/Obstacle.hpp"
+#include "CollisionModule/CollisionObject.hpp"
 
-class Bomb
+
+class Bomb : public CollisionObject
 {
 public:
 	Bomb();
@@ -24,8 +28,13 @@ public:
 
 	// Explosion status getter
 	bool hasExploded() const { return exploded; }
+	bool hasAnimExploded() const { return animExploded; }
 
 	std::shared_ptr<Animation> getCurrentAnimation() const;
+
+	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
+	CollisionRectangle& getCollision() { return collision; }
 
 private:
 	int32_t currentAnimation = -1;
@@ -37,19 +46,38 @@ private:
 	int32_t bombRightID;
 	int32_t bombCenterID;
 
+	std::unique_ptr<CollisionComponent> collisionBox;
+
+	CollisionRectangle collision;
+
+	float gridSize = 64.0f;
+
 	// Bomb position
 	sf::Vector2f position;
+
 	// Explosion radius
 	float explosionRadius;
-	// Explosion timer
+
+	// Bomb before explosion timer
 	float timer;
+
+	// Explosion timer
+	float explosionTimer = 1000000.0f;
+
 	// Did the bomb explode
-	bool exploded;
-	// Graphic representation of a bomb
-	sf::CircleShape bombShape;
+	bool exploded = false;
+	bool animExploded = false;
+	bool animExplosionStart = false;
+
+    std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
+	bool canChangeObstacleAnim = false;
 
 	// Method about what will happen when there is an explosion
 	void explosionEffect(const sf::Vector2f& direction);
 
 	int32_t getExplosionAnimationID(const sf::Vector2f& direction) const;
+
+	sf::Vector2f alignToGrid(const sf::Vector2f& newPosition);
+
+	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
 };

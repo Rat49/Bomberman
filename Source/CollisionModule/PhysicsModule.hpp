@@ -16,6 +16,11 @@ public:
 									float maxDistance,
 									sf::Vector2f& endPoint);
 
+	std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> rayCastAll(
+		const sf::Vector2f& origin,
+		const sf::Vector2f& direction,
+		float maxDistance);
+
 	// Checks if ray intersects with rectangle
 	bool rayIntersectsRectangle(const CollisionRectangle& rectangle,
 							const sf::Vector2f& origin,

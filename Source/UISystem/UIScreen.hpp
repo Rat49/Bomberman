@@ -57,8 +57,9 @@ public:
 
 	void setBackgroundColor(const sf::Color& newColor) { backgroundColor = newColor; }
 
-	void setBackground(float positionX, float positionY, float sizeX, float sizeY);
+	void setBackground(float positionX, float positionY, float sizeX, float sizeY, const sf::Color& color);
 
+	float getBackgroundHeigth() const { return background.getSize().y + background.getPosition().y; }
 protected:
 
 	// Map to store UI elements

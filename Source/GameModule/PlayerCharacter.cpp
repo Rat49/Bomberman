@@ -8,7 +8,14 @@
 #include <thread>
 #include <chrono>
 
-PlayerCharacter::PlayerCharacter() {}
+PlayerCharacter::PlayerCharacter()
+{
+	/*collisionBox = std::make_unique<CollisionComponent>();
+
+	collisionBox->setParent(this);
+
+	collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));*/
+}
 
 bool PlayerCharacter::init()
 {
@@ -18,6 +25,8 @@ bool PlayerCharacter::init()
 	const ConfigFile& playerConfig = Modules::Config->getFile("../../Data/Config/PlayerCharacterConfig.ini");
 	speed = playerConfig.getSection("Player").getValue("speed").getFloat();
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
+    bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
+	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
     invincibilityDuration = playerConfig.getSection("InvincibeBooster").getValue("invincibilityDuration").getFloat();
 
 	activeBombs.reserve(maxBombs);
@@ -111,7 +120,7 @@ void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 
 	// Need to add and then get Player's position here
 	auto bomb = std::make_shared<Bomb>();
-	bomb->Initialize(getCurrentPosition(), 1, 3.0f);
+	bomb->Initialize(getCurrentPosition(), 1, bombDuration);
 	activeBombs.push_back(bomb);
 }
 
@@ -122,7 +131,7 @@ void PlayerCharacter::updateBombs(float deltaTime)
 		auto& bomb = *it;
 		bomb->update(deltaTime);
 
-		if (!bomb->hasExploded())
+		if (bomb->hasExploded() && bomb->hasAnimExploded())
 		{
 			// Remove bomb if inactive
 			it = activeBombs.erase(it);
@@ -134,11 +143,20 @@ void PlayerCharacter::updateBombs(float deltaTime)
 	}
 }
 
+void PlayerCharacter::addMaxBombs()
+{
+    if (maxBombs<bombCapacity)
+    {
+        maxBombs++;
+    }
+}
+
 void PlayerCharacter::drawBombs(sf::RenderWindow& window)
 {
-	for (const auto& bomb : activeBombs)
+ 	for (const auto& bomb : activeBombs)
 	{
-		window.draw(*bomb->getCurrentAnimation());
+		//window.draw(*bomb->getCurrentAnimation());
+		bomb->draw(window);
 	}
 }
 
@@ -174,9 +192,19 @@ sf::Vector2f PlayerCharacter::getCurrentPosition() const
 	return { x, y };
 }
 
+void PlayerCharacter::PassThroughBombs(bool pass)
+{
+    canPassThroughBombs = pass;
+}
+
 void PlayerCharacter::updateVelocity(float deltaTime)
 {
-	velocity = speed * deltaTime;
+    velocity = speed * deltaTime;
+}
+
+void PlayerCharacter::updateSpeed(float factor)
+{
+    speed *= factor;
 }
 
 PlayerCharacter::~PlayerCharacter()

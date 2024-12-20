@@ -1,6 +1,7 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
+#include "CollisionModule/CollisionComponent.hpp"
 #include <chrono>
 
 class Animation;
@@ -28,12 +29,21 @@ public:
 
 	sf::Vector2f getCurrentPosition() const;
 
+	void PassThroughBombs(bool pass);
+
+    bool getPassThroughBombs() {return canPassThroughBombs;}
+
 	void updateVelocity(float deltaTime);
+
+	void updateSpeed(float factor);
 
 	void updateBombs(float deltaTime);
 
+	void addMaxBombs();
+
 	void drawBombs(sf::RenderWindow& window);
 
+	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 	void startInvincibility();
 
 	void updateInvincibility();
@@ -46,7 +56,11 @@ private:
 	float y = 70.f;
 	float speed = 0.f;
 	int32_t maxBombs;
+    int32_t bombCapacity;
+	float bombDuration;
 	float velocity = 0.f;
+    bool canPassThroughBombs = false;
+
 
 	ActionID playerMovement;
 	FunctionHandle playerMovementHandle;
@@ -56,6 +70,8 @@ private:
 	int32_t rightId;
 	int32_t upId;
 	int32_t downId;
+
+	std::unique_ptr<CollisionComponent> collisionBox;
 
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 

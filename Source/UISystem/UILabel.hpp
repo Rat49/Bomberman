@@ -40,6 +40,8 @@ public:
 
 	void removeShadow() { hasShadow = false; }
 
+	void handleResize(const sf::Vector2f& scale) override;
+
 protected:
 	// Render the label on the screen
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

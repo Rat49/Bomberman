@@ -8,7 +8,6 @@ class UIScreen;
 class UISystem : public BaseModule
 {
 public:
-	UISystem();
 
 	// Updates the viewport size to handle dynamic resizing
 	void setViewportSize(float width, float height);
