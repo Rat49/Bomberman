@@ -36,6 +36,8 @@ public:
 
 	void addMaxBombs();
 
+	void addExplosionRadius();
+
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
@@ -47,6 +49,8 @@ private:
 	float speed = 0.f;
 	int32_t maxBombs;
     int32_t bombCapacity;
+    float currentExposionRadius;
+    float maxExposionRadius;
 	float bombDuration;
 	float velocity = 0.f;
 

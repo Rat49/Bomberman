@@ -27,6 +27,8 @@ bool PlayerCharacter::init()
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
     bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
 	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
+    currentExposionRadius = playerConfig.getSection("ExplosionRadius").getValue("explosionRadius").getFloat();
+    maxExposionRadius = playerConfig.getSection("MaxExplosionRadius").getValue("maxExplosionRadius").getFloat();
 
 	activeBombs.reserve(maxBombs);
 
@@ -119,7 +121,7 @@ void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
 
 	// Need to add and then get Player's position here
 	auto bomb = std::make_shared<Bomb>();
-	bomb->Initialize(getCurrentPosition(), 1, bombDuration);
+	bomb->Initialize(getCurrentPosition(), currentExposionRadius, bombDuration);
 	activeBombs.push_back(bomb);
 }
 
@@ -147,6 +149,13 @@ void PlayerCharacter::addMaxBombs()
     if (maxBombs<bombCapacity)
     {
         maxBombs++;
+    }
+}
+void PlayerCharacter::addExplosionRadius()
+{
+    if (currentExposionRadius < maxExposionRadius)
+    {
+        currentExposionRadius++;
     }
 }
 
