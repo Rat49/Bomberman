@@ -198,7 +198,8 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 	sf::Vector2f alignPos = alignToGrid(position);
 	sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-	auto hitResults = Modules::Physics->rayCastAll(position, newDirection, 1.0f);
+	hitResults.clear();
+    hitResults.emplace_back(Modules::Physics->rayCast(position, newDirection, explosionRadius, endPoint), directionAndPosition);
 
     if (!hitResults.empty())
     {
