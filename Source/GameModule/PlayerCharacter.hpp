@@ -50,6 +50,8 @@ public:
 
 	bool getIsInvincible() const;
 
+	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
+
 private:
 	int32_t currentAnimation = -1;
 	float x = 70.f;

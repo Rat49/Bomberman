@@ -14,7 +14,7 @@ public:
 	bool removeEffect(PlayerCharacter& playerCharacter) override;
 
 
-	bool shoulRemoveEffect() override;
+	bool shouldRemoveEffect() override;
 
 private:
 	int32_t boosterID = 1;

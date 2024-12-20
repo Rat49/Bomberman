@@ -22,7 +22,7 @@ bool InvincibleBooster::removeEffect(PlayerCharacter& playerCharacter)
 	return isEffectDone;
 }
 
-bool InvincibleBooster::shoulRemoveEffect()
+bool InvincibleBooster::shouldRemoveEffect()
 {
 	return isEffectDone;
 }
