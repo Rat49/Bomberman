@@ -194,8 +194,8 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
     sf::Vector2f endPoint;
 
-    sf::Vector2f newDirection         = directionToPosition(direction);
-    sf::Vector2f alignPos             = alignToGrid(position);
+    sf::Vector2f newDirection = directionToPosition(direction);
+    sf::Vector2f alignPos = alignToGrid(position);
     sf::Vector2f directionAndPosition = alignPos + newDirection;
 
     hitResult = std::make_pair(Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint), directionAndPosition);

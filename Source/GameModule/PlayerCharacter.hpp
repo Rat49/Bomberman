@@ -46,6 +46,7 @@ public:
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
 	void startInvincibility();
 
 	void updateInvincibility();

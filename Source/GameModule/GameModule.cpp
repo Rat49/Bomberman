@@ -179,8 +179,10 @@ void GameModule::run()
             player.drawBombs(window);
 
             window.draw(*player.getCurrentAnimation());
+            window.draw(player.getCollisionBox().getRectangle());
             player.setIsUpdated(false);
 
+			Modules::Physics->updateCollision();
 
             screens[currentScreen]->getWindow()->setView(tempView);
 

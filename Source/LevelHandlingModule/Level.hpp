@@ -96,7 +96,7 @@ private:
 	std::string m_configPath;
 
 	float unbreakableObstacleOffset = 5.0f;
-    float unbreakableObstacleCollisionSize = 58.0f;
+    float unbreakableObstacleCollisionSize = 64.0f;
 
 };
 

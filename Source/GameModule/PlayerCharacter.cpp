@@ -1,4 +1,4 @@
-#include "PlayerCharacter.hpp"
+﻿#include "PlayerCharacter.hpp"
 #include "Common/Modules.hpp"
 #include "InputModule/InputModule.hpp"
 #include "Common/Logs.hpp"
@@ -110,18 +110,18 @@ void PlayerCharacter::onMove(void* axis2DState)
         else if (state == downDirection)
         { //DOWN
             y += (canMoveDown ? velocity : 0.0f);
-            updateAnimation(rightId);
+            updateAnimation(downId);
         }
         else if (state == leftDirection)
         { //LEFT
             x -= (canMoveLeft ? velocity : 0.0f);
-            updateAnimation(rightId);
+            updateAnimation(leftId);
         }
 
         else if (state == upDirection)
         { //UP
             y -= (canMoveUp ? velocity : 0.0f);
-            updateAnimation(rightId);
+            updateAnimation(upId);
         }
     }
 }
@@ -132,54 +132,42 @@ void PlayerCharacter::onCollision(CollisionComponent* other)
     {
         sf::Vector2f playerPos = getCurrentPosition();
         sf::Vector2f otherPos  = other->getRectangle().getPosition();
-        canMoveRight = otherPos.x > playerPos.x && globalStats == rightDirection;
-        canMoveDown            = globalStats == downDirection && otherPos.y > playerPos.y;
-        canMoveLeft            = globalStats == leftDirection && otherPos.x < playerPos.x;
-        canMoveUp              = globalStats == upDirection && otherPos.y < playerPos.y;
 
-		if (!canMoveRight && !canMoveDown && !canMoveLeft && !canMoveUp)
-        {
-            canMoveRight = true;
-            canMoveDown  = true;
-            canMoveLeft  = true;
-            canMoveUp    = true;
-        }
-
-        /*if (otherPos.x > playerPos.x && (globalStats == rightDirection))
+        if (otherPos.x > playerPos.x && (globalStats == rightDirection)) // right
         {
             canMoveRight = false;
             canMoveDown  = true;
             canMoveLeft  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.y > playerPos.y && (globalStats == downDirection))
+        else if (otherPos.y > playerPos.y && (globalStats == downDirection)) // down
         {
-            canMoveDown = false;
+            canMoveDown  = false;
             canMoveRight = true;
             canMoveLeft  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.x < playerPos.x && (globalStats == leftDirection))
+        else if (otherPos.x < playerPos.x && (globalStats == leftDirection)) // left
         {
-            canMoveLeft = false;
+            canMoveLeft  = false;
             canMoveRight = true;
             canMoveDown  = true;
             canMoveUp    = true;
         }
-        else if (otherPos.y < playerPos.y && (globalStats == upDirection))
+        else if (otherPos.y < playerPos.y && (globalStats == upDirection)) // up
         {
-            canMoveUp = false;
+            canMoveUp    = false;
             canMoveRight = true;
             canMoveDown  = true;
             canMoveLeft  = true;
         }
-       else
+        else
         {
             canMoveRight = true;
             canMoveDown  = true;
             canMoveLeft  = true;
             canMoveUp    = true;
-		}*/
+        }
     }
 }
 

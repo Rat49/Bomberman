@@ -38,8 +38,8 @@ namespace
 	const int32_t numberOfTilesWidth = 14;	// number of tiles by width that player can see in one moment
 	const int32_t numberOfTilesHeight = 11;	// 16 x 13 in the original game
 
-	const std::string UNBREAKABLE_OBSTACLE = "Undestroyable";
-    const std::string WALKABLE_TILE = "Walkable";
+	//const std::string UNBREAKABLE_OBSTACLE = "Undestroyable";
+    //const std::string WALKABLE_TILE = "Walkable";
     } // namespace
 
 Level::Level(const std::string baseLevelConfigPath)
@@ -240,7 +240,7 @@ void Level::initializeUnbreakableObstacle()
 
     for (const auto& position : unbreakablePositions)
     {
-        auto collisionObject = std::make_unique<UnbreakableObstacle>(position + sf::Vector2f(unbreakableObstacleOffset, unbreakableObstacleOffset), sf::Vector2f(unbreakableObstacleCollisionSize, unbreakableObstacleCollisionSize));
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(position, sf::Vector2f(unbreakableObstacleCollisionSize, unbreakableObstacleCollisionSize));
 
 		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
     }
@@ -442,7 +442,7 @@ std::vector<sf::Vector2f> Level::getWalkablePositions() const
 	{
 		for (std::size_t x = 0; x < m_fields[y].size(); ++x)
 		{
-            if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == WALKABLE_TILE)
+            if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Walkable")
 			{
 				walkablePositions.push_back(m_fields[y][x].tilePosition);
 			}
@@ -460,7 +460,7 @@ std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
     {
         for (int32_t x = 0; x < m_fields[y].size(); ++x)
         {
-            if (getTileInfos(x, y) == UNBREAKABLE_OBSTACLE)
+            if (getTileInfos(x, y) == "Undestroyable")
             {
                 unbreakablePositions.push_back(m_fields[y][x].tilePosition);
             }
