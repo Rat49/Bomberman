@@ -1,10 +1,11 @@
 #pragma once
+
 #include "BoosterComponent.hpp"
 
-class SpeedBooster : public BoosterComponent
+class FireUpBooster : public BoosterComponent
 {
 public:
-    int32_t getBoosterID() override { return m_boosterId; }
+    int32_t getBoosterID() override;
 
     void applyEffect(PlayerCharacter& playerCharacter) override;
 
@@ -13,5 +14,6 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-    int32_t m_boosterId;
+    int32_t boosterId;
+    bool    isEffectDone = false;
 };

@@ -23,8 +23,9 @@ PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFon
 				};
 			
 			if (element.first == Buttons::RESUME) {
-				button->onRelease = []() {
+				button->onRelease = [this]() {
 					Modules::Game->setIsPaused(false);
+                    isPauseMenuOpen = false;
 				};
 			}
 			else if (element.first == Buttons::MENU) {
@@ -80,5 +81,14 @@ void PauseMenu::handleInput()
 void PauseMenu::onPause(void* buttonState)
 {
 	bool state = *reinterpret_cast<bool*>(buttonState);
-	Modules::Game->setIsPaused(state);
+    if (state && !isPauseMenuOpen)
+	{
+		Modules::Game->setIsPaused(state);
+        isPauseMenuOpen = state;
+    }
+	else if (state && isPauseMenuOpen)
+	{
+        Modules::Game->setIsPaused(!state);
+        isPauseMenuOpen = !state;
+	}
 }
