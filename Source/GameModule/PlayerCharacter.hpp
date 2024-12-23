@@ -4,7 +4,7 @@
 #include "CollisionModule/CollisionComponent.hpp"
 #include "CollisionModule/CollisionObject.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
-
+#include <chrono>
 
 class Animation;
 
@@ -46,6 +46,13 @@ public:
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+	void startInvincibility();
+
+	void updateInvincibility();
+
+	bool getIsInvincible() const;
+
+	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
 
     CollisionRectangle& getCollision() { return collision; }
 
@@ -84,6 +91,9 @@ private:
 
 	bool m_isUpdated = true;
 
+	bool isInvincible = false;
+	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
+    float invincibilityDuration;
 	float gridSize = 64.0f;
 
 	bool canMoveLeft  = true;
