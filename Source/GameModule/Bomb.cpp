@@ -192,56 +192,51 @@ void Bomb::explode()
 // Method about what will happen when there is an explosion
 void Bomb::explosionEffect(const sf::Vector2f& direction)
 {
-	sf::Vector2f endPoint;
+    sf::Vector2f endPoint;
 
-	sf::Vector2f newDirection = directionToPosition(direction);
-	sf::Vector2f alignPos = alignToGrid(position);
-	sf::Vector2f directionAndPosition = alignPos + newDirection;
+    sf::Vector2f newDirection         = directionToPosition(direction);
+    sf::Vector2f alignPos             = alignToGrid(position);
+    sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-	hitResults.clear();
-    hitResults.emplace_back(Modules::Physics->rayCast(position, newDirection, explosionRadius, endPoint), directionAndPosition);
+    hitResult = std::make_pair(Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint), directionAndPosition);
 
-    if (!hitResults.empty())
+    if (hitResult.first)
     {
-        for (const auto& [obj, pos] : hitResults)
+
+        if (auto* hitObstacle = dynamic_cast<Obstacle*>(hitResult.first->getObjectParent()))
         {
-            if (obj)
+            if (hitObstacle)
             {
-                if (auto* hitObstacle = dynamic_cast<Obstacle*>(obj->getObjectParent()))
+                canChangeObstacleAnim = true;
+                obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
+                hitObstacle->isExploded = true;
+            }
+        }
+        else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitResult.first->getObjectParent()))
+        {
+            if (hitPlayer)
+            {
+                LOG("PLAYER!");
+            }
+
+            else if (auto* hitEnemy = dynamic_cast<Enemy*>(hitResult.first->getObjectParent()))
+            {
+                if (hitEnemy)
                 {
-                    if (hitObstacle)
-                    {
-                        canChangeObstacleAnim = true;
-                        obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
-                        hitObstacle->isExploded = true;
-                    }
+                    LOG("ENEMY!");
                 }
-                else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(obj->getObjectParent()))
-				{
-                    if (hitPlayer)
-                    {
-                        LOG("PLAYER!");
-					}
-				}
-                else if (auto* hitEnemy = dynamic_cast<Enemy*>(obj->getObjectParent()))
-				{
-					if (hitEnemy)
-					{
-                        LOG("ENEMY!");
-					}
-				}
             }
         }
     }
 
-	// Activation of direction animation
-	int32_t animationID = getExplosionAnimationID(direction);
-	currentAnimation = animationID;
-	if (auto animation = Modules::Sprite->getAnimation(animationID))
-	{
-		animation->setPosition(directionAndPosition);
-		animation->Play();
-	}
+    // Activation of direction animation
+    int32_t animationID = getExplosionAnimationID(direction);
+    currentAnimation    = animationID;
+    if (auto animation = Modules::Sprite->getAnimation(animationID))
+    {
+        animation->setPosition(directionAndPosition);
+        animation->Play();
+    }
 }
 
 int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const

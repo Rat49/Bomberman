@@ -5,6 +5,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "GameModule/GameModule.hpp"
+#include "Common/Directions.hpp"
 #include <thread>
 #include <chrono>
 
@@ -16,7 +17,7 @@ PlayerCharacter::PlayerCharacter()
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
 bool PlayerCharacter::init()
@@ -91,10 +92,9 @@ bool PlayerCharacter::init()
 	return true;
 }
 
-// I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onMove(void* axis2DState)
 {
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 
 	if (!Modules::Game->getIsPaused())
     {
@@ -103,68 +103,48 @@ void PlayerCharacter::onMove(void* axis2DState)
 
 		if (state == rightDirection)
         { //RIGHT
-            if (canMoveRight)
-            {
-                x += velocity;
-                updateAnimation(rightId);
-            }
-            else
-            {
-                x += 0.0f;
-                updateAnimation(rightId);
-            }
+            x += (canMoveRight ? velocity : 0.0f);
+            updateAnimation(rightId);
         }
         else if (state == downDirection)
         { //DOWN
-            if (canMoveDown)
-            {
-                y += velocity;
-                updateAnimation(downId);
-            }
-			else
-			{
-                y += 0.0f;
-                updateAnimation(downId);
-			}
+            y += (canMoveDown ? velocity : 0.0f);
+            updateAnimation(rightId);
         }
         else if (state == leftDirection)
         { //LEFT
-            if (canMoveLeft)
-            {
-                x -= velocity;
-                updateAnimation(leftId);
-            }
-            else
-            {
-                x -= 0.0f;
-                updateAnimation(leftId);
-			}
+            x -= (canMoveLeft ? velocity : 0.0f);
+            updateAnimation(rightId);
         }
 
         else if (state == upDirection)
         { //UP
-            if (canMoveUp)
-            {
-                y -= velocity;
-                updateAnimation(upId);
-            }
-            else
-            {
-                y -= 0.0f;
-                updateAnimation(upId);
-			}
+            y -= (canMoveUp ? velocity : 0.0f);
+            updateAnimation(rightId);
         }
     }
 }
 
-// For this too: I know this can be done better and more elegantly, this is how it is currently.
 void PlayerCharacter::onCollision(CollisionComponent* other)
 {
     if (other)
     {
-        sf::Vector2f  playerPos = getCurrentPosition();
+        sf::Vector2f playerPos = getCurrentPosition();
         sf::Vector2f otherPos  = other->getRectangle().getPosition();
-        if (otherPos.x > playerPos.x && (globalStats == rightDirection))
+        canMoveRight = otherPos.x > playerPos.x && globalStats == rightDirection;
+        canMoveDown            = globalStats == downDirection && otherPos.y > playerPos.y;
+        canMoveLeft            = globalStats == leftDirection && otherPos.x < playerPos.x;
+        canMoveUp              = globalStats == upDirection && otherPos.y < playerPos.y;
+
+		if (!canMoveRight && !canMoveDown && !canMoveLeft && !canMoveUp)
+        {
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+
+        /*if (otherPos.x > playerPos.x && (globalStats == rightDirection))
         {
             canMoveRight = false;
             canMoveDown  = true;
@@ -192,13 +172,13 @@ void PlayerCharacter::onCollision(CollisionComponent* other)
             canMoveDown  = true;
             canMoveLeft  = true;
         }
-        else
+       else
         {
             canMoveRight = true;
             canMoveDown  = true;
             canMoveLeft  = true;
             canMoveUp    = true;
-		}
+		}*/
     }
 }
 

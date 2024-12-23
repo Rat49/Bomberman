@@ -78,6 +78,8 @@ private:
 
 	int32_t collisionBoxID;
 
+	float collisionBoxSize = 52.0f;
+
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;

@@ -73,7 +73,7 @@ private:
     std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	bool canChangeObstacleAnim = false;
 
-	std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> hitResults;
+    std::pair<const CollisionComponent*, sf::Vector2f> hitResult = {nullptr, sf::Vector2f()};
 
 	// Method about what will happen when there is an explosion
 	void explosionEffect(const sf::Vector2f& direction);
