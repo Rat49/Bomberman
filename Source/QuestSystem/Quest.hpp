@@ -1,8 +1,12 @@
 #pragma once
+
 #include "BaseObjective.hpp"
 #include "EventSystem/EventTypes.hpp"
+#include <vector>
+#include <memory>
 
-class Quest {
+class Quest 
+{
 public:
 	Quest(const std::string& id, const std::string& fileName);
 
@@ -12,8 +16,16 @@ public:
 
 	const std::string& getFile() const { return fileName; }
 
+	void addObjective(std::unique_ptr<BaseObjective> objective);
+    void addFailCondition(std::unique_ptr<BaseObjective> failCondition);
+
+    void checkCompletion();
+
 private:
 	std::string fileName;
 	std::string id;
 	int32_t reward;
+
+	std::vector<std::unique_ptr<BaseObjective>> objectives;
+    std::vector<std::unique_ptr<BaseObjective>> failConditions;
 };
