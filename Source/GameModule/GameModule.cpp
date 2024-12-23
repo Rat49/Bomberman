@@ -55,7 +55,7 @@ bool GameModule::initialize()
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 
-	EventTypes::initialize();
+	//EventTypes::initialize();
 
 	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -179,7 +179,6 @@ void GameModule::run()
             window.draw(*player.getCurrentAnimation());
             player.setIsUpdated(false);
 
-
             screens[currentScreen]->getWindow()->setView(tempView);
 
 
@@ -234,7 +233,7 @@ void GameModule::checkTimeCounter()
             // Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
 
-            Modules::Events->emit(EventTypes::GAME_TIMER_FINISHED, nullptr);
+            //Modules::Events->emit(EventTypes::GAME_TIMER_FINISHED, nullptr);
         }
 		break;
 	case Screens::STAGE:

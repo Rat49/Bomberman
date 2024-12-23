@@ -2,6 +2,7 @@
 #include "Common/Modules.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "QuestSystem/FailObjective.hpp"
+#include "EventSystem/EventTypes.hpp"
 
 
 void QuestSystem::addQuest(const std::string& file, const std::string& questName)
