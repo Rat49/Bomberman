@@ -5,6 +5,7 @@
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "SoundSystem/SoundSystem.hpp"
+#include "EventSystem/EventTypes.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
@@ -53,6 +54,8 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_OPTIONS);
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
+
+	EventTypes::initialize();
 
 	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -163,25 +166,28 @@ void GameModule::run()
 		updateBoosters();
 
 		window.clear(screens[currentScreen]->getBackgroundColor());
-		if(currentScreen == Screens::LEVEL) 
-		{
-			sf::View tempView = screens[currentScreen]->getWindow()->getView();
-			Modules::update(deltaTime, &window);
-			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
+        if (currentScreen == Screens::LEVEL)
+        {
+            sf::View tempView = screens[currentScreen]->getWindow()->getView();
+            Modules::update(deltaTime, &window);
+            Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 
-			player.updateVelocity(deltaTime);
-			player.updateBombs(deltaTime);
-			player.drawBombs(window);
+            player.updateVelocity(deltaTime);
+            player.updateBombs(deltaTime);
+            player.drawBombs(window);
 
-			window.draw(*player.getCurrentAnimation());
-			player.setIsUpdated(false);
+            window.draw(*player.getCurrentAnimation());
+            player.setIsUpdated(false);
 
-			screens[currentScreen]->getWindow()->setView(tempView);
 
-			if (isPaused) {
-				screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
-			}
-		}
+            screens[currentScreen]->getWindow()->setView(tempView);
+
+
+            if (isPaused)
+            {
+                screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
+            }
+        }
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();
     }
@@ -225,8 +231,10 @@ void GameModule::checkTimeCounter()
 		}
         if (gameTime < 0)
         {
-			// Changing screen to game over, for now here
+            // Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
+
+            Modules::Events->emit(EventTypes::GAME_TIMER_FINISHED, nullptr);
         }
 		break;
 	case Screens::STAGE:
