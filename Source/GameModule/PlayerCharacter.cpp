@@ -54,7 +54,7 @@ bool PlayerCharacter::init()
 		return false;
 	}
 
-	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, [this](void* /*axis2DState*/) { this->onBombPlant(nullptr); });
+	plantBombHandle = Modules::Input->RegisterEvent(plantBomb, std::bind(&PlayerCharacter::onBombPlant, this, std::placeholders::_1));
 	if (plantBombHandle < 0)
 	{
 		LOG("Failed to register PlantBomb event.");
@@ -112,18 +112,23 @@ void PlayerCharacter::onMove(void* axis2DState)
 	}
 }
 
-void PlayerCharacter::onBombPlant(void* /*axis2DState*/)
+void PlayerCharacter::onBombPlant(void* state)
 {
-	if (activeBombs.size() >= static_cast<size_t>(maxBombs))
-	{
-		LOG("Cannot plant more bombs. Maximum reached.");
-		return;
-	}
+    bool isPressed = *reinterpret_cast<bool*>(state);
 
-	// Need to add and then get Player's position here
-	auto bomb = std::make_shared<Bomb>();
-	bomb->Initialize(getCurrentPosition(), currentExposionRadius, bombDuration);
-	activeBombs.push_back(bomb);
+	if (isPressed)
+    {
+        if (activeBombs.size() >= static_cast<size_t>(maxBombs))
+        {
+            LOG("Cannot plant more bombs. Maximum reached.");
+            return;
+        }
+
+        // Need to add and then get Player's position here
+        auto bomb = std::make_shared<Bomb>();
+        bomb->Initialize(getCurrentPosition(), 1, bombDuration);
+        activeBombs.push_back(bomb);
+    }
 }
 
 void PlayerCharacter::updateBombs(float deltaTime)
