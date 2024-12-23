@@ -28,6 +28,8 @@ bool PlayerCharacter::init()
     bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
 	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
     invincibilityDuration = playerConfig.getSection("InvincibeBooster").getValue("invincibilityDuration").getFloat();
+    currentExposionRadius = playerConfig.getSection("ExplosionRadius").getValue("explosionRadius").getFloat();
+    maxExposionRadius = playerConfig.getSection("MaxExplosionRadius").getValue("maxExplosionRadius").getFloat();
 
 	activeBombs.reserve(maxBombs);
 
@@ -190,6 +192,13 @@ void PlayerCharacter::addMaxBombs()
     if (maxBombs<bombCapacity)
     {
         maxBombs++;
+    }
+}
+void PlayerCharacter::addExplosionRadius()
+{
+    if (currentExposionRadius < maxExposionRadius)
+    {
+        currentExposionRadius++;
     }
 }
 
