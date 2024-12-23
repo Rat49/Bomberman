@@ -5,14 +5,24 @@
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
+#include <functional>
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
 */
 
+using EventID        = int32_t;
+using FunctionHandle = int32_t;
+using Callback       = std::function<void(void*)>;
+
 class GameModule : public BaseModule
 {
 public:
+    // Declare the game-specific event IDs here
+    EventID GAME_TIMER_FINISHED;
+    EventID QUEST_FAILED;
+    EventID PLAYER_DESTROYED;
+    EventID OBJECTIVE_COMPLETED;
 
 	bool initialize() override;
 
