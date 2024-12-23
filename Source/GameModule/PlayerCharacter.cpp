@@ -143,7 +143,7 @@ void PlayerCharacter::onBombDetonate(void*)
     {
         isDetonating = true;
 
-        bombsToDetonate = (int32_t) activeBombs.size();
+        bombsToDetonate = static_cast<int32_t>(activeBombs.size());
         for (int32_t i = 0; i < bombsToDetonate; i++)
         {
             activeBombs[i]->setTimer(i);
@@ -164,7 +164,8 @@ void PlayerCharacter::updateBombs(float deltaTime)
             it = activeBombs.erase(it);
             if (isDetonating)
             {
-                if (--bombsToDetonate == 0)
+                --bombsToDetonate;
+                if (bombsToDetonate == 0)
                 {
                     isDetonating = false;
                 }
