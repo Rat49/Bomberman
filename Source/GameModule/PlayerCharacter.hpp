@@ -2,6 +2,7 @@
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
+#include <chrono>
 
 class Animation;
 
@@ -47,6 +48,13 @@ public:
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+	void startInvincibility();
+
+	void updateInvincibility();
+
+	bool getIsInvincible() const;
+
+	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
 
 private:
 	int32_t currentAnimation = -1;
@@ -82,4 +90,8 @@ private:
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
+
+	bool isInvincible = false;
+	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
+    float invincibilityDuration;
 };
