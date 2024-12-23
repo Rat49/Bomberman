@@ -36,7 +36,6 @@ namespace {
 	const std::string GAME_TIME = "gameTime";
 	const std::string STAGE = "stage";
 
-	
 }
 
 using Time = std::chrono::high_resolution_clock;
@@ -55,7 +54,10 @@ bool GameModule::initialize()
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 
-	EventTypes::initialize();
+	GAME_TIMER_FINISHED = Modules::Events->registerEvent();
+    QUEST_FAILED        = Modules::Events->registerEvent();
+    PLAYER_DESTROYED    = Modules::Events->registerEvent();
+    OBJECTIVE_COMPLETED = Modules::Events->registerEvent();
 
 	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -234,7 +236,7 @@ void GameModule::checkTimeCounter()
             // Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
 
-            Modules::Events->emit(EventTypes::GAME_TIMER_FINISHED, nullptr);
+            Modules::Events->emit(GameModule::GAME_TIMER_FINISHED, nullptr);
         }
 		break;
 	case Screens::STAGE:
