@@ -8,7 +8,8 @@ enum class BoosterType
 {
 	Speed,
 	Bomb,
-	Health
+	Health,
+	PassBomb
 };
 
 class Booster : public sf::Sprite
