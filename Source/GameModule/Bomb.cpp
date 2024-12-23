@@ -63,7 +63,7 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 }
 
 // Bomb update
-void Bomb::update(float deltaTime)
+void Bomb::update(float deltaTime, bool canDetonate)
 {
 	if (exploded)
 	{
@@ -71,11 +71,17 @@ void Bomb::update(float deltaTime)
 		if (explosionTimer <= 0.0f)
 		{
 			animExploded = true;
+            isDetonating = false;
 		}
+        return;
 	}
+    // when player canDetonate (booster picked) and key for detonating isn't pressed previously -> timer should stay the same
+    if (!canDetonate || isDetonating)
+    {
+        timer -= deltaTime;
+    }
 
-	timer -= deltaTime;
-    if (timer < 0.0f && !animExplosionStart)
+    if (timer < 0.0f)
     {
         explode();
     }
@@ -155,10 +161,6 @@ std::shared_ptr<Animation> Bomb::getCurrentAnimation() const
 // Explosion activation
 void Bomb::explode()
 {
-    if (animExplosionStart)
-        return;
-
-	animExplosionStart = true;
 
 	auto animation = Modules::Sprite->getAnimation(bombIdleID);
 	animation->Stop();
@@ -187,6 +189,12 @@ void Bomb::explode()
 	{
 		explosionEffect(direction);
 	}
+}
+
+void Bomb::setTimer(int32_t inc)
+{
+    timer = inc * detonateCooldown;
+	isDetonating = true;
 }
 
 // Method about what will happen when there is an explosion

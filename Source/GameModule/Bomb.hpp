@@ -19,13 +19,16 @@ public:
 	bool Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer);
 
 	// Bomb update
-	void update(float deltaTime);
+    void update(float deltaTime, bool canDetonate);
 
 	// Drawing a bomb
 	void draw(sf::RenderWindow& window);
 
 	// Explosion activation
 	void explode();
+
+	// When player can remotely detonate (picked booster) and click on key happened
+	void setTimer(int32_t inc);
 
 	// Explosion status getter
 	bool hasExploded() const { return exploded; }
@@ -65,10 +68,15 @@ private:
 	// Explosion timer
 	float explosionTimer = 1000000.0f;
 
+	// Detonate cool down
+    float detonateCooldown = 500000.0f;
+
 	// Did the bomb explode
 	bool exploded = false;
 	bool animExploded = false;
-	bool animExplosionStart = false;
+
+	// If true that means detonating key is pressed and detonating is enabled
+	bool isDetonating = false;
 
     std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	bool canChangeObstacleAnim = false;
