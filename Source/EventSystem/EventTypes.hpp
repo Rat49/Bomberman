@@ -1,4 +1,5 @@
 #pragma once
+
 #include <functional>
 
 using EventID = int32_t;
