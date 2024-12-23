@@ -27,6 +27,7 @@ bool PlayerCharacter::init()
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
     bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
 	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
+    invincibilityDuration = playerConfig.getSection("InvincibeBooster").getValue("invincibilityDuration").getFloat();
 
 	activeBombs.reserve(maxBombs);
 
@@ -211,3 +212,35 @@ PlayerCharacter::~PlayerCharacter()
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
 	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }
+
+void PlayerCharacter::startInvincibility()
+{
+	isInvincible = true;
+	invincibilityStartTime = std::chrono::high_resolution_clock::now();
+}
+
+void PlayerCharacter::updateInvincibility()
+{
+	if (isInvincible)
+	{
+		auto now = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration<float>(invincibilityDuration);
+
+        if (now - invincibilityStartTime >= duration)
+        {
+            isInvincible = false;
+        }
+	}
+}
+
+bool PlayerCharacter::getIsInvincible() const
+{
+	return isInvincible;
+}
+
+// TODO
+// To check collision with player use this to avoid booster effect if booster effect is active:
+// if (!player.getIsInvincible())
+// {
+//		Handle damage from bombs or enemies
+// }
