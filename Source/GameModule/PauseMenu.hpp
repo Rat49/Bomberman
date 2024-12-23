@@ -18,4 +18,5 @@ private:
 
 	ActionID pauseID;
 	FunctionHandle pauseHandle;
+    bool isPauseMenuOpen = false;
 };
