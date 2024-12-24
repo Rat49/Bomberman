@@ -76,7 +76,15 @@ bool SaveSystem::loadGameData(const std::string& fileName, std::unordered_map <s
 	}
 
 	//read data
-    auto data = reader.readAll();
+    std::vector<char> datas;
+	if (!reader.readAll(datas))
+	{
+        LOG("Faild to read file with path [$]", filePath);
+        return false;
+	}
+
+	//vector of chars to string
+	std::string data(datas.begin(), datas.end());
 
 	//decrypt data
 	StringUtils::cipherText(data, CIPHER_KEY);

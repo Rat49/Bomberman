@@ -246,7 +246,14 @@ bool AssetManager::loadMetadata()
         return false;
     }
 
-    auto metadata = fileReader.readAll();
+	std::vector<char> metadatas;
+	if (fileReader.readAll(metadatas))
+	{
+        LOG("Failed to read file: [$]", METADATA_FILE);
+        return false;
+	}
+
+    std::string metadata(metadatas.begin(), metadatas.end());
 
 	StringUtils::cipherText(metadata, CIPHER_KEY);
 	std::istringstream ss(metadata);

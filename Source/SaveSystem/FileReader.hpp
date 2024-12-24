@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SFML/System/FileInputStream.hpp"
+#include <vector>
 
 class FileReader : public sf::FileInputStream
 {
@@ -10,6 +11,5 @@ public:
     bool open(const std::string& filename);
 
     //read file and 
-    std::string readAll();
-
+    bool readAll(std::vector<char>& buffer);
 };
