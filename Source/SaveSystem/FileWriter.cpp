@@ -1,25 +1,26 @@
 #include "FileWriter.hpp"
+#include <Common/Logs.hpp>
 
-bool FileWriter::open(const std::string& filePath)
+FileWriter::~FileWriter()
 {
-    m_fileStream.open(filePath, std::ios::binary, std::ios::trunc);
-    return m_fileStream.is_open();
-}
-
-void FileWriter::write(const std::string& data)
-{
-    if (m_fileStream.is_open())
+    if (m_file)
     {
-        m_fileStream.write(data.c_str(), data.size());
+        std::fclose(m_file);
     }
 }
 
-void FileWriter::close()
+bool FileWriter::open(const std::string& filePath, bool append)
 {
-    if (m_fileStream.is_open())
-    {
-        m_fileStream.close();
-    }
+    fopen_s(&m_file, filePath.c_str(), append ? "ab" : "wb");
+    return m_file != nullptr;
 }
 
-
+bool FileWriter::write(const std::vector<char> data)
+{
+    if (m_file)
+    {
+        std::size_t written = std::fwrite(data.data(), 1, data.size(), m_file);
+        return written == data.size();
+    }
+    return false;
+}

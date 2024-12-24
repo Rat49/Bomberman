@@ -1,20 +1,22 @@
 #pragma once
 
-#include <fstream>
+#include <vector>
+#include <string>
 
 class FileWriter
 {
 public:
 
+    //destructor to close file
+    ~FileWriter();
+
     //opens a file for writing
-    bool open(const std::string& filePath);
+    bool open(const std::string& filePath, bool append = true);
 
     //writes the given data to the file
-    void write(const std::string& data);
-
-    //close file
-    void close();
+    bool write(const std::vector<char> data);
 
 private:
-    std::ofstream m_fileStream;
+
+    std::FILE* m_file;
 };

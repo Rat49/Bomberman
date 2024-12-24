@@ -10,6 +10,7 @@ public:
     //open file for reading
     bool open(const std::string& filename);
 
-    //read file and 
+    //read file and store in buffer
     bool readAll(std::vector<char>& buffer);
+
 };

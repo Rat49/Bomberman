@@ -57,8 +57,13 @@ bool SaveSystem::saveGameData(const std::string& fileName, const std::unordered_
     StringUtils::cipherText(serializedData, CIPHER_KEY);
 
 	//write data to file
-    writer.write(serializedData);
-    writer.close();
+    std::vector<char> dataVector(serializedData.begin(), serializedData.end());
+	if (!writer.write(dataVector))
+	{
+        LOG("Failed to write data to file [$]", filePath);
+        return false;
+	}
+
 	return true;
 }
 
