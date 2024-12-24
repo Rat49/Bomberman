@@ -36,6 +36,19 @@ Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), posi
 
 	Modules::Sprite->getAnimation(m_currentAnimationId)->setPosition(spawnPosition);
 	Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
+
+	
+	collision.setObjectParent(this);
+
+    collisionBox = std::make_unique<CollisionComponent>();
+
+    collisionBox->setObjectParent(this);
+
+    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
+
+    collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
+
+    Modules::Physics->addObject(collisionBox.get());
 }
 
 EnemyType Enemy::getType() const

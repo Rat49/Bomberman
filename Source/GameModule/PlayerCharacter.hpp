@@ -2,11 +2,13 @@
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
+#include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include <chrono>
 
 class Animation;
 
-class PlayerCharacter
+class PlayerCharacter : public CollisionObject
 {
 public:
 	PlayerCharacter();
@@ -50,6 +52,7 @@ public:
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
 	void startInvincibility();
 
 	void updateInvincibility();
@@ -57,6 +60,10 @@ public:
 	bool getIsInvincible() const;
 
 	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
+
+    CollisionRectangle& getCollision() { return collision; }
+
+	void onCollision(CollisionComponent* other);
 
 private:
 	int32_t currentAnimation = -1;
@@ -91,6 +98,12 @@ private:
 
 	std::unique_ptr<CollisionComponent> collisionBox;
 
+    CollisionRectangle collision;
+
+	int32_t collisionBoxID;
+
+	float collisionBoxSize = 52.0f;
+
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
@@ -98,4 +111,17 @@ private:
 	bool isInvincible = false;
 	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
     float invincibilityDuration;
+	float gridSize = 64.0f;
+
+	bool canMoveLeft  = true;
+    bool canMoveRight = true;
+    bool canMoveUp    = true;
+    bool canMoveDown  = true;
+
+	sf::Vector2f rightDirection = sf::Vector2f(1.0f, 0.0f);
+    sf::Vector2f leftDirection  = sf::Vector2f(-1.0f, 0.0f);
+    sf::Vector2f upDirection    = sf::Vector2f(0.0f, 1.0f);
+    sf::Vector2f downDirection  = sf::Vector2f(0.0f, -1.0f);
+
+	sf::Vector2f globalStats;
 };

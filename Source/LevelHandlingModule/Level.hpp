@@ -45,6 +45,11 @@ public:
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	//return all unbreakable obstacle positions on level
+    std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
+	void initializeUnbreakableObstacle();
+
 private:
 
 	//loads the level configuration from a file and creates tiles with IDs.
@@ -89,6 +94,9 @@ private:
 	std::vector<std::vector<FieldInfo>> m_fields;
 
 	std::string m_configPath;
+
+	float unbreakableObstacleOffset = 5.0f;
+    float unbreakableObstacleCollisionSize = 64.0f;
 
 };
 

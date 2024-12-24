@@ -1,15 +1,53 @@
 #include "PhysicsModule.hpp"
 #include "Common/FloatUtils.hpp"
+#include "Common/Logs.hpp"
+#include "GameModule/PlayerCharacter.hpp"
 
 int PhysicsModule::ID = 0;
 
-int PhysicsModule::registerObject(const CollisionComponent* physicsObject) {
+int PhysicsModule::registerObject(const CollisionComponent* physicsObject) 
+{
 	physicsObjects[ID] = physicsObject;
 	return ID++;
 }
 
 void PhysicsModule::unRegisterObject(int id) {
 	physicsObjects.erase(id);
+}
+
+void PhysicsModule::addObject(CollisionComponent* obj)
+{
+	if (obj)
+	{
+        registeredObjects.push_back(obj);
+	}
+}
+
+void PhysicsModule::deleteObject(CollisionComponent* obj)
+{
+    auto it = std::remove(registeredObjects.begin(), registeredObjects.end(), obj);
+	if (it != registeredObjects.end())
+	{
+        registeredObjects.erase(it, registeredObjects.end());
+	}
+}
+
+void PhysicsModule::updateCollision()
+{
+    for (size_t i = 0; i < registeredObjects.size(); ++i)
+    {
+        for (size_t j = i + 1; j < registeredObjects.size(); ++j)
+        {
+            if (registeredObjects[i]->getRectangle().getGlobalBounds().intersects(registeredObjects[j]->getRectangle().getGlobalBounds()))
+            {
+                auto* obje = dynamic_cast<PlayerCharacter*>(registeredObjects[j]->getObjectParent());
+                if (obje)
+				{
+                    obje->onCollision(registeredObjects[i]);
+				}
+            }
+        }
+    }
 }
 
 //casts a ray and returns closest intersected object and its point of intersection

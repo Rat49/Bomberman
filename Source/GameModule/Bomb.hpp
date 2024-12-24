@@ -5,6 +5,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "GameModule/Obstacle.hpp"
+//#include "GameModule/PlayerCharacter.hpp"
 #include "CollisionModule/CollisionObject.hpp"
 
 
@@ -59,7 +60,7 @@ private:
 	sf::Vector2f position;
 
 	// Explosion radius
-	float explosionRadius;
+	float explosionRadius = 1.0f;
 
 	// Bomb before explosion timer
 	float timer;
@@ -79,6 +80,8 @@ private:
 
     std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	bool canChangeObstacleAnim = false;
+
+    std::pair<const CollisionComponent*, sf::Vector2f> hitResult = {nullptr, sf::Vector2f()};
 
 	// Method about what will happen when there is an explosion
 	void explosionEffect(const sf::Vector2f& direction);

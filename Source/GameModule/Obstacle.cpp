@@ -1,9 +1,9 @@
 #include "GameModule/Obstacle.hpp"
 #include "Common/Modules.hpp"
+#include <Common/Logs.hpp>
 #include <random>
 #include <set>
 #include <utility>
-#include <Common/Logs.hpp>
 
 Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate)
 {
@@ -22,7 +22,11 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	collisionBox->setObjectParent(this);
 
-	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(60.0f, 60.0f));
+	collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
+
+	collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
+
+	Modules::Physics->addObject(collisionBox.get());
 }
 
 void Obstacle::changeAnim(sf::Vector2f obsPos)

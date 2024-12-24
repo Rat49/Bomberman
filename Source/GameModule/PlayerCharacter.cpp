@@ -1,24 +1,30 @@
-#include "PlayerCharacter.hpp"
+﻿#include "PlayerCharacter.hpp"
 #include "Common/Modules.hpp"
 #include "InputModule/InputModule.hpp"
 #include "Common/Logs.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "GameModule/GameModule.hpp"
+#include "Common/Directions.hpp"
 #include <thread>
 #include <chrono>
 
 PlayerCharacter::PlayerCharacter()
 {
-	/*collisionBox = std::make_unique<CollisionComponent>();
+	collision.setObjectParent(this);
 
-	collisionBox->setParent(this);
+    collisionBox = std::make_unique<CollisionComponent>();
 
-	collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(52.0f, 52.0f));*/
+    collisionBox->setObjectParent(this);
+
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
 bool PlayerCharacter::init()
 {
+    collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
+    Modules::Physics->addObject(collisionBox.get());
+
 	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
 
@@ -105,25 +111,80 @@ bool PlayerCharacter::init()
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-	if (!Modules::Game->getIsPaused()) {
-		sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
-		if (state.x == 1 && state.y == 0) { //RIGHT
-			x += velocity;
-			updateAnimation(rightId);
-		}
-		else if (state.x == 0 && state.y == -1) { //DOWN
-			y += velocity;
-			updateAnimation(downId);
-		}
-		else if (state.x == -1 && state.y == 0) { //LEFT
-			x -= velocity;
-			updateAnimation(leftId);
-		}
-		else if (state.x == 0 && state.y == 1) { //UP 
-			y -= velocity;
-			updateAnimation(upId);
-		}
-	}
+    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
+
+	if (!Modules::Game->getIsPaused())
+    {
+        sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
+        globalStats = state;
+
+		if (state == rightDirection)
+        { //RIGHT
+            x += (canMoveRight ? velocity : 0.0f);
+            updateAnimation(rightId);
+        }
+        else if (state == downDirection)
+        { //DOWN
+            y += (canMoveDown ? velocity : 0.0f);
+            updateAnimation(downId);
+        }
+        else if (state == leftDirection)
+        { //LEFT
+            x -= (canMoveLeft ? velocity : 0.0f);
+            updateAnimation(leftId);
+        }
+
+        else if (state == upDirection)
+        { //UP
+            y -= (canMoveUp ? velocity : 0.0f);
+            updateAnimation(upId);
+        }
+    }
+}
+
+void PlayerCharacter::onCollision(CollisionComponent* other)
+{
+    if (other)
+    {
+        sf::Vector2f playerPos = getCurrentPosition();
+        sf::Vector2f otherPos  = other->getRectangle().getPosition();
+
+        if (otherPos.x > playerPos.x && (globalStats == rightDirection)) // right
+        {
+            canMoveRight = false;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.y > playerPos.y && (globalStats == downDirection)) // down
+        {
+            canMoveDown  = false;
+            canMoveRight = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.x < playerPos.x && (globalStats == leftDirection)) // left
+        {
+            canMoveLeft  = false;
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveUp    = true;
+        }
+        else if (otherPos.y < playerPos.y && (globalStats == upDirection)) // up
+        {
+            canMoveUp    = false;
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+        }
+        else
+        {
+            canMoveRight = true;
+            canMoveDown  = true;
+            canMoveLeft  = true;
+            canMoveUp    = true;
+        }
+    }
 }
 
 void PlayerCharacter::onBombPlant(void* state)
@@ -260,6 +321,8 @@ void PlayerCharacter::updateSpeed(float factor)
 
 PlayerCharacter::~PlayerCharacter()
 {
+    Modules::Physics->unRegisterObject(collisionBoxID);
+
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
 	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }
