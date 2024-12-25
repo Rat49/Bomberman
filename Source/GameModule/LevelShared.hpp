@@ -32,6 +32,6 @@ struct GeneratedElements
     std::vector<std::shared_ptr<UnbreakableObstacle>> unbreakableObstacles;
 	std::vector<std::shared_ptr<Gate>> gates;
 	std::vector<std::shared_ptr<Key>> keys;
-	std::vector<std::shared_ptr<Booster>> boosters;
+	mutable std::vector<std::shared_ptr<Booster>> boosters;
 };
 

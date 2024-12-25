@@ -333,35 +333,65 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		target.draw(*gate, states);
 	}
-	
-	
-	for (const auto& booster : m_generatedElements.boosters)
-	{
-		target.draw(*booster, states);
+
+	auto boostersIterator = m_generatedElements.boosters.begin();
+    while (boostersIterator != m_generatedElements.boosters.end())
+    {
+        if ((*boostersIterator)->getIsPickedUp())
+        {
+            Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
+		}
+        else
+        {
+            target.draw(*(*boostersIterator), states);
+            ++boostersIterator;
+		}
+
 	}
 
-	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
+    auto obstaclesIterator = m_generatedElements.obstacles.begin();
+    while (obstaclesIterator != m_generatedElements.obstacles.end())
     {
-        if (!(*it)->isExploded)
+        if ((*obstaclesIterator)->isExploded)
         {
-            target.draw(*(*it)->getCurrentAnimation());
-            ++it; 
+            target.draw(*(*obstaclesIterator)->getCurrentAnimation());
+
+            if (!(*obstaclesIterator)->getCurrentAnimation()->isPlaying())
+            {
+                Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
+                obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
+                continue;
+            }
         }
         else
         {
-            target.draw(*(*it)->getCurrentAnimation());
-
-            if (!(*it)->getCurrentAnimation()->isPlaying())
+            target.draw(*(*obstaclesIterator)->getCurrentAnimation());
+		}
+        ++obstaclesIterator;
+    }
+    /* for (auto& it : m_generatedElements.obstacles)
+    {
+        if (it->isExploded)
+        {
+            target.draw(*it->getCurrentAnimation());
+			
+            if (!it->getCurrentAnimation()->isPlaying())
             {
-                Modules::Physics->deleteObject(&(*it)->getCollisionBox());
-                it = m_generatedElements.obstacles.erase(it);
-            }
-            else
-            {
-                ++it;
+                Modules::Physics->deleteObject(&it->getCollisionBox());
+                indicesToRemove.push_back(i);
             }
         }
+        else
+        {
+            target.draw(*it->getCurrentAnimation());
+        }
+        i++;
     }
+    for (auto it = indicesToRemove.rbegin(); it != indicesToRemove.rend(); ++it)
+    {
+        m_generatedElements.obstacles.erase(m_generatedElements.obstacles.begin() + *it);
+    }*/
 	
     for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
     {

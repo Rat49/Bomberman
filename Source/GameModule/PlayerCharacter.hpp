@@ -1,11 +1,16 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
-#include "CollisionModule/CollisionComponent.hpp"
+#include "CollisionModule/PlayerCollisionComponent.hpp"
 #include "CollisionModule/CollisionObject.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
 #include <chrono>
+#include <set>
 
+class Booster;
+class UnbreakableObstacle;
+class Obstacle;
+class Enemy;
 class Animation;
 
 class PlayerCharacter : public CollisionObject
@@ -61,14 +66,16 @@ public:
 
 	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
 
-    CollisionRectangle& getCollision() { return collision; }
+	void handleEnemyOverlap(Enemy* enemy);
 
-	void onCollision(CollisionComponent* other);
+	void handleObstacleOverlap(bool begin);
+
+	void handleBoosterOverlap(Booster* booster);
 
 private:
 	int32_t currentAnimation = -1;
-	float x = 70.f;
-	float y = 70.f;
+	float x = 72.f;
+	float y = 72.f;
 	float speed = 0.f;
 	int32_t maxBombs;
     int32_t bombCapacity;
@@ -96,13 +103,11 @@ private:
 	int32_t upId;
 	int32_t downId;
 
-	std::unique_ptr<CollisionComponent> collisionBox;
-
-    CollisionRectangle collision;
+	std::unique_ptr<PlayerCollisionComponent> collisionBox;
 
 	int32_t collisionBoxID;
 
-	float collisionBoxSize = 52.0f;
+	float collisionBoxSize = 48.0f;
 
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
@@ -113,10 +118,8 @@ private:
     float invincibilityDuration;
 	float gridSize = 64.0f;
 
-	bool canMoveLeft  = true;
-    bool canMoveRight = true;
-    bool canMoveUp    = true;
-    bool canMoveDown  = true;
+	sf::Vector2f currentDirection = sf::Vector2f(0.0f, 0.0f);
+    std::set<std::pair<float, float>> previousDirections;
 
 	sf::Vector2f rightDirection = sf::Vector2f(1.0f, 0.0f);
     sf::Vector2f leftDirection  = sf::Vector2f(-1.0f, 0.0f);

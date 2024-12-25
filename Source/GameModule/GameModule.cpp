@@ -175,14 +175,15 @@ void GameModule::run()
             Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 
             player.updateVelocity(deltaTime);
+
+            Modules::Physics->updateCollision();
+
             player.updateBombs(deltaTime);
             player.drawBombs(window);
 
-            window.draw(*player.getCurrentAnimation());
-            window.draw(player.getCollisionBox().getRectangle());
+			window.draw(*player.getCurrentAnimation());
             player.setIsUpdated(false);
-
-			Modules::Physics->updateCollision();
+			
 
             screens[currentScreen]->getWindow()->setView(tempView);
 
@@ -252,12 +253,12 @@ void GameModule::checkTimeCounter()
 
 void GameModule::updateBoosters()
 {
-	auto boostersIterator = m_boosters.begin();
+    auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
-		if (boostersIterator->second->shouldRemoveEffect())
+		if ((*boostersIterator)->shouldRemoveEffect())
 		{
-			if (boostersIterator->second->removeEffect(player))
+			if ((*boostersIterator)->removeEffect(player))
 			{
 				boostersIterator = m_boosters.erase(boostersIterator);
 				continue;
@@ -285,13 +286,9 @@ float GameModule::getHUDHeight()
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
 {
-	auto id = newBooster->getBoosterID();
-	auto it = m_boosters.find(id);
-	if (it == m_boosters.end())
-	{
-		it = m_boosters.insert({ id, newBooster }).first;
-	}
-	it->second->applyEffect(player);
+	m_boosters.push_back(newBooster);
+	
+	newBooster->applyEffect(player);
 }
 
 void GameModule::removeAllBoosters()

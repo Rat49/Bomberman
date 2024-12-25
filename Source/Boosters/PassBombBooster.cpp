@@ -1,10 +1,5 @@
 #include "PassBombBooster.hpp"
 
-int32_t PassBombBooster::getBoosterID()
-{
-    return m_boosterId;
-}
-
 void PassBombBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
     playerCharacter.PassThroughBombs(true);

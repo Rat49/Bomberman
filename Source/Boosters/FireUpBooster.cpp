@@ -1,10 +1,5 @@
 #include "FireUpBooster.hpp"
 
-int32_t FireUpBooster::getBoosterID()
-{
-    return boosterId;
-}
-
 void FireUpBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
     playerCharacter.addExplosionRadius();

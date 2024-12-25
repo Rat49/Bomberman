@@ -6,24 +6,21 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "GameModule/GameModule.hpp"
 #include "Common/Directions.hpp"
+#include "Booster.hpp"
 #include <thread>
 #include <chrono>
 
 PlayerCharacter::PlayerCharacter()
 {
-	collision.setObjectParent(this);
-
-    collisionBox = std::make_unique<CollisionComponent>();
+    collisionBox = std::make_unique<PlayerCollisionComponent>();
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
+    collisionBox->setRectangleProperties((getCurrentPosition() + sf::Vector2f(0.f, (gridSize - collisionBoxSize) / 2)),
+                                         sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
-
 bool PlayerCharacter::init()
 {
-    collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
-    Modules::Physics->addObject(collisionBox.get());
 
 	//Modules::Input->LoadInputSettings("../../Data/Config/input_config.ini");
 	Modules::Config->addFile("../../Data/Config/PlayerCharacterConfig.ini");
@@ -105,86 +102,75 @@ bool PlayerCharacter::init()
 		LOG("Failed to play initial animation.");
 		return false;
 	}
-
 	return true;
 }
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-    collisionBox->setRectangleProperties(getCurrentPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 
 	if (!Modules::Game->getIsPaused())
     {
         sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
-        globalStats = state;
-
+        currentDirection   = state;
 		if (state == rightDirection)
         { //RIGHT
-            x += (canMoveRight ? velocity : 0.0f);
+            x += velocity;
             updateAnimation(rightId);
         }
         else if (state == downDirection)
         { //DOWN
-            y += (canMoveDown ? velocity : 0.0f);
+            y += velocity;
             updateAnimation(downId);
         }
         else if (state == leftDirection)
         { //LEFT
-            x -= (canMoveLeft ? velocity : 0.0f);
+            x -= velocity;
             updateAnimation(leftId);
         }
 
         else if (state == upDirection)
         { //UP
-            y -= (canMoveUp ? velocity : 0.0f);
+            y -= velocity;
             updateAnimation(upId);
         }
+        collisionBox->setRectangleProperties(getCurrentPosition() + sf::Vector2f(0.f, (gridSize - collisionBoxSize) / 2),
+                                             sf::Vector2f(collisionBoxSize, collisionBoxSize));
+
+        Modules::Physics->updateCollision();
     }
 }
 
-void PlayerCharacter::onCollision(CollisionComponent* other)
+void PlayerCharacter::handleEnemyOverlap(Enemy* )
 {
-    if (other)
-    {
-        sf::Vector2f playerPos = getCurrentPosition();
-        sf::Vector2f otherPos  = other->getRectangle().getPosition();
+	// loose life...
+}
 
-        if (otherPos.x > playerPos.x && (globalStats == rightDirection)) // right
-        {
-            canMoveRight = false;
-            canMoveDown  = true;
-            canMoveLeft  = true;
-            canMoveUp    = true;
-        }
-        else if (otherPos.y > playerPos.y && (globalStats == downDirection)) // down
-        {
-            canMoveDown  = false;
-            canMoveRight = true;
-            canMoveLeft  = true;
-            canMoveUp    = true;
-        }
-        else if (otherPos.x < playerPos.x && (globalStats == leftDirection)) // left
-        {
-            canMoveLeft  = false;
-            canMoveRight = true;
-            canMoveDown  = true;
-            canMoveUp    = true;
-        }
-        else if (otherPos.y < playerPos.y && (globalStats == upDirection)) // up
-        {
-            canMoveUp    = false;
-            canMoveRight = true;
-            canMoveDown  = true;
-            canMoveLeft  = true;
-        }
-        else
-        {
-            canMoveRight = true;
-            canMoveDown  = true;
-            canMoveLeft  = true;
-            canMoveUp    = true;
-        }
+void PlayerCharacter::handleObstacleOverlap(bool)
+{
+    if (currentDirection == rightDirection)
+    { //RIGHT
+        x -= velocity;
     }
+    else if (currentDirection == downDirection)
+    { //DOWN
+        y -= velocity;
+    }
+    else if (currentDirection == leftDirection)
+    { //LEFT
+        x += velocity;
+    }
+    else if (currentDirection == upDirection)
+    { //UP
+        y += velocity;
+    }
+    collisionBox->setRectangleProperties(getCurrentPosition() + sf::Vector2f(0.f, (gridSize - collisionBoxSize) / 2),
+                                         sf::Vector2f(collisionBoxSize, collisionBoxSize));
+}
+
+void PlayerCharacter::handleBoosterOverlap(Booster* booster)
+{
+    LOG("Picked up: $", booster->getTypeAsString());
+    Modules::Game->addBooster(booster->getBoosterComponent());
 }
 
 void PlayerCharacter::onBombPlant(void* state)
@@ -301,7 +287,7 @@ std::shared_ptr<Animation> PlayerCharacter::getCurrentAnimation() const
 
 sf::Vector2f PlayerCharacter::getCurrentPosition() const
 {
-	return { x, y };
+	return { x , y };
 }
 
 void PlayerCharacter::PassThroughBombs(bool pass)
@@ -317,6 +303,7 @@ void PlayerCharacter::updateVelocity(float deltaTime)
 void PlayerCharacter::updateSpeed(float factor)
 {
     speed *= factor;
+    LOG("Speed: $", speed);
 }
 
 PlayerCharacter::~PlayerCharacter()

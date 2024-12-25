@@ -7,6 +7,7 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "SpriteModule/Sprite.hpp"
 #include "Common/Logs.hpp"
+
 Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), position(spawnPosition)
 {
 	// different animations for different enemies needs to be added
@@ -37,18 +38,11 @@ Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), posi
 	Modules::Sprite->getAnimation(m_currentAnimationId)->setPosition(spawnPosition);
 	Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
 
-	
-	collision.setObjectParent(this);
-
     collisionBox = std::make_unique<CollisionComponent>();
 
     collisionBox->setObjectParent(this);
 
     collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
-
-    collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
-
-    Modules::Physics->addObject(collisionBox.get());
 }
 
 EnemyType Enemy::getType() const
