@@ -21,15 +21,12 @@ void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition)
     collisionBox = std::make_unique<CollisionComponent>();
     ai           = std::make_unique<AIController>();
     collisionBox->setParent(this);
+    collisionBox->setObjectParent(this);
     collisionBox->setRectangleProperties(spawnPosition, {64.f, 64.f});
     ai->setParent(this);
 
     patrollingState = std::make_shared<PatrollingState>();
     restState  = std::make_shared<RestState>();
-
-    std::random_device          rd;
-    std::mt19937                gen(rd());
-    std::bernoulli_distribution d(0.5);
 
     ai->fsm->SetInitialState(restState);
 

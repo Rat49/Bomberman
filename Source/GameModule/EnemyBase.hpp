@@ -70,6 +70,16 @@ public:
         return velocity;
     }
 
+    void setPlayerPosition(sf::Vector2f newPlayerPos)
+    {
+        m_playerPos = newPlayerPos;
+    }
+
+    sf::Vector2f getPlayerPos() const
+    {
+        return m_playerPos;
+    }
+
 protected:
     EnemyType                 enemyType;
     sf::Vector2f              position;
@@ -86,6 +96,8 @@ protected:
 
     std::vector<sf::Vector2i> m_patrolligPoints;
 
-    float   speed = 0.0001f;
+    float   speed = 0.00015f;
     float   velocity = 0.f;
+
+    sf::Vector2f m_playerPos;
 };

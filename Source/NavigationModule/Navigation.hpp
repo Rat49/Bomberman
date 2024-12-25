@@ -13,13 +13,13 @@ class NavigationModule : public BaseModule {
 
 public:
 	NavigationModule() = default;
-	NavigationModule(std::vector<std::vector<bool>>& grid/*, some parameter for mapping the grid*/);
+    NavigationModule(std::shared_ptr<std::vector<std::vector<bool>>> grid/*, some parameter for mapping the grid*/);
 
 	//Algorithm used for navigation
 	std::unique_ptr<AStar> algorithm;
 
 	//mapped grid of players environment for now char of tiles
-	std::vector<std::vector<bool>> grid;
+    std::shared_ptr<std::vector<std::vector<bool>>> grid;
 
 	void terminate() override;
 private:

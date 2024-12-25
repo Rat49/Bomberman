@@ -41,6 +41,8 @@ private:
 	
 	std::vector<std::shared_ptr<Booster>> generateBoosters(std::mt19937& gen, const sf::Texture& atlasTexture);
 
+	std::vector<std::vector<bool>> generateNavGrid(const std::string& navGridPath);
+
 	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType levelType) const;
 	
 	std::set<std::pair<int32_t, int32_t>> generateSafetyZone() const;
@@ -48,8 +50,12 @@ private:
 	sf::IntRect getTextureRect(const std::string& textureName) const;
 
 	bool parseConfigFile(const std::string& configFilePath);
+
+
 	
 private:
+
+	std::shared_ptr<std::vector<std::vector<bool>>> grid;
 
 	LevelConfigs m_levelConfig;
 
@@ -58,11 +64,6 @@ private:
 	std::vector<sf::Vector2f> breakableObstaclesPositions;
 	std::vector<sf::Vector2f> freePositions;
 	std::set<std::pair<int32_t, int32_t>> safePositions;
-
-	//parameters for enemy and patrol generation
-	//int32_t enemyRange = 3;
-	//int32_t minNumOfPatrolPoints = 2;
-	//int32_t maxNumOfPatrolPoints = 6;
 
 	std::string m_atlasPath;
 	float m_renderDuration;

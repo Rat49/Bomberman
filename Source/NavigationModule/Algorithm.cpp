@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
+#include "Common/Logs.hpp"
 
 //hash for sf::Vector2i
 struct vector_hash {
@@ -26,7 +27,7 @@ void Algorithm::returnActions(const sf::Vector2i& currentPosition,
 		tmpPosition.x += iter.x;
 		tmpPosition.y += iter.y;
 
-		if (grid[tmpPosition.x][tmpPosition.y] != 1) {
+		if ((*grid)[tmpPosition.x][tmpPosition.y] != 1) {
 			actions.push_back(tmpPosition);
 		}
 
@@ -51,7 +52,7 @@ void Algorithm::moveTo(const sf::Vector2i& currentPosition, sf::Vector2i& moveTo
 //finds best path via path length and heuristic
 //only works as a bfs for now
 void AStar::navigate(const sf::Vector2i& startingPosition) {
-	gridRelative = std::vector<std::vector<int>>(grid.size(), std::vector<int>(grid[0].size(), INT_MAX));
+	gridRelative = std::vector<std::vector<int>>(grid->size(), std::vector<int>((*grid)[0].size(), INT_MAX));
 	//set of all visited positions
 	std::unordered_set<sf::Vector2i, vector_hash> visited;
 

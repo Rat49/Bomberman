@@ -1,6 +1,6 @@
 #include "Navigation.hpp" 
 
-NavigationModule::NavigationModule(std::vector<std::vector<bool>>& grid/*, some parameter for mapping the grid*/) : grid(grid) {
+NavigationModule::NavigationModule(std::shared_ptr<std::vector<std::vector<bool>>> grid/*, some parameter for mapping the grid*/) : grid(grid) {
 
 	// grid will be initialized by the second parameter
 	// grid = parseGrid(/*some parameter for mapping the grid*/);

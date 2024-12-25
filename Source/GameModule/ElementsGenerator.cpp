@@ -41,14 +41,15 @@ namespace
 
 	const std::string ENEMY_RECT_NAME = "Enemy1";
 	const std::string ENEMY_PATH = "../../Data/Config/Enemy1IdleAnimation.ini";
-}
+
+	const std::string NAV_GRID_PATH = "Game/Levels/Level.csv";
+    }
 
 ElementsGenerator::ElementsGenerator() : m_levelConfig{ GameLevelType::Easy, 5, 10, 3 } {}
 
 
 bool ElementsGenerator::initialize(const LevelConfigs& levelConfig)
 {
-  /*  enemyCountNew = 20;*/
 	if (!parseConfigFile(OBSTACLE_PATH))
 	{
 		LOG("Failed to parse file: $", OBSTACLE_PATH);
@@ -82,6 +83,8 @@ bool ElementsGenerator::initialize(const LevelConfigs& levelConfig)
 
 	m_levelConfig = levelConfig;
 
+	std::srand(static_cast<unsigned int>(std::time(0)));
+
 	return true;
 }
 
@@ -93,13 +96,15 @@ const GeneratedElements& ElementsGenerator::generateElements(const std::vector<s
 	//random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
-
-	//generate all level components
+    auto               vec          = generateNavGrid(NAV_GRID_PATH);
+    grid                            = std::make_shared<std::vector<std::vector<bool>>>(vec);
 	m_generatedElements.obstacles	= generateObstacles(gen);
 	m_generatedElements.keys		= generateKeys(gen, atlasTexture);
 	m_generatedElements.enemies		= generateEnemies(gen);
 	m_generatedElements.gates		= generateGates(gen, atlasTexture);
 	m_generatedElements.boosters	= generateBoosters(gen, atlasTexture);
+
+    m_generatedElements.navGrid     = grid;
 
 	return m_generatedElements;
 }
@@ -155,6 +160,10 @@ std::vector<std::shared_ptr<Obstacle>> ElementsGenerator::generateObstacles(std:
 
 		// Add the obstacle to the list of all obstacles
 		obstacles.push_back(obstacle);
+
+		sf::Vector2i gridPos = static_cast<sf::Vector2i>(obstacle->getCollisionBox().getCenter()) / 64;
+
+		(*grid)[gridPos.y][gridPos.x] = 1;
 
 		// Remove the used position from the free positions list
 		it = freePositions.erase(it);
@@ -314,7 +323,6 @@ std::vector<std::shared_ptr<Booster>> ElementsGenerator::generateBoosters(std::m
 	return boosters;
 }
 
-
 std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std::mt19937& gen)
 {
 	//temp enemies
@@ -354,8 +362,23 @@ std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std:
 
 		// Increment the counter for placed enemy
 		++placedEnemies;
+        std::shared_ptr<EnemyBase> enemy;
+        int32_t enemyType = 1 + std::rand() % 3;
+        switch (enemyType)
+        {
+            case 1:
+				enemy = EnemyFactory::createEnemy(EnemyType::Basic, sf::Vector2f(static_cast<float>(x), static_cast<float>(y)), grid);
+                break;
+			case 2:
+				enemy = EnemyFactory::createEnemy(EnemyType::Medium, sf::Vector2f(static_cast<float>(x), static_cast<float>(y)), grid);
+                break;
+			case 3:
+				enemy = EnemyFactory::createEnemy(EnemyType::Hard, sf::Vector2f(static_cast<float>(x), static_cast<float>(y)), grid);
+                break;
+            default:
+                break;
+        }
 
-		std::shared_ptr<EnemyBase> enemy = EnemyFactory::createEnemy(EnemyType::Basic, sf::Vector2f(static_cast<float>(x), static_cast<float>(y)));
 
 		// Add the enemy to the list of all enemies
 		enemies.emplace_back((std::move(enemy)));
@@ -365,6 +388,41 @@ std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std:
 	}
 
 	return enemies;
+}
+
+std::vector<std::vector<bool>> ElementsGenerator::generateNavGrid(const std::string& navGridPath)
+{
+    std::vector<std::vector<bool>> navGrid;
+    const auto levelData = Modules::Assets->getLevel(navGridPath);
+
+    if (levelData->empty())
+    {
+        LOG("Failed to load level .csv file from [$]", navGridPath);
+        return navGrid;
+    }
+
+    std::string levelString(levelData->begin(), levelData->end());
+
+    levelString.erase(std::remove(levelString.begin(), levelString.end(), '\r'), levelString.end());
+
+    std::istringstream file(levelString);
+    std::string        line;
+
+    while (std::getline(file, line))
+    {
+        std::stringstream sStream(line);
+        std::string       value;
+        std::vector<bool> navGridRow;
+
+        while (std::getline(sStream, value, ','))
+        {
+            (value == "1") ? navGridRow.push_back(true) : navGridRow.push_back(false);
+        }
+
+        navGrid.push_back(navGridRow);
+    }
+
+    return navGrid;
 }
 
 bool ElementsGenerator::parseConfigFile(const std::string& configFilePath)

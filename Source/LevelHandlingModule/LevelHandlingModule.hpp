@@ -48,6 +48,11 @@ public:
 	//remove levels from data member
 	void terminate() override;
 
+	 std::shared_ptr<Level> getCurrentLevelPtr()
+	{
+        return m_levels[m_currentLevel];
+	}
+
 private:
 
 	//store loaded levels

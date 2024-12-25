@@ -17,3 +17,9 @@ float FloatUtils::squareDistance(const sf::Vector2f& point1, const sf::Vector2f&
 	float dy = point2.y - point1.y;
 	return (dx * dx + dy * dy);
 }
+
+bool FloatUtils::areVectorsEqual(const sf::Vector2f& v1, const sf::Vector2f& v2)
+{
+    return std::abs(v1.x - v2.x) < std::numeric_limits<float>::epsilon() &&
+           std::abs(v1.y - v2.y) < std::numeric_limits<float>::epsilon();
+}

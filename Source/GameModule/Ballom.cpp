@@ -18,6 +18,7 @@ void Ballom::initialize(EnemyType type, sf::Vector2f spawnPosition)
     collisionBox = std::make_unique<CollisionComponent>();
     ai = std::make_unique<AIController>();
     collisionBox->setParent(this);
+    collisionBox->setObjectParent(this);
     collisionBox->setRectangleProperties(spawnPosition, {64.f, 64.f});
     ai->setParent(this);
 

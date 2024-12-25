@@ -36,7 +36,7 @@ void NavigationModuleTest::setup(){
 			{1,1,1,1,1,1,1,1,1,1,1}
 	};
 
-	nav = std::make_unique<NavigationModule>(grid);
+	nav = std::make_unique<NavigationModule>(std::make_shared<std::vector<std::vector<bool>>>(grid));
 }
 
 void NavigationModuleTest::run(){
@@ -59,8 +59,8 @@ void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, std::vector<sf
 		std::cout << RED << "E = Enemy" << RESET << std::endl;
 		std::cout << MAGENTA << "G = Grass" << RESET << std::endl;
 		std::cout << YELLOW << "O = Obstacle" << RESET << std::endl;
-		for (int i = 0; i < nav->grid.size(); i++) {
-			for (int j = 0; j < nav->grid[0].size(); j++) {
+		for (int i = 0; i < nav->grid->size(); i++) {
+			for (int j = 0; j < (*nav->grid)[0].size(); j++) {
 				if(!checkOcuppied(playerPosition, enemyPositions[0], i, j) &&
 					!checkOcuppied(playerPosition, enemyPositions[1], i, j))
 					color(i, j);
@@ -91,7 +91,7 @@ void NavigationModuleTest::navigate(sf::Vector2i& playerPosition, std::vector<sf
 //prints out a colored char from a grid
 void NavigationModuleTest::color(int i, int j) {
 	std::string fill;
-	bool c = nav->grid[i][j];
+	bool c = (*nav->grid)[i][j];
 	char out = 'O';
 	switch (c) {
 	case 0: { fill = MAGENTA; out = 'G';  break; }

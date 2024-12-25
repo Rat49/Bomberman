@@ -44,6 +44,11 @@ public:
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	const std::vector<std::shared_ptr<EnemyBase>>& getEnemies() const
+    {
+        return m_generatedElements.enemies;
+	}
+
 private:
     //draws all the tiles in the level to the specified render target
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -68,6 +73,8 @@ private:
 	void addKeys(const std::vector<std::shared_ptr<Key>>& keys);
 
 	void addBoosters(const std::vector<std::shared_ptr<Booster>>& boosters);
+
+
 
 private:
 

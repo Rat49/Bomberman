@@ -223,9 +223,10 @@ bool Level::setUpElements(int32_t levelElementsId)
 	//store generated elements on level
 	addObstacles(generatedElements.obstacles);
 	addKeys(generatedElements.keys);
-	addEnemies(generatedElements.enemies);
 	addGates(generatedElements.gates);
 	addBoosters(generatedElements.boosters);
+    addEnemies(generatedElements.enemies);
+    m_generatedElements.navGrid = generatedElements.navGrid;
 
 	return true;
 }
@@ -356,6 +357,8 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         auto* obstacle = obstacle_it->get();
 		if (obstacle->hasExploded())
 		{
+            sf::Vector2i gridPos = static_cast<sf::Vector2i>(obstacle->getCollisionBox().getCenter()) / 64;
+            (*m_generatedElements.navGrid)[gridPos.y][gridPos.x] = 0;
             obstacle_it = m_generatedElements.obstacles.erase(obstacle_it);
 		}
 		else

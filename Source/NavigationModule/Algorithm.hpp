@@ -2,10 +2,12 @@
 
 #include <vector>
 #include <SFML/System/Vector2.hpp>
+#include <memory>
 
 class Algorithm {
 public:
-	Algorithm(std::vector<std::vector<bool>>& grid) : grid(grid) {}
+	Algorithm(std::shared_ptr<std::vector<std::vector<bool>>> grid) : grid(grid) {
+	}
 
 	virtual ~Algorithm() {};
 
@@ -21,7 +23,7 @@ public:
 protected:
 
 	//mapped grid of players environment
-	std::vector<std::vector<bool>> grid;
+    std::shared_ptr<std::vector<std::vector<bool>>> grid;
 
 	//mapped grid of players relative position to any tile
 	//smaller value == closer to player
@@ -30,7 +32,9 @@ protected:
 
 class AStar : public Algorithm {
 public:
-	AStar(std::vector<std::vector<bool>>& grid) : Algorithm(grid) {}
+    AStar(std::shared_ptr<std::vector<std::vector<bool>>> grid) : Algorithm(grid)
+    {
+    }
 
 	~AStar() {};
 

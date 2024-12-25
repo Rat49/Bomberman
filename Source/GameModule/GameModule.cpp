@@ -16,6 +16,7 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include "AssetManager/AssetManager.hpp"
+#include "EnemyBase.hpp"
 
 namespace {
 	const std::string PATH_WINDOW_INFO = "../../Data/Config/windowInfo.ini";
@@ -176,6 +177,19 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
 			player.setIsUpdated(false);
+
+			for (const auto& enemyPtr : Modules::Level->getCurrentLevelPtr()->getEnemies())
+            {
+				// Cast to the derived type (e.g., Enemy)
+				auto specificEnemyPtr = std::dynamic_pointer_cast<EnemyBase>(enemyPtr);
+
+				if (specificEnemyPtr)
+				{
+					// Now you can safely call 'getPlayerPos()' from 'Enemy'
+					specificEnemyPtr->setPlayerPosition(player.getCurrentPosition());
+				}
+
+            }
 
 			screens[currentScreen]->getWindow()->setView(tempView);
 

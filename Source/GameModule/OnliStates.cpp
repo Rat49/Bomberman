@@ -60,12 +60,20 @@ void PatrollingState::Update(AIController* ai)
     sf::Vector2i parentPosition2     = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
                                        static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
 
-    auto obstacleComponent = const_cast<CollisionComponent*>(Modules::Physics->rayCast(raycastStartingPos, directions[m_currentDirection], RAYCAST_LENGTH, endPoint));
+    auto obstacleComponent = Modules::Physics->rayCast(raycastStartingPos, directions[m_currentDirection], RAYCAST_LENGTH, endPoint);
     bool isNotColiding = obstacleComponent == nullptr;
     isNotColiding &= Modules::Level->getTileInfo((static_cast<int32_t>(collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET) ) ) / TILE_SIZE,
                                                  (static_cast<int32_t>(collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET) ) ) / TILE_SIZE) == "Walkable";
 
-    if (isNotColiding)
+EnemyBase* enemy = nullptr;
+    if (obstacleComponent != nullptr)
+    {
+        enemy = dynamic_cast<EnemyBase*>(obstacleComponent->getObjectParent());
+    }
+
+
+
+    if (isNotColiding || enemy)
     {
         parent->setPosition({parentPosition.x + (directions[m_currentDirection].x * parent->getVelocity()),
                              parentPosition.y + (directions[m_currentDirection].y * parent->getVelocity())});
