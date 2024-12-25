@@ -45,6 +45,11 @@ public:
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	//return all unbreakable obstacle positions on level
+    std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
+	void initializeUnbreakableObstacle();
+	
 	std::vector<std::shared_ptr<Enemy>>& getEnemies() const;
 
 	std::vector<std::shared_ptr<Booster>>& getBoosters() const;
@@ -95,6 +100,9 @@ private:
 	std::vector<std::vector<FieldInfo>> m_fields;
 
 	std::string m_configPath;
+
+	float unbreakableObstacleOffset = 5.0f;
+    float unbreakableObstacleCollisionSize = 64.0f;
 
 };
 

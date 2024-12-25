@@ -48,9 +48,11 @@ public:
 
 	// Returns a center of rectangle
 	sf::Vector2f getCenter();
-protected:
+
 	// Function to check if this rectangle overlaps with another
 	const bool isOverlapping(CollisionRectangle& other);
+
+protected:
 
 	//collision rectangle
 	sf::RectangleShape rectangle;

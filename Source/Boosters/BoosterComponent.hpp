@@ -12,7 +12,7 @@ public:
 
 	virtual bool removeEffect(PlayerCharacter& playerCharacter) = 0;
 
-	virtual bool shoulRemoveEffect() = 0;
+	virtual bool shouldRemoveEffect() = 0;
 
 	void setCallback(EventID callbackID)
 	{

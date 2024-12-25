@@ -10,6 +10,10 @@ public:
 	int registerObject(const CollisionComponent* physicsObject);
 	void unRegisterObject(int id);
 
+	void addObject(CollisionComponent* obj);
+    void deleteObject(CollisionComponent* obj);
+    void updateCollision();
+
 	//casts a ray and returns closest intersected object and its point of intersection
 	const CollisionComponent* rayCast(const sf::Vector2f& origin,
 									const sf::Vector2f& direction,
@@ -33,4 +37,5 @@ public:
 private:
 	static int ID;
 	std::unordered_map<int,const CollisionComponent*> physicsObjects;
+    std::vector<CollisionComponent*> registeredObjects;
 };

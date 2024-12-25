@@ -44,6 +44,8 @@ public:
 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
 	//draw level on window
 	void update(float, sf::Window*) override;
 
