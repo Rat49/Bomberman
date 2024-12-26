@@ -40,8 +40,6 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	CollisionRectangle& getCollision() { return collision; }
-
 	bool isExploded;
 
 	void setCallbackID(EventID obstacleDestructionID);
@@ -58,10 +56,6 @@ private:
 
 	float collisionBoxSize = 64.0f;
 	std::unique_ptr<CollisionComponent> collisionBox;
-
-	CollisionRectangle collision;
-
-	int32_t collisionBoxID;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;

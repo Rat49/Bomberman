@@ -15,12 +15,6 @@ public:
 
     CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-    CollisionRectangle& getCollision() { return collision; }
-
 private:
     std::unique_ptr<CollisionComponent> collisionBox;
-
-    CollisionRectangle collision;
-
-    int32_t collisionBoxID;
 };

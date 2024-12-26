@@ -18,17 +18,11 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	isExploded = false;
 
-	collision.setObjectParent(this);
-
 	collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setObjectParent(this);
 
 	collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
-
-	collisionBoxID = Modules::Physics->registerObject(collisionBox.get());
-
-	Modules::Physics->addObject(collisionBox.get());
 }
 
 void Obstacle::changeAnim(sf::Vector2f obsPos)
@@ -69,7 +63,7 @@ bool Obstacle::isValidUnbreakablePosition(const sf::Vector2f& position)
 
 std::shared_ptr<Animation> Obstacle::getCurrentAnimation() const
 {
-	return Modules::Sprite->getAnimation(currentAnimation);
+    return Modules::Sprite->getAnimation(currentAnimation);
 }
 
 void Obstacle::setCallbackID(EventID obstacleDestructionID)

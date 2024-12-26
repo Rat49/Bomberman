@@ -4,7 +4,6 @@
 class SpeedBooster : public BoosterComponent
 {
 public:
-    int32_t getBoosterID() override { return m_boosterId; }
 
     void applyEffect(PlayerCharacter& playerCharacter) override;
 

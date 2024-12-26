@@ -333,11 +333,10 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		target.draw(*gate, states);
 	}
-	
-	
-	for (const auto& booster : m_generatedElements.boosters)
+    for (const auto& booster : m_generatedElements.boosters)
 	{
-		target.draw(*booster, states);
+        target.draw(*booster, states);
+        target.draw(booster->getCollisionBox().getRectangle(), states);
 	}
 
 	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
@@ -346,7 +345,7 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
         if (!obstacle->isExploded)
         {
             target.draw(*obstacle->getCurrentAnimation());
-            ++it; 
+            ++it; // Move to the next obstacle
         }
         else
         {
@@ -355,27 +354,28 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
             if (!obstacle->getCurrentAnimation()->isPlaying())
             {
                 obstacle->emitCallback();
-                Modules::Physics->deleteObject(&(*it)->getCollisionBox());
-                it = m_generatedElements.obstacles.erase(it);
+                Modules::Physics->deleteObject(&obstacle->getCollisionBox());
+                it = m_generatedElements.obstacles.erase(it); // Erase and get new iterator
             }
             else
             {
-                ++it;
+                ++it; // Move to the next obstacle
             }
         }
     }
-	
+
+    // Iterate through enemies
     for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
     {
         auto& enemy = *enemy_it;
         if (enemy->isDead())
         {
-            enemy_it = m_generatedElements.enemies.erase(enemy_it);
+            enemy_it = m_generatedElements.enemies.erase(enemy_it); // Erase and get new iterator
         }
         else
         {
             target.draw(*enemy, states);
-            ++enemy_it;
+            ++enemy_it; // Move to the next enemy
         }
     }
 }
@@ -412,6 +412,52 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 	
     m_view.setViewport(sf::FloatRect((1.0f - factor) / 2, hudPercentage, factor, 1.f - hudPercentage));
     
+}
+
+void Level::update(sf::RenderWindow* window, float)
+{
+    auto boostersIterator = m_generatedElements.boosters.begin();
+    while (boostersIterator != m_generatedElements.boosters.end())
+    {
+        if ((*boostersIterator)->getIsPickedUp())
+        {
+            Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
+        }
+        else
+        {
+            ++boostersIterator;
+        }
+    }
+
+    auto obstaclesIterator = m_generatedElements.obstacles.begin();
+    while (obstaclesIterator != m_generatedElements.obstacles.end())
+    {
+        if ((*obstaclesIterator)->isExploded)
+        {
+            if (!(*obstaclesIterator)->getCurrentAnimation()->isPlaying())
+            {
+                Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
+                obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
+                continue;
+            }
+        }
+        ++obstaclesIterator;
+    }
+
+    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
+    {
+        if ((*enemy_it)->isDead())
+        {
+            enemy_it = m_generatedElements.enemies.erase(enemy_it);
+        }
+        else
+        {
+            ++enemy_it;
+        }
+    }
+
+	draw(*window, sf::RenderStates::Default);
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const

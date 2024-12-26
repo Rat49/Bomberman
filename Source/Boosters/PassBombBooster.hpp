@@ -6,8 +6,6 @@ class PassBombBooster : public BoosterComponent
 {
 public:
 
-    int32_t getBoosterID() override;
-
     void applyEffect(PlayerCharacter& playerCharacter) override;
 
     bool removeEffect(PlayerCharacter& playerCharacter) override;
@@ -15,8 +13,6 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-
-    int32_t m_boosterId;
 
     float m_duration = 10.f;
     

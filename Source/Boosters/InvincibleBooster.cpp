@@ -1,11 +1,5 @@
 #include "Boosters/InvincibleBooster.hpp"
 
-
-int32_t InvincibleBooster::getBoosterID()
-{
-	return boosterID;
-}
-
 void InvincibleBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
 	playerCharacter.startInvincibility();

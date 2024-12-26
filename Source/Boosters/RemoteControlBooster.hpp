@@ -5,10 +5,6 @@
 class RemoteControlBooster : public BoosterComponent
 {
 public:
-    int32_t getBoosterID() override
-    {
-        return m_boosterId;
-    }
 
     void applyEffect(PlayerCharacter& playerCharacter) override;
 
@@ -17,7 +13,6 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-    int32_t m_boosterId;
 
     float m_duration = 10.f;
 
