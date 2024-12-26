@@ -42,7 +42,7 @@ Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), posi
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
+    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(60.0f, 60.0f));
 }
 
 EnemyType Enemy::getType() const
