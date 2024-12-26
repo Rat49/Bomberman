@@ -333,77 +333,20 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
 		target.draw(*gate, states);
 	}
-
-	auto boostersIterator = m_generatedElements.boosters.begin();
-    while (boostersIterator != m_generatedElements.boosters.end())
-    {
-        if ((*boostersIterator)->getIsPickedUp())
-        {
-            Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
-            boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
-		}
-        else
-        {
-            target.draw(*(*boostersIterator), states);
-            ++boostersIterator;
-		}
-
+    for (const auto& booster : m_generatedElements.boosters)
+	{
+        target.draw(*booster, states);
+        target.draw(booster->getCollisionBox().getRectangle(), states);
 	}
 
-    auto obstaclesIterator = m_generatedElements.obstacles.begin();
-    while (obstaclesIterator != m_generatedElements.obstacles.end())
+    for (const auto& obstacle : m_generatedElements.obstacles)
     {
-        if ((*obstaclesIterator)->isExploded)
-        {
-            target.draw(*(*obstaclesIterator)->getCurrentAnimation());
-
-            if (!(*obstaclesIterator)->getCurrentAnimation()->isPlaying())
-            {
-                Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
-                obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
-                continue;
-            }
-        }
-        else
-        {
-            target.draw(*(*obstaclesIterator)->getCurrentAnimation());
-		}
-        ++obstaclesIterator;
+        target.draw(*obstacle->getCurrentAnimation());
     }
-    /* for (auto& it : m_generatedElements.obstacles)
-    {
-        if (it->isExploded)
-        {
-            target.draw(*it->getCurrentAnimation());
-			
-            if (!it->getCurrentAnimation()->isPlaying())
-            {
-                Modules::Physics->deleteObject(&it->getCollisionBox());
-                indicesToRemove.push_back(i);
-            }
-        }
-        else
-        {
-            target.draw(*it->getCurrentAnimation());
-        }
-        i++;
-    }
-    for (auto it = indicesToRemove.rbegin(); it != indicesToRemove.rend(); ++it)
-    {
-        m_generatedElements.obstacles.erase(m_generatedElements.obstacles.begin() + *it);
-    }*/
 	
-    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
+    for (const auto& enemy : m_generatedElements.enemies)
     {
-        if ((*enemy_it)->isDead())
-        {
-            enemy_it = m_generatedElements.enemies.erase(enemy_it);
-        }
-        else
-        {
-            target.draw(*(*enemy_it), states);
-            ++enemy_it;
-        }
+        target.draw(*enemy, states);
     }
 }
 
@@ -439,6 +382,52 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
 	
     m_view.setViewport(sf::FloatRect((1.0f - factor) / 2, hudPercentage, factor, 1.f - hudPercentage));
     
+}
+
+void Level::update(sf::RenderWindow* window, float)
+{
+    auto boostersIterator = m_generatedElements.boosters.begin();
+    while (boostersIterator != m_generatedElements.boosters.end())
+    {
+        if ((*boostersIterator)->getIsPickedUp())
+        {
+            Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
+        }
+        else
+        {
+            ++boostersIterator;
+        }
+    }
+
+    auto obstaclesIterator = m_generatedElements.obstacles.begin();
+    while (obstaclesIterator != m_generatedElements.obstacles.end())
+    {
+        if ((*obstaclesIterator)->isExploded)
+        {
+            if (!(*obstaclesIterator)->getCurrentAnimation()->isPlaying())
+            {
+                Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
+                obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
+                continue;
+            }
+        }
+        ++obstaclesIterator;
+    }
+
+    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
+    {
+        if ((*enemy_it)->isDead())
+        {
+            enemy_it = m_generatedElements.enemies.erase(enemy_it);
+        }
+        else
+        {
+            ++enemy_it;
+        }
+    }
+
+	draw(*window, sf::RenderStates::Default);
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const

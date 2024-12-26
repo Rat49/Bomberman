@@ -36,6 +36,8 @@ public:
 	//level view config
 	void setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window);
 
+	void update(sf::RenderWindow* window, float deltaTime);
+
 	//draws all the tiles in the level to the specified render target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 

@@ -146,13 +146,13 @@ std::vector<sf::Vector2f> LevelHandlingModule::getUnbreakableObstaclePositions()
 }
 
 
-void LevelHandlingModule::update(float, sf::Window* window)
+void LevelHandlingModule::update(float deltaTime, sf::Window* window)
 {
 	if (isLevelLoaded(m_currentLevel))
 	{
 		//draw level on screen
 		auto* renderWindow = dynamic_cast<sf::RenderWindow*>(window);
-		m_levels[m_currentLevel]->draw(*renderWindow, sf::RenderStates::Default);
+		m_levels[m_currentLevel]->update(renderWindow, deltaTime);
 	}
 }
 

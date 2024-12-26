@@ -27,11 +27,11 @@ struct LevelConfigs
 
 struct GeneratedElements
 {
-	mutable std::vector<std::shared_ptr<Enemy>> enemies;
-	mutable std::vector<std::shared_ptr<Obstacle>> obstacles;
+	std::vector<std::shared_ptr<Enemy>> enemies;
+	std::vector<std::shared_ptr<Obstacle>> obstacles;
     std::vector<std::shared_ptr<UnbreakableObstacle>> unbreakableObstacles;
 	std::vector<std::shared_ptr<Gate>> gates;
 	std::vector<std::shared_ptr<Key>> keys;
-	mutable std::vector<std::shared_ptr<Booster>> boosters;
+	std::vector<std::shared_ptr<Booster>> boosters;
 };
 
