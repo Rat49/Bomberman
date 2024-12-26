@@ -1,10 +1,5 @@
 #include "FlamePassBooster.hpp"
 
-int32_t FlamePassBooster::getBoosterID()
-{
-    return boosterId;
-}
-
 void FlamePassBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
     playerCharacter.setPassThroughFlame(true);
