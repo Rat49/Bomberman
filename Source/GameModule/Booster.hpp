@@ -4,6 +4,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "EventSystem/EventTypes.hpp"
 
 enum class BoosterType
 {
@@ -32,10 +33,17 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
+	void setCallbackID(EventID boosterPickupID);
+
 private:
     std::unique_ptr<CollisionComponent> collisionBox;
 
 	BoosterType type;
+	
+	//sf::Vector2i boosterPosition;
+	
+	EventID m_boosterPickupID = -1;
+	
 	sf::Vector2f boosterPosition;
 
 	bool isPickedUp = false;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "GameModule/LevelShared.hpp"
+#include "LevelShared.hpp"
 #include "LevelData.hpp"
 #include "Tile.hpp"
 #include <vector>
@@ -51,6 +51,12 @@ public:
     std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
 
 	void initializeUnbreakableObstacle();
+	
+	std::vector<std::shared_ptr<Enemy>>& getEnemies() const;
+
+	std::vector<std::shared_ptr<Booster>>& getBoosters() const;
+
+	std::vector<std::shared_ptr<Obstacle>>& getObstacles() const;
 
 private:
 

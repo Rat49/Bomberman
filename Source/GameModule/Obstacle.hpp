@@ -9,6 +9,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 
 enum class ObstacleType
 {
@@ -41,6 +42,10 @@ public:
 
 	bool isExploded;
 
+	void setCallbackID(EventID obstacleDestructionID);
+
+	void emitCallback() const;
+
 private:
 	ObstacleType obstacleType;
 	sf::Vector2f obstaclePosition;
@@ -54,4 +59,6 @@ private:
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
+
+	EventID m_obstacleDestructionID = -1;
 };

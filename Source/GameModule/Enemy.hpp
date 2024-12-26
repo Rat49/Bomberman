@@ -5,6 +5,7 @@
 #include "CollisionModule/CollisionComponent.hpp"
 #include <SFML/System.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 
 enum class EnemyType
 {
@@ -31,6 +32,8 @@ public:
 	bool isDead() const;
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+    
+	void setCallbackID(EventID enemyDeathID);
 
 private:
 	EnemyType enemyType;
@@ -45,4 +48,6 @@ private:
 	std::unique_ptr<CollisionComponent> collisionBox;
 
 	bool isEnemyDead = false;
+
+	EventID m_enemyDeathID = -1;
 };

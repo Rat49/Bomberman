@@ -54,6 +54,8 @@ public:
 
 	void addExplosionRadius();
 
+	void setPassThroughFlame(bool shouldPassThroughFlame){ canPassThroughFlames = shouldPassThroughFlame; }
+
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
@@ -84,6 +86,7 @@ private:
 	float bombDuration;
 	float velocity = 0.f;
     bool canPassThroughBombs = false;
+    bool canPassThroughFlames = false;
 
 
 	ActionID playerMovement;

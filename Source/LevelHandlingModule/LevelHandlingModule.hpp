@@ -29,7 +29,9 @@ public:
 	void setCurrentLevel(LevelId levelId);
 
 	//get level 
-	LevelId getCurrentLevel();
+	LevelId getCurrentLevelID() const;
+
+	std::shared_ptr<Level> getCurrentLevel() const;
 
 	//check if level is loaded 
 	bool isLevelLoaded(LevelId levelId) const;
@@ -53,14 +55,12 @@ public:
 private:
 
 	//store loaded levels
-	std::unordered_map<LevelId, std::shared_ptr<Level>> m_levels;
+	mutable std::unordered_map<LevelId, std::shared_ptr<Level>> m_levels;
 
 	//id of current level
-	LevelId m_currentLevel = -1;
+	LevelId m_currentLevelID = -1;
 
 	//temp Level id
 	LevelId m_levelId = -1;
-
-
 };
 

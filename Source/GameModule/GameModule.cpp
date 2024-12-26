@@ -106,6 +106,9 @@ bool GameModule::initialize()
 		return false;
 	}
 
+	gameStats = std::make_unique<GameStats>();
+    gameStats->initialize(Modules::Level->getCurrentLevel());
+
 	return true;
 }
 
@@ -166,7 +169,7 @@ void GameModule::run()
         Modules::Tests->update(deltaTime, &window);
 #endif
 		updateBoosters();
-
+		//gameStats->updateLevelStats();
 		window.clear(screens[currentScreen]->getBackgroundColor());
         if (currentScreen == Screens::LEVEL)
         {
@@ -183,7 +186,11 @@ void GameModule::run()
 
 			window.draw(*player.getCurrentAnimation());
             player.setIsUpdated(false);
+
+			Modules::Physics->updateCollision();
 			
+			screens[currentScreen]->getWindow()->setView(tempView);
+            std::static_pointer_cast<HUD>(screens[Screens::LEVEL])->setScore(std::to_string(gameStats->getPoints()));
 
             screens[currentScreen]->getWindow()->setView(tempView);
 
@@ -200,6 +207,7 @@ void GameModule::run()
 
 void GameModule::terminate()
 {
+    gameStats->terminate();
 }
 
 void GameModule::setCurrentScreen(const Screens& newScreen)

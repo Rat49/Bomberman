@@ -339,14 +339,44 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.draw(booster->getCollisionBox().getRectangle(), states);
 	}
 
-    for (const auto& obstacle : m_generatedElements.obstacles)
+	for (auto it = m_generatedElements.obstacles.begin(); it != m_generatedElements.obstacles.end();)
     {
-        target.draw(*obstacle->getCurrentAnimation());
+        auto& obstacle = *it;
+        if (!obstacle->isExploded)
+        {
+            target.draw(*obstacle->getCurrentAnimation());
+            ++it; // Move to the next obstacle
+        }
+        else
+        {
+            target.draw(*obstacle->getCurrentAnimation());
+
+            if (!obstacle->getCurrentAnimation()->isPlaying())
+            {
+                obstacle->emitCallback();
+                Modules::Physics->deleteObject(&obstacle->getCollisionBox());
+                it = m_generatedElements.obstacles.erase(it); // Erase and get new iterator
+            }
+            else
+            {
+                ++it; // Move to the next obstacle
+            }
+        }
     }
-	
-    for (const auto& enemy : m_generatedElements.enemies)
+
+    // Iterate through enemies
+    for (auto enemy_it = m_generatedElements.enemies.begin(); enemy_it != m_generatedElements.enemies.end();)
     {
-        target.draw(*enemy, states);
+        auto& enemy = *enemy_it;
+        if (enemy->isDead())
+        {
+            enemy_it = m_generatedElements.enemies.erase(enemy_it); // Erase and get new iterator
+        }
+        else
+        {
+            target.draw(*enemy, states);
+            ++enemy_it; // Move to the next enemy
+        }
     }
 }
 
@@ -487,4 +517,19 @@ std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
     }
 
     return unbreakablePositions;
+}
+
+std::vector<std::shared_ptr<Enemy>>&  Level::getEnemies() const
+{
+    return m_generatedElements.enemies;
+}
+
+std::vector<std::shared_ptr<Booster>>& Level::getBoosters() const
+{
+    return m_generatedElements.boosters;
+}
+
+std::vector<std::shared_ptr<Obstacle>>& Level::getObstacles() const
+{
+    return m_generatedElements.obstacles;
 }

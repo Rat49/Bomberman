@@ -8,6 +8,8 @@
 #include "Boosters/InvincibleBooster.hpp"
 #include "Boosters/PassBombBooster.hpp"
 #include <iostream>
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 
 Booster::Booster(BoosterType type, float x, float y) : type(type)
 {
@@ -70,4 +72,9 @@ std::shared_ptr<BoosterComponent> Booster::getBoosterComponent()
             return std::make_shared<SpeedBooster>();
     }
     return std::make_shared<SpeedBooster>();
+}
+
+void Booster::setCallbackID(EventID boosterPickupID)
+{
+	m_boosterPickupID = boosterPickupID;
 }

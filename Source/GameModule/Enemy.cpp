@@ -7,6 +7,8 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "SpriteModule/Sprite.hpp"
 #include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
 
 Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), position(spawnPosition)
 {
@@ -83,5 +85,11 @@ bool Enemy::isDead() const
 	{
 		return false;
 	}
+	Modules::Events->emit(m_enemyDeathID, nullptr);
 	return true;
+}
+
+void Enemy::setCallbackID(EventID enemyDeathID)
+{
+	m_enemyDeathID = enemyDeathID;
 }

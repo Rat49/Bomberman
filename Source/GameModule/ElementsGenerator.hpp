@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LevelShared.hpp"
+#include "LevelHandlingModule/LevelShared.hpp"
 #include "Enemy.hpp"
 #include <SFML/System.hpp>
 #include <unordered_map>

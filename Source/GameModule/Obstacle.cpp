@@ -4,6 +4,8 @@
 #include <random>
 #include <set>
 #include <utility>
+#include <Common/Logs.hpp>
+#include "EventSystem/EventSystem.hpp"
 
 Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate)
 {
@@ -62,4 +64,14 @@ bool Obstacle::isValidUnbreakablePosition(const sf::Vector2f& position)
 std::shared_ptr<Animation> Obstacle::getCurrentAnimation() const
 {
     return Modules::Sprite->getAnimation(currentAnimation);
+}
+
+void Obstacle::setCallbackID(EventID obstacleDestructionID)
+{
+    m_obstacleDestructionID = obstacleDestructionID;
+}
+
+void Obstacle::emitCallback() const
+{
+    Modules::Events->emit(m_obstacleDestructionID, nullptr);
 }
