@@ -51,7 +51,7 @@ private:
 	int32_t idleBreakableObstacleAnimID;
 	int32_t obstacleDestructionAnimID;
 
-	float collisionBoxSize = 64.0f;
+	float collisionBoxSize = 58.0f;
 	std::unique_ptr<CollisionComponent> collisionBox;
 
 	CollisionRectangle collision;
