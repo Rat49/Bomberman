@@ -57,7 +57,7 @@ private:
 	int32_t idleBreakableObstacleAnimID;
 	int32_t obstacleDestructionAnimID;
 
-	float collisionBoxSize = 64.0f;
+	float collisionBoxSize = 58.0f;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;

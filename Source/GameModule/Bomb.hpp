@@ -82,9 +82,13 @@ private:
 	// Method about what will happen when there is an explosion
 	void explosionEffect(const sf::Vector2f& direction);
 
+	// Method to determine directions in which the bomb can explode
+	bool isDirectionSafe(const sf::Vector2f& position, const sf::Vector2f& direction, float maxDistance);
+	
 	int32_t getExplosionAnimationID(const sf::Vector2f& direction) const;
 
 	sf::Vector2f alignToGrid(const sf::Vector2f& newPosition);
 
 	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
+
 };

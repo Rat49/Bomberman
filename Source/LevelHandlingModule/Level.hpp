@@ -106,7 +106,7 @@ private:
 
 	float unbreakableObstacleOffset = 5.0f;
 	
-    float unbreakableObstacleCollisionSize = 64.0f;
+    float unbreakableObstacleCollisionSize = 60.0f;
 
 };
 

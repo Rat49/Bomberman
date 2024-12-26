@@ -3,6 +3,7 @@
 #include "Common/Logs.hpp"
 #include "GameModule/PlayerCharacter.hpp"
 #include "GameModule/EnemyBase.hpp"
+#include "UnbreakableObstacle.hpp"
 
 Bomb::Bomb()
 {
@@ -187,7 +188,10 @@ void Bomb::explode()
 
 	for (const auto& direction : directions)
 	{
-		explosionEffect(direction);
+		if (isDirectionSafe(position, direction, explosionRadius))
+		{
+			explosionEffect(direction);
+		}
 	}
 }
 
@@ -253,6 +257,26 @@ sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection)
 	sf::Vector2f dir = sf::Vector2f(newDirection.x * 64.0f, newDirection.y * 64.0f);
 
 	return dir;
+}
+
+bool Bomb::isDirectionSafe(const sf::Vector2f& origin, const sf::Vector2f& direction, float maxDistance)
+{
+    sf::Vector2f endPoint;
+    sf::Vector2f newDirection = directionToPosition(direction);
+    auto hitObject = Modules::Physics->rayCast(origin, newDirection, maxDistance, endPoint);
+
+    if (hitObject)
+    {
+        auto* obstacle = dynamic_cast<UnbreakableObstacle*>(hitObject->getObjectParent());
+        if (obstacle)
+        {
+            //direction is blocked
+            return false; 
+        }
+    }
+
+	//direction is safe
+    return true; 
 }
 
 sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)
