@@ -7,8 +7,6 @@
 
 Bomb::Bomb()
 {
-	collision.setObjectParent(this);
-
 	collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setObjectParent(this);
@@ -84,7 +82,9 @@ void Bomb::update(float deltaTime, bool canDetonate)
 
     if (timer < 0.0f)
     {
+		Modules::Physics->deleteObject(collisionBox.get());
         explode();
+
     }
 }
 
@@ -210,34 +210,23 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
     sf::Vector2f alignPos = alignToGrid(position);
     sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-    hitResult = std::make_pair(Modules::Physics->rayCast(position, newDirection, 1.0f, endPoint), directionAndPosition);
+    hitResult = std::make_pair(Modules::Physics->rayCast(sf::Vector2f(alignPos.x+32.f, alignPos.y+32.f), newDirection, 1.0f, endPoint), directionAndPosition);
 
     if (hitResult.first)
     {
-
         if (auto* hitObstacle = dynamic_cast<Obstacle*>(hitResult.first->getObjectParent()))
         {
-            if (hitObstacle)
-            {
-                canChangeObstacleAnim = true;
-                obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
-                hitObstacle->isExploded = true;
-            }
+            canChangeObstacleAnim = true;
+            obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
+            hitObstacle->isExploded = true;
         }
         else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitResult.first->getObjectParent()))
         {
-            if (hitPlayer)
-            {
-                LOG("PLAYER!");
-            }
-
-            else if (auto* hitEnemy = dynamic_cast<Enemy*>(hitResult.first->getObjectParent()))
-            {
-                if (hitEnemy)
-                {
-                    LOG("ENEMY!");
-                }
-            }
+            LOG("PLAYER!");
+        }
+        else if (auto* hitEnemy = dynamic_cast<Enemy*>(hitResult.first->getObjectParent()))
+        {
+            LOG("ENEMY!");
         }
     }
 
@@ -296,4 +285,5 @@ sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)
 	return { alignedX, alignedY };
 }
 
-Bomb::~Bomb() {}
+Bomb::~Bomb() {
+}

@@ -2,6 +2,7 @@
 #include "Common/Modules.hpp"
 #include "EventSystem/EventSystem.hpp"
 #include "Common/Logs.hpp"
+#include "PlayerCollisionComponent.hpp"
 
 // Constructor that sets up the rectangle shape with a position and size
 CollisionRectangle::CollisionRectangle(const sf::Vector2f& position, const sf::Vector2f& size) {
@@ -10,7 +11,7 @@ CollisionRectangle::CollisionRectangle(const sf::Vector2f& position, const sf::V
 }
 
 // Function to check for overlap with another Collision object
-const bool CollisionRectangle::isOverlapping(CollisionRectangle& other) {
+bool CollisionRectangle::isOverlapping(CollisionRectangle& other) {
 	return rectangle.getGlobalBounds().intersects(other.getRectangle().getGlobalBounds());
 }
 
@@ -23,6 +24,7 @@ const sf::RectangleShape& CollisionRectangle::getRectangle() const {
 void CollisionRectangle::setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size) {
 	rectangle.setPosition(position);
 	rectangle.setSize(size);
+    rectangle.setFillColor(sf::Color(0, 0, 0, 150));
 }
 
 // setting a fill color of a rectangle
@@ -32,15 +34,17 @@ void CollisionRectangle::setColor(const sf::Color& color) {
 
 //updates overlap status and calls handlers if needed
 void CollisionRectangle::update(CollisionRectangle& other) {
-	bool isCurrentlyOverlapping = isOverlapping(other);
-	if (isCurrentlyOverlapping && !getIsOverlapped()) {
-		setIsOverlapped(true);
-		BeginOverlapHandler(&other);  // Trigger BeginOverlap handler
-	}
-	else if (!isCurrentlyOverlapping && getIsOverlapped()) {
-		setIsOverlapped(false);
-		EndOverlapHandler(&other);    // Trigger EndOverlap handler
-	}
+    bool isCurrentlyOverlapping = isOverlapping(other);
+    if (isCurrentlyOverlapping && idOverlappedObjects.count(other.getId()) == 0)
+    {
+        idOverlappedObjects.insert(other.getId());
+        BeginOverlapHandler(&other); // Trigger BeginOverlap handler
+    }
+    else if (!isCurrentlyOverlapping && idOverlappedObjects.count(other.getId()) > 0)
+    {
+        idOverlappedObjects.erase(other.getId());
+        EndOverlapHandler(&other); // Trigger EndOverlap handler
+    }
 }
 
 // Returns a center of rectangle

@@ -38,8 +38,6 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	CollisionRectangle& getCollision() { return collision; }
-
 private:
 	int32_t currentAnimation = -1;
 
@@ -51,8 +49,6 @@ private:
 	int32_t bombCenterID;
 
 	std::unique_ptr<CollisionComponent> collisionBox;
-
-	CollisionRectangle collision;
 
 	float gridSize = 64.0f;
 

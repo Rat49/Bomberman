@@ -48,9 +48,11 @@ public:
 
 	int32_t getCurrentStage() const { return currentStage; }
 
-private:
+	PlayerCharacter& getPlayerCharacter() { return player; }
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+private:
 
 	void removeAllBoosters();
 
@@ -69,7 +71,7 @@ private:
 	
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
-	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
+	std::vector<std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 	

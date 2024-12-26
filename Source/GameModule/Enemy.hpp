@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GameModule/Obstacle.hpp"
 #include "SpriteModule/Animation.hpp"
 #include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/CollisionComponent.hpp"
 #include <SFML/System.hpp>
 #include <vector>
 
@@ -32,8 +32,6 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-    CollisionRectangle& getCollision() { return collision; }
-
 private:
 	EnemyType enemyType;
 	sf::Vector2f position;
@@ -45,10 +43,6 @@ private:
 	int32_t m_rightAnimationId;
 
 	std::unique_ptr<CollisionComponent> collisionBox;
-
-    CollisionRectangle collision;
-
-	int32_t collisionBoxID;
 
 	bool isEnemyDead = false;
 };
