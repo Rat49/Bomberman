@@ -7,6 +7,9 @@
 #include "SpriteModule/SpriteModule.hpp"
 #include "SpriteModule/Sprite.hpp"
 #include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
+
 Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), position(spawnPosition)
 {
 	// different animations for different enemies needs to be added
@@ -36,6 +39,12 @@ Enemy::Enemy(EnemyType type, sf::Vector2f spawnPosition) : enemyType(type), posi
 
 	Modules::Sprite->getAnimation(m_currentAnimationId)->setPosition(spawnPosition);
 	Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
+
+    collisionBox = std::make_unique<CollisionComponent>();
+
+    collisionBox->setObjectParent(this);
+
+    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
 }
 
 EnemyType Enemy::getType() const
@@ -76,5 +85,11 @@ bool Enemy::isDead() const
 	{
 		return false;
 	}
+	Modules::Events->emit(m_enemyDeathID, nullptr);
 	return true;
+}
+
+void Enemy::setCallbackID(EventID enemyDeathID)
+{
+	m_enemyDeathID = enemyDeathID;
 }

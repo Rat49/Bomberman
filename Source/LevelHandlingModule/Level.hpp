@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "GameModule/LevelShared.hpp"
+#include "LevelShared.hpp"
 #include "LevelData.hpp"
 #include "Tile.hpp"
 #include <vector>
@@ -36,6 +36,8 @@ public:
 	//level view config
 	void setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window);
 
+	void update(sf::RenderWindow* window, float deltaTime);
+
 	//draws all the tiles in the level to the specified render target
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -44,6 +46,17 @@ public:
 
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
+
+	//return all unbreakable obstacle positions on level
+    std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
+	void initializeUnbreakableObstacle();
+	
+	std::vector<std::shared_ptr<Enemy>>& getEnemies() const;
+
+	std::vector<std::shared_ptr<Booster>>& getBoosters() const;
+
+	std::vector<std::shared_ptr<Obstacle>>& getObstacles() const;
 
 private:
 
@@ -89,6 +102,9 @@ private:
 	std::vector<std::vector<FieldInfo>> m_fields;
 
 	std::string m_configPath;
+
+	float unbreakableObstacleOffset = 5.0f;
+    float unbreakableObstacleCollisionSize = 64.0f;
 
 };
 

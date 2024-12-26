@@ -1,12 +1,19 @@
 #pragma once
 #include "InputModule/InputTypes.hpp"
 #include "GameModule/Bomb.hpp"
-#include "CollisionModule/CollisionComponent.hpp"
+#include "CollisionModule/PlayerCollisionComponent.hpp"
+#include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include <chrono>
+#include <set>
 
+class Booster;
+class UnbreakableObstacle;
+class Obstacle;
+class Enemy;
 class Animation;
 
-class PlayerCharacter
+class PlayerCharacter : public CollisionObject
 {
 public:
 	PlayerCharacter();
@@ -18,6 +25,10 @@ public:
 	void onMove(void* axis2DState);
 
 	void onBombPlant(void* axis2DState);
+
+	void onBombDetonate(void* buttonState);
+
+	void setCanDetonate(bool detonate) { canDetonate = detonate; }
 
 	void updateAnimation(int32_t id);
 
@@ -48,6 +59,7 @@ public:
 	void drawBombs(sf::RenderWindow& window);
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+
 	void startInvincibility();
 
 	void updateInvincibility();
@@ -56,10 +68,16 @@ public:
 
 	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
 
+	void handleEnemyOverlap(Enemy* enemy);
+
+	void handleObstacleOverlap(bool begin);
+
+	void handleBoosterOverlap(Booster* booster);
+
 private:
 	int32_t currentAnimation = -1;
-	float x = 70.f;
-	float y = 70.f;
+	float x = 72.f;
+	float y = 72.f;
 	float speed = 0.f;
 	int32_t maxBombs;
     int32_t bombCapacity;
@@ -75,12 +93,24 @@ private:
 	FunctionHandle playerMovementHandle;
 	ActionID plantBomb;
 	FunctionHandle plantBombHandle;
+	ActionID detonateBomb;
+	FunctionHandle detonateBombHandle;
+
+	bool canDetonate  = false;		// variable is true if RemoteControlBooster is picked up
+	bool isDetonating = false;		// variable is true if DetonateBomb key is pressed
+
+	int32_t bombsToDetonate = 0;	// number of bombs to detonate (if player plants a bomb during detonating, that bomb won't be detonated)
+
 	int32_t leftId;
 	int32_t rightId;
 	int32_t upId;
 	int32_t downId;
 
-	std::unique_ptr<CollisionComponent> collisionBox;
+	std::unique_ptr<PlayerCollisionComponent> collisionBox;
+
+	int32_t collisionBoxID;
+
+	float collisionBoxSize = 48.0f;
 
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
@@ -89,4 +119,15 @@ private:
 	bool isInvincible = false;
 	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;
     float invincibilityDuration;
+	float gridSize = 64.0f;
+
+	sf::Vector2f currentDirection = sf::Vector2f(0.0f, 0.0f);
+    std::set<std::pair<float, float>> previousDirections;
+
+	sf::Vector2f rightDirection = sf::Vector2f(1.0f, 0.0f);
+    sf::Vector2f leftDirection  = sf::Vector2f(-1.0f, 0.0f);
+    sf::Vector2f upDirection    = sf::Vector2f(0.0f, 1.0f);
+    sf::Vector2f downDirection  = sf::Vector2f(0.0f, -1.0f);
+
+	sf::Vector2f globalStats;
 };

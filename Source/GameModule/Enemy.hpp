@@ -1,9 +1,11 @@
 #pragma once
 
+#include "SpriteModule/Animation.hpp"
+#include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/CollisionComponent.hpp"
 #include <SFML/System.hpp>
 #include <vector>
-#include "GameModule/Obstacle.hpp"
-#include "SpriteModule/Animation.hpp"
+#include "EventSystem/EventTypes.hpp"
 
 enum class EnemyType
 {
@@ -12,10 +14,10 @@ enum class EnemyType
 	Hard
 };
 
-class Enemy : public sf::Sprite
+class Enemy : public sf::Sprite, public CollisionObject
 {
 public:
-	Enemy(EnemyType type, sf::Vector2f spawnPosition); // , const std::vector<sf::Vector2i>& patrollingPoints = {});
+	Enemy(EnemyType type, sf::Vector2f spawnPosition);
 
 	EnemyType getType() const;
 
@@ -29,6 +31,10 @@ public:
 
 	bool isDead() const;
 
+	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+    
+	void setCallbackID(EventID enemyDeathID);
+
 private:
 	EnemyType enemyType;
 	sf::Vector2f position;
@@ -39,5 +45,9 @@ private:
 	int32_t m_leftAnimationId;
 	int32_t m_rightAnimationId;
 
+	std::unique_ptr<CollisionComponent> collisionBox;
+
 	bool isEnemyDead = false;
+
+	EventID m_enemyDeathID = -1;
 };

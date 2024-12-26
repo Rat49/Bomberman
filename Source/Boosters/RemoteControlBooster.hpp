@@ -1,8 +1,8 @@
 #pragma once
-
 #include "BoosterComponent.hpp"
+#include <chrono>
 
-class FireUpBooster : public BoosterComponent
+class RemoteControlBooster : public BoosterComponent
 {
 public:
 
@@ -13,5 +13,10 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-    bool    isEffectDone = false;
+
+    float m_duration = 10.f;
+
+    bool m_isEffectDone;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 };

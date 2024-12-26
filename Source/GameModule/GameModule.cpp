@@ -106,6 +106,9 @@ bool GameModule::initialize()
 		return false;
 	}
 
+	gameStats = std::make_unique<GameStats>();
+    gameStats->initialize(Modules::Level->getCurrentLevel());
+
 	return true;
 }
 
@@ -166,7 +169,7 @@ void GameModule::run()
         Modules::Tests->update(deltaTime, &window);
 #endif
 		updateBoosters();
-
+		//gameStats->updateLevelStats();
 		window.clear(screens[currentScreen]->getBackgroundColor());
         if (currentScreen == Screens::LEVEL)
         {
@@ -175,12 +178,19 @@ void GameModule::run()
             Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 
             player.updateVelocity(deltaTime);
+
+            Modules::Physics->updateCollision();
+
             player.updateBombs(deltaTime);
             player.drawBombs(window);
 
-            window.draw(*player.getCurrentAnimation());
+			window.draw(*player.getCurrentAnimation());
             player.setIsUpdated(false);
 
+			Modules::Physics->updateCollision();
+			
+			screens[currentScreen]->getWindow()->setView(tempView);
+            std::static_pointer_cast<HUD>(screens[Screens::LEVEL])->setScore(std::to_string(gameStats->getPoints()));
 
             screens[currentScreen]->getWindow()->setView(tempView);
 
@@ -197,6 +207,7 @@ void GameModule::run()
 
 void GameModule::terminate()
 {
+    gameStats->terminate();
 }
 
 void GameModule::setCurrentScreen(const Screens& newScreen)
@@ -250,12 +261,12 @@ void GameModule::checkTimeCounter()
 
 void GameModule::updateBoosters()
 {
-	auto boostersIterator = m_boosters.begin();
+    auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
-		if (boostersIterator->second->shouldRemoveEffect())
+		if ((*boostersIterator)->shouldRemoveEffect())
 		{
-			if (boostersIterator->second->removeEffect(player))
+			if ((*boostersIterator)->removeEffect(player))
 			{
 				boostersIterator = m_boosters.erase(boostersIterator);
 				continue;
@@ -283,13 +294,9 @@ float GameModule::getHUDHeight()
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
 {
-	auto id = newBooster->getBoosterID();
-	auto it = m_boosters.find(id);
-	if (it == m_boosters.end())
-	{
-		it = m_boosters.insert({ id, newBooster }).first;
-	}
-	it->second->applyEffect(player);
+	m_boosters.push_back(newBooster);
+	
+	newBooster->applyEffect(player);
 }
 
 void GameModule::removeAllBoosters()

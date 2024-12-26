@@ -5,9 +5,11 @@
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "SpriteModule/Animation.hpp"
 #include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 
 enum class ObstacleType
 {
@@ -38,9 +40,11 @@ public:
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	CollisionRectangle& getCollision() { return collision; }
-
 	bool isExploded;
+
+	void setCallbackID(EventID obstacleDestructionID);
+
+	void emitCallback() const;
 
 private:
 	ObstacleType obstacleType;
@@ -50,10 +54,11 @@ private:
 	int32_t idleBreakableObstacleAnimID;
 	int32_t obstacleDestructionAnimID;
 
+	float collisionBoxSize = 64.0f;
 	std::unique_ptr<CollisionComponent> collisionBox;
-
-	CollisionRectangle collision;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
+
+	EventID m_obstacleDestructionID = -1;
 };

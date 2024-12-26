@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LevelShared.hpp"
+#include "LevelHandlingModule/LevelShared.hpp"
 #include "Enemy.hpp"
 #include <SFML/System.hpp>
 #include <unordered_map>
@@ -68,6 +68,8 @@ private:
 	float m_renderDuration;
 	bool m_isLooping;
 	std::unordered_map<std::string, sf::IntRect> m_texturesRect;
+
+    std::shared_ptr<Booster> createBooster(float x, float y);
 };
 
 template <typename ObjectType>

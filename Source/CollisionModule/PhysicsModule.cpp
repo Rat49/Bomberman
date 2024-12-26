@@ -1,15 +1,43 @@
 #include "PhysicsModule.hpp"
 #include "Common/FloatUtils.hpp"
+#include "Common/Logs.hpp"
+#include "GameModule/PlayerCharacter.hpp"
 
 int PhysicsModule::ID = 0;
 
-int PhysicsModule::registerObject(const CollisionComponent* physicsObject) {
+int PhysicsModule::registerObject(CollisionComponent* physicsObject)
+{
 	physicsObjects[ID] = physicsObject;
 	return ID++;
 }
 
 void PhysicsModule::unRegisterObject(int id) {
 	physicsObjects.erase(id);
+}
+
+void PhysicsModule::deleteObject(CollisionComponent* physicsObject)
+{
+    for (auto it = physicsObjects.begin(); it != physicsObjects.end(); ++it)
+    {
+        if (it->second == physicsObject)
+        {
+            physicsObjects.erase(it);
+            return;
+        }
+    }
+    LOG("Physics module - delete object failed (not found in map)");
+}
+
+void PhysicsModule::updateCollision()
+{
+    for (auto& it1: physicsObjects)
+    {
+        for (auto& it2: physicsObjects)
+        {
+            if (it1.first != it2.first)
+				it1.second->update(*it2.second);
+        }
+    }
 }
 
 //casts a ray and returns closest intersected object and its point of intersection
@@ -38,9 +66,9 @@ const CollisionComponent* PhysicsModule::rayCast(const sf::Vector2f& origin,
 	return candidate;
 }
 
-std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> PhysicsModule::rayCastAll(const sf::Vector2f& origin, const sf::Vector2f& direction, float maxDistance)
+std::vector<std::pair<CollisionComponent*, sf::Vector2f>> PhysicsModule::rayCastAll(const sf::Vector2f& origin, const sf::Vector2f& direction, float maxDistance)
 {
-    std::vector<std::pair<const CollisionComponent*, sf::Vector2f>> hitObjects;
+    std::vector<std::pair<CollisionComponent*, sf::Vector2f>> hitObjects;
 
 	for (auto& iter : physicsObjects)
 	{
@@ -101,4 +129,25 @@ bool PhysicsModule::rayIntersectsRectangle(const CollisionRectangle& rectangle,
 
 void PhysicsModule::terminate()
 {
+}
+
+bool PhysicsModule::tryToMove()
+{
+    for (int i = 0; i < physicsObjects.size(); ++i)
+    {
+        if (dynamic_cast<PlayerCharacter*>(physicsObjects[i]->getObjectParent()))
+        {
+            for (int j = 0; j < physicsObjects.size(); ++j)
+            {
+				if (i != j)
+				{
+                    if (physicsObjects[i]->isOverlapping(*physicsObjects[j]))
+                        return false;
+				}
+                   
+            }
+            return true;
+        }
+    }
+    return true;
 }

@@ -6,6 +6,7 @@
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
 #include <functional>
+#include "GameStats.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -48,9 +49,11 @@ public:
 
 	int32_t getCurrentStage() const { return currentStage; }
 
-private:
+	PlayerCharacter& getPlayerCharacter() { return player; }
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+private:
 
 	void removeAllBoosters();
 
@@ -69,7 +72,7 @@ private:
 	
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
-	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
+	std::vector<std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 	
@@ -88,5 +91,7 @@ private:
 	std::string gameTitle;
 	
 	bool resized = false;
+
+	std::unique_ptr<GameStats> gameStats;
 
 };
