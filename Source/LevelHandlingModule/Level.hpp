@@ -44,10 +44,16 @@ public:
 	//return all walkable positions on level 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
-	const std::vector<std::shared_ptr<EnemyBase>>& getEnemies() const
-    {
-        return m_generatedElements.enemies;
-	}
+	//return all unbreakable obstacle positions on level
+    std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
+	void initializeUnbreakableObstacle();
+	
+	const std::vector<std::shared_ptr<EnemyBase>>& getEnemies() const;
+
+	const std::vector<std::shared_ptr<Booster>>& getBoosters() const;
+
+	const std::vector<std::shared_ptr<Obstacle>>& getObstacles() const;
 
 private:
     //draws all the tiles in the level to the specified render target
@@ -97,6 +103,11 @@ private:
 	std::vector<std::vector<FieldInfo>> m_fields;
 
 	std::string m_configPath;
+
+	float unbreakableObstacleOffset = 5.0f;
+	
+    float unbreakableObstacleCollisionSize = 64.0f;
+
 };
 
 

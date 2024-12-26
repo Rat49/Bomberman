@@ -5,14 +5,25 @@
 #include "PlayerCharacter.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
+#include <functional>
+#include "GameStats.hpp"
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
 */
 
+using EventID        = int32_t;
+using FunctionHandle = int32_t;
+using Callback       = std::function<void(void*)>;
+
 class GameModule : public BaseModule
 {
 public:
+    // Declare the game-specific event IDs here
+    EventID GAME_TIMER_FINISHED;
+    EventID QUEST_FAILED;
+    EventID PLAYER_DESTROYED;
+    EventID OBJECTIVE_COMPLETED;
 
 	bool initialize() override;
 
@@ -36,9 +47,13 @@ public:
 
 	float getHUDHeight();
 
-private:
+	int32_t getCurrentStage() const { return currentStage; }
+
+	PlayerCharacter& getPlayerCharacter() { return player; }
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+private:
 
 	void removeAllBoosters();
 
@@ -49,8 +64,6 @@ private:
 	
 	void checkTimeCounter();
 
-private:
-
 	sf::RenderWindow window;
 
 	PlayerCharacter player;
@@ -59,7 +72,7 @@ private:
 	
 	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
-	std::map<int32_t, std::shared_ptr<BoosterComponent>> m_boosters;
+	std::vector<std::shared_ptr<BoosterComponent>> m_boosters;
 
 	Screens currentScreen = Screens::MAIN_MENU;
 	
@@ -78,5 +91,7 @@ private:
 	std::string gameTitle;
 	
 	bool resized = false;
+
+	std::unique_ptr<GameStats> gameStats;
 
 };

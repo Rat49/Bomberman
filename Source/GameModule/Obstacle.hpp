@@ -5,9 +5,11 @@
 #include "CollisionModule/CollisionRectangle.hpp"
 #include "SpriteModule/Animation.hpp"
 #include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 #include "CollisionModule/CollisionComponent.hpp"
 
 enum class ObstacleType
@@ -45,6 +47,8 @@ public:
 
 	bool hasExploded() const;
 
+	void setCallbackID(EventID obstacleDestructionID);
+
 private:
 	ObstacleType obstacleType;
 	sf::Vector2f obstaclePosition;
@@ -53,10 +57,15 @@ private:
 	int32_t idleBreakableObstacleAnimID;
 	int32_t obstacleDestructionAnimID;
 
-	CollisionRectangle collision;
+	float collisionBoxSize = 64.0f;
 
 	// True if there is a key or gate under the obstacle
 	bool obstacleHasKeyOrGate;
+
+	EventID m_obstacleDestructionID = -1;
+	
+	CollisionRectangle collision;
+
     std::unique_ptr<CollisionComponent> collisionBox;
 
     bool m_hasExploded;

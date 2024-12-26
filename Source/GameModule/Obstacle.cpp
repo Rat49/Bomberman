@@ -1,9 +1,11 @@
 #include "GameModule/Obstacle.hpp"
 #include "Common/Modules.hpp"
+#include <Common/Logs.hpp>
 #include <random>
 #include <set>
 #include <utility>
 #include <Common/Logs.hpp>
+#include "EventSystem/EventSystem.hpp"
 
 Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) : obstacleType(type), obstaclePosition(position), obstacleHasKeyOrGate(hasKeyOrGate)
 {
@@ -16,13 +18,11 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 
 	m_hasExploded = false;
 
-	collision.setObjectParent(this);
-
 	collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setObjectParent(this);
 
-	collisionBox->setRectangleProperties(sf::Vector2f((float)getPosition().x, (float)getPosition().y), sf::Vector2f(60.f, 60.f));
+	collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
 void Obstacle::changeAnim(sf::Vector2f obsPos)
@@ -63,7 +63,12 @@ bool Obstacle::isValidUnbreakablePosition(const sf::Vector2f& position)
 
 std::shared_ptr<Animation> Obstacle::getCurrentAnimation() const
 {
-	return Modules::Sprite->getAnimation(currentAnimation);
+    return Modules::Sprite->getAnimation(currentAnimation);
+}
+
+void Obstacle::setCallbackID(EventID obstacleDestructionID)
+{
+    m_obstacleDestructionID = obstacleDestructionID;
 }
 
 void Obstacle::initializeDestruction()
@@ -82,6 +87,7 @@ bool Obstacle::hasExploded() const
 {
     if (!Modules::Sprite->getAnimation(currentAnimation)->isPlaying() && m_hasExploded)
     {
+        Modules::Events->emit(m_obstacleDestructionID, nullptr);
         return true;
     }
     return false;

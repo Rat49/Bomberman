@@ -22,7 +22,7 @@ void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition)
     ai           = std::make_unique<AIController>();
     collisionBox->setParent(this);
     collisionBox->setObjectParent(this);
-    collisionBox->setRectangleProperties(spawnPosition, {64.f, 64.f});
+    collisionBox->setRectangleProperties(spawnPosition + sf::Vector2f(2.f, 2.f), {60.f, 60.f});
     ai->setParent(this);
 
     patrollingState = std::make_shared<PatrollingState>();

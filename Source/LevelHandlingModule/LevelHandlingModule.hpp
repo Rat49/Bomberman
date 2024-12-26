@@ -29,7 +29,9 @@ public:
 	void setCurrentLevel(LevelId levelId);
 
 	//get level 
-	LevelId getCurrentLevel();
+	LevelId getCurrentLevelID() const;
+
+	std::shared_ptr<Level> getCurrentLevel() const;
 
 	//check if level is loaded 
 	bool isLevelLoaded(LevelId levelId) const;
@@ -42,28 +44,28 @@ public:
 
 	std::vector<sf::Vector2f> getWalkablePositions() const;
 
+	std::vector<sf::Vector2f> getUnbreakableObstaclePositions() const;
+
 	//draw level on window
 	void update(float, sf::Window*) override;
 
 	//remove levels from data member
 	void terminate() override;
 
-	 std::shared_ptr<Level> getCurrentLevelPtr()
+	std::shared_ptr<Level> getCurrentLevelPtr()
 	{
-        return m_levels[m_currentLevel];
+         return m_levels[m_currentLevelID];
 	}
 
 private:
 
 	//store loaded levels
-	std::unordered_map<LevelId, std::shared_ptr<Level>> m_levels;
+	mutable std::unordered_map<LevelId, std::shared_ptr<Level>> m_levels;
 
 	//id of current level
-	LevelId m_currentLevel = -1;
+	LevelId m_currentLevelID = -1;
 
 	//temp Level id
 	LevelId m_levelId = -1;
-
-
 };
 

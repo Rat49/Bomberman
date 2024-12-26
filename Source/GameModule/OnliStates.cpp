@@ -6,10 +6,10 @@
 
 namespace
 {
-    const int32_t RAYCAST_OFFSET = 32;
+    const int32_t RAYCAST_OFFSET = 31;
     const int32_t PARENT_OFFSET  = 64;
     const int32_t TILE_SIZE      = 64;
-    const float RAYCAST_LENGTH   = 2.f;
+    const float RAYCAST_LENGTH   = 4.f;
     const int32_t ANIMATION_CHANGE_TIME = 2;
 }
 
@@ -53,7 +53,7 @@ void PatrollingState::Update(AIController* ai)
     auto parent  = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f endPoint;
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
-    parent->getCollisionBox().setRectangleProperties(parent->getPosition(), {64.f, 64.f});
+    parent->getCollisionBox().setRectangleProperties(parent->getPosition() + sf::Vector2f(2.f, 2.f) , {60.f, 60.f});
     sf::Vector2f parentPosition = parent->getPosition();
     sf::Vector2f raycastStartingPos = {collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET), 
                                        collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET)};
@@ -65,15 +65,13 @@ void PatrollingState::Update(AIController* ai)
     isNotColiding &= Modules::Level->getTileInfo((static_cast<int32_t>(collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET) ) ) / TILE_SIZE,
                                                  (static_cast<int32_t>(collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET) ) ) / TILE_SIZE) == "Walkable";
 
-EnemyBase* enemy = nullptr;
+    EnemyBase* enemy = nullptr;
     if (obstacleComponent != nullptr)
     {
         enemy = dynamic_cast<EnemyBase*>(obstacleComponent->getObjectParent());
     }
 
-
-
-    if (isNotColiding || enemy)
+    if (!parent->getIsDeathInitialized() && (isNotColiding || enemy))
     {
         parent->setPosition({parentPosition.x + (directions[m_currentDirection].x * parent->getVelocity()),
                              parentPosition.y + (directions[m_currentDirection].y * parent->getVelocity())});
@@ -84,7 +82,7 @@ EnemyBase* enemy = nullptr;
         m_changeAnimation  = true;
     }
 
-    if (m_changeAnimation)
+    if (!parent->getIsDeathInitialized() && m_changeAnimation)
     {
         m_changeAnimation = false;
         switch (m_currentDirection)

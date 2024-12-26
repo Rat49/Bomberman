@@ -13,6 +13,4 @@ public:
     void BeginOverlapHandler(void*) override;
 
 	void EndOverlapHandler(void*) override;
-private:
-	int id;
 };

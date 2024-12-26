@@ -5,6 +5,7 @@
 #include "SpriteModule/Animation.hpp"
 #include <SFML/System.hpp>
 #include <vector>
+#include "EventSystem/EventTypes.hpp"
 
 class AIController;
 class CollisionComponent;
@@ -80,6 +81,13 @@ public:
         return m_playerPos;
     }
 
+    bool getIsDeathInitialized() const
+    {
+        return isDeathInitialized;
+    }
+
+    void setCallbackID(EventID enemyDeathID);
+
 protected:
     EnemyType                 enemyType;
     sf::Vector2f              position;
@@ -90,6 +98,7 @@ protected:
     int32_t m_rightAnimationId   = -1;
 
     bool isEnemyDead = false;
+    bool isDeathInitialized = false;
 
     std::unique_ptr<CollisionComponent> collisionBox;
     std::unique_ptr<AIController>       ai;
@@ -100,4 +109,6 @@ protected:
     float   velocity = 0.f;
 
     sf::Vector2f m_playerPos;
+
+    EventID m_enemyDeathID = -1;
 };

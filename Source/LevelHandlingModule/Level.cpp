@@ -5,6 +5,7 @@
 #include "GameModule/GameModule.hpp"
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
+#include "GameModule/UnbreakableObstacle.hpp"
 #include "GameModule/Key.hpp"
 #include "GameModule/EnemyBase.hpp"
 #include "GameModule/Booster.hpp"
@@ -38,7 +39,10 @@ namespace
 
 	const int32_t numberOfTilesWidth = 14;	// number of tiles by width that player can see in one moment
 	const int32_t numberOfTilesHeight = 11;	// 16 x 13 in the original game
-} // namespace
+
+	//const std::string UNBREAKABLE_OBSTACLE = "Undestroyable";
+    //const std::string WALKABLE_TILE = "Walkable";
+    } // namespace
 
 Level::Level(const std::string baseLevelConfigPath)
 	:m_configPath(baseLevelConfigPath)
@@ -209,6 +213,8 @@ bool Level::setUpElements(int32_t levelElementsId)
 	//walkable positions
 	const std::vector<sf::Vector2f>& walkablePositions = getWalkablePositions();
 
+	initializeUnbreakableObstacle();
+
 	//initialize elements generator
 	m_elementsGenerator = std::make_unique<ElementsGenerator>();
 	if (!m_elementsGenerator->initialize(it->second))
@@ -229,6 +235,18 @@ bool Level::setUpElements(int32_t levelElementsId)
     m_generatedElements.navGrid = generatedElements.navGrid;
 
 	return true;
+}
+
+void Level::initializeUnbreakableObstacle()
+{
+    const std::vector<sf::Vector2f>& unbreakablePositions = getUnbreakableObstaclePositions();
+
+    for (const auto& position : unbreakablePositions)
+    {
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(position, sf::Vector2f(unbreakableObstacleCollisionSize, unbreakableObstacleCollisionSize));
+
+		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
+    }
 }
 
 void Level::addObstacles(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
@@ -319,7 +337,8 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	
 	for (const auto& booster : m_generatedElements.boosters)
 	{
-		target.draw(*booster, states);
+        target.draw(*booster, states);
+        target.draw(booster->getCollisionBox().getRectangle(), states);
 	}
 
 	for (const auto& obstacle : m_generatedElements.obstacles)
@@ -335,6 +354,20 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Level::update(sf::RenderWindow* window, float deltaTime)
 {
+    auto boostersIterator = m_generatedElements.boosters.begin();
+    while (boostersIterator != m_generatedElements.boosters.end())
+    {
+        if ((*boostersIterator)->getIsPickedUp())
+        {
+            Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
+        }
+        else
+        {
+            ++boostersIterator;
+        }
+    }
+
     auto enemy_it = m_generatedElements.enemies.begin();
 	while (enemy_it != m_generatedElements.enemies.end())
 	{
@@ -357,6 +390,7 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         auto* obstacle = obstacle_it->get();
 		if (obstacle->hasExploded())
 		{
+            Modules::Physics->deleteObject(&obstacle->getCollisionBox());
             sf::Vector2i gridPos = static_cast<sf::Vector2i>(obstacle->getCollisionBox().getCenter()) / 64;
             (*m_generatedElements.navGrid)[gridPos.y][gridPos.x] = 0;
             obstacle_it = m_generatedElements.obstacles.erase(obstacle_it);
@@ -434,7 +468,7 @@ std::vector<sf::Vector2f> Level::getWalkablePositions() const
 	{
 		for (std::size_t x = 0; x < m_fields[y].size(); ++x)
 		{
-			if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Walkable")
+            if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Walkable")
 			{
 				walkablePositions.push_back(m_fields[y][x].tilePosition);
 			}
@@ -442,4 +476,37 @@ std::vector<sf::Vector2f> Level::getWalkablePositions() const
 	}
 
 	return walkablePositions;
+}
+
+std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
+{
+    std::vector<sf::Vector2f> unbreakablePositions;
+
+    for (int32_t y = 0; y < m_fields.size(); ++y)
+    {
+        for (int32_t x = 0; x < m_fields[y].size(); ++x)
+        {
+            if (getTileInfos(x, y) == "Undestroyable")
+            {
+                unbreakablePositions.push_back(m_fields[y][x].tilePosition);
+            }
+        }
+    }
+
+    return unbreakablePositions;
+}
+
+const std::vector<std::shared_ptr<EnemyBase>>&  Level::getEnemies() const
+{
+    return m_generatedElements.enemies;
+}
+
+const std::vector<std::shared_ptr<Booster>>& Level::getBoosters() const
+{
+    return m_generatedElements.boosters;
+}
+
+const std::vector<std::shared_ptr<Obstacle>>& Level::getObstacles() const
+{
+    return m_generatedElements.obstacles;
 }

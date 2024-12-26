@@ -3,11 +3,11 @@
 #include <vector>
 #include <memory>
 
-class Enemy;
 class Obstacle;
 class Gate;
 class Key;
 class Booster;
+class UnbreakableObstacle;
 class EnemyBase;
 
 enum class GameLevelType
@@ -27,11 +27,12 @@ struct LevelConfigs
 
 struct GeneratedElements
 {
-	std::vector<std::shared_ptr<EnemyBase>> enemies;
-	std::vector<std::shared_ptr<Obstacle>> obstacles;
+    std::vector<std::shared_ptr<UnbreakableObstacle>> unbreakableObstacles;
+    std::vector<std::shared_ptr<Booster>>     boosters;
+    std::vector<std::shared_ptr<EnemyBase>>   enemies;
+    std::vector<std::shared_ptr<Obstacle>>    obstacles;
 	std::vector<std::shared_ptr<Gate>> gates;
 	std::vector<std::shared_ptr<Key>> keys;
-	std::vector<std::shared_ptr<Booster>> boosters;
     std::shared_ptr<std::vector<std::vector<bool>>> navGrid;
 };
 

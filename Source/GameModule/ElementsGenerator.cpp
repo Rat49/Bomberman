@@ -26,20 +26,18 @@ namespace
 	const std::string ATLAS_PATH = "atlasPath";
 	const std::string IS_LOOPING = "isLooping";
 	const std::string RENDER_DURATION = "renderDuration";
+    const std::string ANIMATION = "Animation";
 
 	const std::string OBSTACLE_RECT_NAME = "BreakableObstacle1";
-	const std::string OBSTACLE_PATH = "../../Data/Config/BreakableObstacle.ini";
 
 	const std::string KEY_RECT_NAME = "Key1";
-	const std::string KEY_PATH = "../../Data/Config/Key.ini";
 
 	const std::string GATE_RECT_NAME = "Gate1";
-	const std::string GATE_PATH = "../../Data/Config/Gate.ini";
 
-	const std::string SPEED_BOOSTER_RECT_NAME = "SpeedUpBooster";
-	const std::string SPEED_BOOSTER_PATH = "../../Data/Config/SpeedUpBooster.ini";
+	const std::string ELEMENTS_GENERATOR_PATH = "../../Data/Config/ElementsGenerator.ini";
 
 	const std::string ENEMY_RECT_NAME = "Enemy1";
+	
 	const std::string ENEMY_PATH = "../../Data/Config/Enemy1IdleAnimation.ini";
 
 	const std::string NAV_GRID_PATH = "Game/Levels/Level.csv";
@@ -50,36 +48,24 @@ ElementsGenerator::ElementsGenerator() : m_levelConfig{ GameLevelType::Easy, 5, 
 
 bool ElementsGenerator::initialize(const LevelConfigs& levelConfig)
 {
-	if (!parseConfigFile(OBSTACLE_PATH))
-	{
-		LOG("Failed to parse file: $", OBSTACLE_PATH);
-		return false;
-	}
-
-	if (!parseConfigFile(ENEMY_PATH))
-	{
-		LOG("Failed to parse file: $", ENEMY_PATH);
-		return false;
-	}
-
-	if (!parseConfigFile(KEY_PATH))
-	{
-		LOG("Failed to parse file: $", KEY_PATH);
-		return false;
-	}
-
-	if (!parseConfigFile(GATE_PATH))
-	{
-		LOG("Failed to parse file: $", GATE_PATH);
-		return false;
-	}
-
-	if (!parseConfigFile(SPEED_BOOSTER_PATH))
-	{
-		LOG("Failed to parse file: $", SPEED_BOOSTER_PATH);
-
-		return false;
-	}
+    Modules::Config->addFile(ELEMENTS_GENERATOR_PATH);
+    auto file = Modules::Config->getFile(ELEMENTS_GENERATOR_PATH);
+	
+	for (auto section : file.getAllSections())
+    {
+        auto sec = file.getSection(section);
+        if (sec.isValuePresent(ANIMATION))
+        {
+            auto path = sec.getValue(ANIMATION).getString();
+            if (!parseConfigFile(path))
+            {
+                LOG("Failed to parse file: $", path);
+                return false;
+            }
+        }
+        else
+            return false;
+    }
 
 	m_levelConfig = levelConfig;
 
@@ -303,12 +289,10 @@ std::vector<std::shared_ptr<Booster>> ElementsGenerator::generateBoosters(std::m
 				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
 			});
 
-		auto booster = std::make_shared<Booster>(BoosterType::Speed);
 
-		// Define, load, assign and set the specific texture and set the position of the booster in the game world
-		booster->setTexture(atlasTexture);
-		booster->setTextureRect(getTextureRect(SPEED_BOOSTER_RECT_NAME));
-		booster->setPosition((float)x, (float)y);
+		auto booster = createBooster((float)x, (float)y);
+
+        booster->setTexture(atlasTexture);
 
 		// Add the booster to the list of all gates
 		boosters.emplace_back((std::move(booster)));
@@ -321,6 +305,23 @@ std::vector<std::shared_ptr<Booster>> ElementsGenerator::generateBoosters(std::m
 	}
 
 	return boosters;
+}
+
+std::shared_ptr<Booster> ElementsGenerator::createBooster(float x, float y)
+{
+	constexpr int min = 0;
+    constexpr int max = static_cast<int>(BoosterType::MaxValue)-1;
+
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	std::uniform_int_distribution<> dis(min, max);
+
+	auto type = static_cast<BoosterType>(dis(gen));
+    
+    auto booster = std::make_shared<Booster>(type, x, y);
+	booster->setTextureRect(getTextureRect(booster->getTypeAsString()));
+
+    return booster;
 }
 
 std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std::mt19937& gen)

@@ -7,6 +7,7 @@
 #include <random>
 #include <set>
 #include <utility>
+#include "EventSystem/EventSystem.hpp"
 
 EnemyType EnemyBase::getType() const
 {
@@ -32,6 +33,7 @@ void EnemyBase::initializeDeath()
         Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
         Modules::Sprite->getAnimation(m_currentAnimationId)->setPosition(position);
         isEnemyDead = true;
+        isDeathInitialized = true;
     }
 }
 
@@ -62,6 +64,7 @@ bool EnemyBase::isDead() const
 {
     if (!Modules::Sprite->getAnimation(m_currentAnimationId)->isPlaying() && isEnemyDead)
     {
+        Modules::Events->emit(m_enemyDeathID, nullptr);
         return true;
     }
     return false;
@@ -70,4 +73,9 @@ bool EnemyBase::isDead() const
 void EnemyBase::updateVelocity(float deltaTime)
 {
     velocity = speed * deltaTime;
+}
+
+void EnemyBase::setCallbackID(EventID enemyDeathID)
+{
+    m_enemyDeathID = enemyDeathID;
 }

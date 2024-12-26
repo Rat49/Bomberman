@@ -47,7 +47,7 @@ void FollowState::Update(AIController* ai)
     auto         parent          = static_cast<Dahl*>(ai->getParent());
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
     sf::Vector2i parentPos       = {static_cast<int32_t>(collisionCenter.x - (m_dir.x * 32.f)) / TILE_SIZE, static_cast<int32_t>(collisionCenter.y - (m_dir.y * 32.f)) / TILE_SIZE};
-    sf::Vector2i playerPos       = static_cast<sf::Vector2i>(parent->getPlayerPos()) / TILE_SIZE;
+    sf::Vector2i playerPos       = (sf::Vector2i(parent->getPlayerPos()) + sf::Vector2i(20, 20)) / TILE_SIZE;
     m_currentPos                 = parentPos;
 
     parent->m_navModule->algorithm->navigate({playerPos.y , playerPos.x});
@@ -58,8 +58,13 @@ void FollowState::Update(AIController* ai)
     }
 
     m_dir = {static_cast<float>(m_moveTo.y - parentPos.x), static_cast<float>(m_moveTo.x - parentPos.y)};
-    parent->setPosition({parent->getPosition().x + (m_dir.x * parent->getVelocity()), parent->getPosition().y + (m_dir.y * parent->getVelocity())});
-    parent->getCollisionBox().setRectangleProperties(parent->getPosition(), {64.f, 64.f});
+    if (!parent->getIsDeathInitialized())
+    {
+        parent->setPosition({parent->getPosition().x + (m_dir.x * parent->getVelocity()),
+                             parent->getPosition().y + (m_dir.y * parent->getVelocity())});
+        parent->getCollisionBox().setRectangleProperties(parent->getPosition(), {64.f, 64.f});
+    }
+
 
     if (!FloatUtils::areVectorsEqual(m_dir, m_currentDir))
     {
@@ -70,7 +75,7 @@ void FollowState::Update(AIController* ai)
     auto now     = std::chrono::steady_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - m_startTime).count();
 
-    if (!FloatUtils::areVectorsEqual(m_dir, LEFT) && !FloatUtils::areVectorsEqual(m_dir, RIGHT) && elapsed > ANIMATION_CHANGE_TIME)
+    if (!parent->getIsDeathInitialized() && !FloatUtils::areVectorsEqual(m_dir, LEFT) && !FloatUtils::areVectorsEqual(m_dir, RIGHT) && elapsed > ANIMATION_CHANGE_TIME)
     {
         m_startTime = std::chrono::steady_clock::now();
         switchAnimation(parent);

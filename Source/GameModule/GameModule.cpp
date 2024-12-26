@@ -5,6 +5,7 @@
 #include "EventSystem/EventSystem.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "SoundSystem/SoundSystem.hpp"
+#include "EventSystem/EventTypes.hpp"
 #include "HUD.hpp"
 #include "MainMenu.hpp"
 #include "StageScreen.hpp"
@@ -36,7 +37,6 @@ namespace {
 	const std::string GAME_TIME = "gameTime";
 	const std::string STAGE = "stage";
 
-	
 }
 
 using Time = std::chrono::high_resolution_clock;
@@ -54,6 +54,11 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_OPTIONS);
     Modules::Config->addFile(PATH_GAMEOVER);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
+
+	GAME_TIMER_FINISHED = Modules::Events->registerEvent();
+    QUEST_FAILED        = Modules::Events->registerEvent();
+    PLAYER_DESTROYED    = Modules::Events->registerEvent();
+    OBJECTIVE_COMPLETED = Modules::Events->registerEvent();
 
 	//load and set current base level
 	currentLevel = Modules::Level->loadLevel(BASE_LEVEL);
@@ -96,12 +101,14 @@ bool GameModule::initialize()
 	auto hudScreen = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
     hudScreen->setTime(std::to_string(gameTime));
 
-
 	if (!player.init())
 	{
 		LOG("Failed to initialize PlayerCharacter.");
 		return false;
 	}
+
+	gameStats = std::make_unique<GameStats>();
+    gameStats->initialize(Modules::Level->getCurrentLevel());
 
 	return true;
 }
@@ -163,21 +170,26 @@ void GameModule::run()
         Modules::Tests->update(deltaTime, &window);
 #endif
 		updateBoosters();
-
+		//gameStats->updateLevelStats();
 		window.clear(screens[currentScreen]->getBackgroundColor());
-		if(currentScreen == Screens::LEVEL) 
-		{
-			sf::View tempView = screens[currentScreen]->getWindow()->getView();
-			Modules::update(deltaTime, &window);
-			Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
+        if (currentScreen == Screens::LEVEL)
+        {
+            sf::View tempView = screens[currentScreen]->getWindow()->getView();
+            Modules::update(deltaTime, &window);
+            Modules::Level->setLevelViewOffset(player.getCurrentPosition(), *screens[currentScreen]->getWindow());
 
-			player.updateVelocity(deltaTime);
-			player.updateBombs(deltaTime);
-			player.drawBombs(window);
+            player.updateVelocity(deltaTime);
+
+            Modules::Physics->updateCollision();
+
+            player.updateBombs(deltaTime);
+            player.drawBombs(window);
 
 			window.draw(*player.getCurrentAnimation());
-			player.setIsUpdated(false);
+            player.setIsUpdated(false);
 
+			Modules::Physics->updateCollision();
+			
 			for (const auto& enemyPtr : Modules::Level->getCurrentLevelPtr()->getEnemies())
             {
 				// Cast to the derived type (e.g., Enemy)
@@ -192,11 +204,16 @@ void GameModule::run()
             }
 
 			screens[currentScreen]->getWindow()->setView(tempView);
+            std::static_pointer_cast<HUD>(screens[Screens::LEVEL])->setScore(std::to_string(gameStats->getPoints()));
 
-			if (isPaused) {
-				screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
-			}
-		}
+            screens[currentScreen]->getWindow()->setView(tempView);
+
+
+            if (isPaused)
+            {
+                screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
+            }
+        }
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
         window.display();
     }
@@ -204,6 +221,7 @@ void GameModule::run()
 
 void GameModule::terminate()
 {
+    gameStats->terminate();
 }
 
 void GameModule::setCurrentScreen(const Screens& newScreen)
@@ -240,8 +258,10 @@ void GameModule::checkTimeCounter()
 		}
         if (gameTime < 0)
         {
-			// Changing screen to game over, for now here
+            // Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
+
+            Modules::Events->emit(GameModule::GAME_TIMER_FINISHED, nullptr);
         }
 		break;
 	case Screens::STAGE:
@@ -255,12 +275,12 @@ void GameModule::checkTimeCounter()
 
 void GameModule::updateBoosters()
 {
-	auto boostersIterator = m_boosters.begin();
+    auto boostersIterator = m_boosters.begin();
 	while (boostersIterator != m_boosters.end())
 	{
-		if (boostersIterator->second->shoulRemoveEffect())
+		if ((*boostersIterator)->shouldRemoveEffect())
 		{
-			if (boostersIterator->second->removeEffect(player))
+			if ((*boostersIterator)->removeEffect(player))
 			{
 				boostersIterator = m_boosters.erase(boostersIterator);
 				continue;
@@ -288,13 +308,9 @@ float GameModule::getHUDHeight()
 
 void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
 {
-	auto id = newBooster->getBoosterID();
-	auto it = m_boosters.find(id);
-	if (it == m_boosters.end())
-	{
-		it = m_boosters.insert({ id, newBooster }).first;
-	}
-	it->second->applyEffect(player);
+	m_boosters.push_back(newBooster);
+	
+	newBooster->applyEffect(player);
 }
 
 void GameModule::removeAllBoosters()

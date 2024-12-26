@@ -2,6 +2,7 @@
 
 #include "CollisionModule/CollisionObject.hpp"
 #include <SFML/Graphics.hpp>
+#include <unordered_set>
 
 class CollisionRectangle
 {
@@ -48,15 +49,23 @@ public:
 
 	// Returns a center of rectangle
 	sf::Vector2f getCenter();
-protected:
+
 	// Function to check if this rectangle overlaps with another
-	const bool isOverlapping(CollisionRectangle& other);
+	bool isOverlapping(CollisionRectangle& other);
+
+	int getId() { return id; }
+
+protected:
+
+	int id;
 
 	//collision rectangle
 	sf::RectangleShape rectangle;
 
 	//is currently overlapping something
 	bool isOverlapped = false;
+
+	std::unordered_set<int> idOverlappedObjects;
 
 	//pointer to the parent object/component
 	void* parentComponent;
