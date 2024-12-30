@@ -336,10 +336,10 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	}
 	
 	for (const auto& booster : m_generatedElements.boosters)
-	{
+    {
         target.draw(*booster, states);
         target.draw(booster->getCollisionBox().getRectangle(), states);
-	}
+    }
 
 	for (const auto& obstacle : m_generatedElements.obstacles)
 	{
@@ -360,6 +360,7 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         if ((*boostersIterator)->getIsPickedUp())
         {
             Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            (*boostersIterator)->emitCallback();
             boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
         }
         else

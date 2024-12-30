@@ -6,12 +6,13 @@
 
 namespace
 {
-    const int32_t RAYCAST_OFFSET = 31;
+    const int32_t RAYCAST_OFFSET = 30;
     const int32_t PARENT_OFFSET  = 64;
     const int32_t TILE_SIZE      = 64;
-    const float RAYCAST_LENGTH   = 4.f;
+    const float RAYCAST_LENGTH   = 17.f;
     const int32_t ANIMATION_CHANGE_TIME = 2;
-}
+    const float   COLLISION_SIZE        = 64.f;
+    }
 
 /*
  * look right state 
@@ -23,8 +24,7 @@ void PatrollingState::Enter(AIController* ai)
     parent->playRightAnimation();
     startTime = std::chrono::steady_clock::now();
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
-    sf::Vector2i parentPosition  = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
-                                    static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
+    sf::Vector2i parentPosition  = static_cast<sf::Vector2i>(parent->getPosition()) / TILE_SIZE;
 
     ai->setIsPlayerInRange(false);
 
@@ -32,7 +32,7 @@ void PatrollingState::Enter(AIController* ai)
     for (const auto& direction : directions)
     {
         sf::Vector2f endPoint;
-        sf::Vector2f raycastStartingPos = collisionCenter + direction * static_cast<float>(RAYCAST_OFFSET);
+        sf::Vector2f raycastStartingPos = collisionCenter + (direction * static_cast<float>(RAYCAST_OFFSET));
 
         bool isNotColiding = Modules::Physics->rayCast(raycastStartingPos, direction, RAYCAST_LENGTH, endPoint) == nullptr;
         isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
@@ -52,13 +52,11 @@ void PatrollingState::Update(AIController* ai)
 
     auto parent  = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f endPoint;
+
+    parent->getCollisionBox().setRectangleProperties(parent->getPosition() /*+ sf::Vector2f(2.f, 2.f)*/, {COLLISION_SIZE, COLLISION_SIZE});
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
-    parent->getCollisionBox().setRectangleProperties(parent->getPosition() + sf::Vector2f(2.f, 2.f) , {60.f, 60.f});
     sf::Vector2f parentPosition = parent->getPosition();
-    sf::Vector2f raycastStartingPos = {collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET), 
-                                       collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET)};
-    sf::Vector2i parentPosition2     = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
-                                       static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
+    sf::Vector2f raycastStartingPos = collisionCenter + (directions[m_currentDirection] *  static_cast<float>(RAYCAST_OFFSET));
 
     auto obstacleComponent = Modules::Physics->rayCast(raycastStartingPos, directions[m_currentDirection], RAYCAST_LENGTH, endPoint);
     bool isNotColiding = obstacleComponent == nullptr;
