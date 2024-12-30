@@ -78,3 +78,8 @@ void Booster::setCallbackID(EventID boosterPickupID)
 {
 	m_boosterPickupID = boosterPickupID;
 }
+
+void Booster::emitCallback() const
+{
+    Modules::Events->emit(m_boosterPickupID, nullptr);
+}
