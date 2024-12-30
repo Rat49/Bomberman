@@ -24,7 +24,7 @@ const sf::RectangleShape& CollisionRectangle::getRectangle() const {
 void CollisionRectangle::setRectangleProperties(const sf::Vector2f& position, const sf::Vector2f& size) {
 	rectangle.setPosition(position);
 	rectangle.setSize(size);
-    rectangle.setFillColor(sf::Color(0, 0, 0, 150));
+    rectangle.setFillColor(sf::Color(50, 100, 50, 150));
 }
 
 // setting a fill color of a rectangle
@@ -33,18 +33,19 @@ void CollisionRectangle::setColor(const sf::Color& color) {
 }
 
 //updates overlap status and calls handlers if needed
-void CollisionRectangle::update(CollisionRectangle& other) {
+bool CollisionRectangle::update(CollisionRectangle& other) {
     bool isCurrentlyOverlapping = isOverlapping(other);
     if (isCurrentlyOverlapping && idOverlappedObjects.count(other.getId()) == 0)
     {
         idOverlappedObjects.insert(other.getId());
-        BeginOverlapHandler(&other); // Trigger BeginOverlap handler
+        return BeginOverlapHandler(&other); // Trigger BeginOverlap handler
+            
     }
     else if (!isCurrentlyOverlapping && idOverlappedObjects.count(other.getId()) > 0)
     {
         idOverlappedObjects.erase(other.getId());
-        EndOverlapHandler(&other); // Trigger EndOverlap handler
     }
+    return false;
 }
 
 // Returns a center of rectangle

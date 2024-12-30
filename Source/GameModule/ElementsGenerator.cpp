@@ -5,8 +5,8 @@
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
-#include "GameModule/Key.hpp"
 #include "GameModule/Booster.hpp"
+#include "GameModule/GameModule.hpp"
 #include "Common/Modules.hpp"
 #include "Common/Logs.hpp"
 #include <set>
@@ -85,7 +85,6 @@ const GeneratedElements& ElementsGenerator::generateElements(const std::vector<s
     auto               vec          = generateNavGrid(NAV_GRID_PATH);
     grid                            = std::make_shared<std::vector<std::vector<bool>>>(vec);
 	m_generatedElements.obstacles	= generateObstacles(gen);
-	m_generatedElements.keys		= generateKeys(gen, atlasTexture);
 	m_generatedElements.enemies		= generateEnemies(gen);
 	m_generatedElements.gates		= generateGates(gen, atlasTexture);
 	m_generatedElements.boosters	= generateBoosters(gen, atlasTexture);
@@ -158,58 +157,6 @@ std::vector<std::shared_ptr<Obstacle>> ElementsGenerator::generateObstacles(std:
 	return obstacles;
 }
 
-std::vector<std::shared_ptr<Key>> ElementsGenerator::generateKeys(std::mt19937& gen, const sf::Texture& atlasTexture)
-{
-	//temp keys
-	std::vector<std::shared_ptr<Key>> keys;
-
-	// Shuffle the remaining positions to randomize obstacle placement
-	std::shuffle(breakableObstaclesPositions.begin(), breakableObstaclesPositions.end(), gen);
-
-	// Generate one key per level
-	int32_t numKeys = 1;
-
-	// Iterate through the shuffled free positions
-	for (auto it = breakableObstaclesPositions.begin(); it != breakableObstaclesPositions.end();)
-	{
-		// Stop if the required number of keys have been placed
-		if (keys.size() >= numKeys)
-		{
-			break;
-		}
-
-		// Extract the x and y coordinates from the current position
-		int32_t x = static_cast<int32_t>(it->x);
-		int32_t y = static_cast<int32_t>(it->y);
-
-		// Check if the position is under a breakable object
-		auto found = std::find_if(
-			breakableObstaclesPositions.begin(),
-			breakableObstaclesPositions.end(),
-			[x, y](const sf::Vector2f& pos) {
-				return static_cast<int32_t>(pos.x) == x && static_cast<int32_t>(pos.y) == y;
-			});
-
-		// Create a new key at the current position
-        auto key = std::make_shared<Key>(sf::Vector2i(x, y));
-
-		// Define, load, assign and set the specific texture and set the position of the key in the game world
-		key->setTexture(atlasTexture);
-		key->setTextureRect(getTextureRect(KEY_RECT_NAME));
-		key->setPosition((float)x, (float)y);
-
-		// Add the gate to the list of all keys
-		keys.emplace_back((std::move(key)));
-
-		if (found != breakableObstaclesPositions.end())
-		{
-			it = breakableObstaclesPositions.erase(it);
-		}
-	}
-
-	return keys;
-}
-
 std::vector<std::shared_ptr<Gate>> ElementsGenerator::generateGates(std::mt19937& gen, const sf::Texture& atlasTexture)
 {
 	//temp gates
@@ -241,12 +188,11 @@ std::vector<std::shared_ptr<Gate>> ElementsGenerator::generateGates(std::mt19937
 			});
 
 		// Create a new breakable obstacle at the current position
-        auto gate = std::make_shared<Gate>(sf::Vector2i(x, y), false, m_generatedElements.keys[0]);
+        auto gate = std::make_shared<Gate>(sf::Vector2f(it->x, it->y));
 
 		// Define, load, assign and set the specific texture and set the position of the obstacle in the game world
 		gate->setTexture(atlasTexture);
-		gate->setTextureRect(getTextureRect(GATE_RECT_NAME));
-		gate->setPosition((float)x, (float)y);
+        gate->setTextureRect(getTextureRect(GATE_RECT_NAME));
 
 		// Add the gate to the list of all gates
 		gates.emplace_back((std::move(gate)));
@@ -348,6 +294,13 @@ std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std:
 	// Counter to track how many enemies have been placed
 	int32_t placedEnemies = 0;
 
+	auto currentStage = Modules::Game->getCurrentStage() - 1;
+    float              levelFactor  = static_cast<float>(currentStage) / Modules::Game->getMaxStage();
+    std::vector<float> weights      = {
+        1.0f + 6.0f * levelFactor, // Weight for type 1
+        3.0f * levelFactor,			// Weight for type 2
+        levelFactor					// Weight for type 3
+    };
 	// Iterate through the shuffled free positions
 	for (auto it = freePositions.begin(); it != freePositions.end();)
 	{
@@ -364,7 +317,14 @@ std::vector <std::shared_ptr<EnemyBase>> ElementsGenerator::generateEnemies(std:
 		// Increment the counter for placed enemy
 		++placedEnemies;
         std::shared_ptr<EnemyBase> enemy;
-        int32_t enemyType = 1 + std::rand() % 3;
+
+		std::random_device  rd;
+        std::mt19937 gen2(rd());
+
+        // Create distribution
+        std::discrete_distribution<int> dist(weights.begin(), weights.end());
+        int32_t enemyType = dist(gen2) + 1;
+		
         switch (enemyType)
         {
             case 1:

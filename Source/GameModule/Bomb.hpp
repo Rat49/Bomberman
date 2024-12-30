@@ -52,6 +52,8 @@ private:
 
 	float gridSize = 64.0f;
 
+	float collisionBoxSize = 50.f;
+
 	// Bomb position
 	sf::Vector2f position;
 

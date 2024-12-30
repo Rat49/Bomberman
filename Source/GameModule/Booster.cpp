@@ -19,7 +19,8 @@ Booster::Booster(BoosterType type, float x, float y) : type(type)
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(64.0f, 64.0f));
+    collisionBox->setRectangleProperties((getPosition() + sf::Vector2f((gridSize - collisionBoxSize) / 2, (gridSize - collisionBoxSize) / 2)),
+                                         sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
 // A function that returns the name of the booster type as a string

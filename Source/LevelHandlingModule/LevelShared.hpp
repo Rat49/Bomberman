@@ -5,7 +5,6 @@
 
 class Obstacle;
 class Gate;
-class Key;
 class Booster;
 class UnbreakableObstacle;
 class EnemyBase;
@@ -32,7 +31,6 @@ struct GeneratedElements
     std::vector<std::shared_ptr<EnemyBase>>   enemies;
     std::vector<std::shared_ptr<Obstacle>>    obstacles;
 	std::vector<std::shared_ptr<Gate>> gates;
-	std::vector<std::shared_ptr<Key>> keys;
     std::shared_ptr<std::vector<std::vector<bool>>> navGrid;
 };
 

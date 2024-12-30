@@ -35,7 +35,8 @@ void PhysicsModule::updateCollision()
         for (auto& it2: physicsObjects)
         {
             if (it1.first != it2.first)
-				it1.second->update(*it2.second);
+                if (it1.second->update(*it2.second))
+                    return;
         }
     }
 }

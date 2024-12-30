@@ -69,16 +69,20 @@ public:
 
 	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
 
-	void handleEnemyOverlap(EnemyBase* enemy);
+	bool handleGateOverlap();
 
 	void handleObstacleOverlap(bool begin);
 
 	void handleBoosterOverlap(Booster* booster);
 
+	void die();
+
+	void resetToStart();
+
 private:
 	int32_t currentAnimation = -1;
-	float x = 72.f;
-	float y = 72.f;
+	float x = 64.f;
+	float y = 64.f;
 	float speed = 0.f;
 	int32_t maxBombs;
     int32_t bombCapacity;
@@ -106,6 +110,7 @@ private:
 	int32_t rightId;
 	int32_t upId;
 	int32_t downId;
+    int32_t deathId;
 
 	std::unique_ptr<PlayerCollisionComponent> collisionBox;
 
@@ -116,6 +121,7 @@ private:
 	std::vector<std::shared_ptr<Bomb>> activeBombs;
 
 	bool m_isUpdated = true;
+    bool m_died      = false;
 
 	bool isInvincible = false;
 	std::chrono::time_point<std::chrono::high_resolution_clock> invincibilityStartTime;

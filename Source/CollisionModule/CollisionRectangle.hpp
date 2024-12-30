@@ -12,10 +12,10 @@ public:
 	CollisionRectangle(const sf::Vector2f& position, const sf::Vector2f& size);
 
 	//updates overlap status and calls handlers if needed
-	void update(CollisionRectangle&);
+	bool update(CollisionRectangle&);
 
 	//event handlers
-	virtual void BeginOverlapHandler(void*) {};
+	virtual bool BeginOverlapHandler(void*) { return false; };
 
 	virtual void EndOverlapHandler(void*) {};
 

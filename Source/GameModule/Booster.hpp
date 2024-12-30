@@ -40,7 +40,9 @@ private:
 
 	BoosterType type;
 	
-	//sf::Vector2i boosterPosition;
+	float collisionBoxSize = 50.0f;
+
+	float gridSize = 64.0f;
 	
 	EventID m_boosterPickupID = -1;
 	

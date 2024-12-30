@@ -18,5 +18,5 @@ void StageScreen::setStage(int32_t newStage)
 {
 	auto stageLabel = std::dynamic_pointer_cast<UILabel>(getElement(STAGE));
 	if (stageLabel)
-		stageLabel->setText(STAGE + std::to_string(newStage));
+        stageLabel->setText(STAGE + " " + std::to_string(newStage));
 }

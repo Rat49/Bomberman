@@ -10,7 +10,7 @@ public:
 	
 	~CollisionComponent();
 	//event handlers
-    void BeginOverlapHandler(void*) override;
+    bool BeginOverlapHandler(void*) override;
 
 	void EndOverlapHandler(void*) override;
 };

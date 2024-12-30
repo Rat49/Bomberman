@@ -6,6 +6,7 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "GameModule/GameModule.hpp"
 #include "Common/Directions.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 #include "Booster.hpp"
 #include <thread>
 #include <chrono>
@@ -83,6 +84,7 @@ bool PlayerCharacter::init()
 	rightId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationRight.ini");
 	upId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationUp.ini");
 	downId = Modules::Sprite->createAnimation("../../Data/Config/PlayerAnimationDown.ini");
+    deathId = Modules::Sprite->createAnimation("../../Data/Config/PlayerDeathAnimation.ini");
 
 	if (leftId <= 0 || rightId <= 0 || upId <= 0 || downId <= 0)
 	{
@@ -102,13 +104,15 @@ bool PlayerCharacter::init()
 		LOG("Failed to play initial animation.");
 		return false;
 	}
+
+    Modules::Sounds->addSound(3, "Game/Sounds/BombermanSFX4.wav");
 	return true;
 }
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
 
-	if (!Modules::Game->getIsPaused())
+	if (!Modules::Game->getIsPaused() && !m_died)
     {
         sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
         currentDirection   = state;
@@ -140,9 +144,14 @@ void PlayerCharacter::onMove(void* axis2DState)
     }
 }
 
-void PlayerCharacter::handleEnemyOverlap(EnemyBase* )
+bool PlayerCharacter::handleGateOverlap()
 {
-	// loose life...
+    // If all enemies are dead
+    if (Modules::Level->getCurrentLevel()->getEnemies().size() == 0) {
+        Modules::Game->nextLevel();
+        return true;
+    }
+    return false;
 }
 
 void PlayerCharacter::handleObstacleOverlap(bool)
@@ -169,8 +178,43 @@ void PlayerCharacter::handleObstacleOverlap(bool)
 
 void PlayerCharacter::handleBoosterOverlap(Booster* booster)
 {
+    Modules::Sounds->playSound(3);
     LOG("Picked up: $", booster->getTypeAsString());
     Modules::Game->addBooster(booster->getBoosterComponent());
+}
+
+void PlayerCharacter::die()
+{
+    Modules::Sprite->getAnimation(currentAnimation)->Stop();
+    m_died = true;
+
+    if (auto animation = Modules::Sprite->getAnimation(deathId))
+    {
+        animation->setPosition(x, y);
+        animation->Play();
+        currentAnimation = deathId;
+    }
+}
+
+void PlayerCharacter::resetToStart()
+{
+    x = gridSize;
+    y = gridSize;
+
+    collisionBox->setRectangleProperties(getCurrentPosition() + sf::Vector2f(0.f, (gridSize - collisionBoxSize) / 2),
+                                         sf::Vector2f(collisionBoxSize, collisionBoxSize));
+
+
+    m_died = false;
+
+    currentAnimation = downId;
+    activeBombs.clear();
+
+    if (const auto& animation = Modules::Sprite->getAnimation(downId))
+    {
+        animation->Play();
+        updateAnimation(downId);
+    }
 }
 
 void PlayerCharacter::onBombPlant(void* state)
@@ -275,13 +319,17 @@ void PlayerCharacter::updateAnimation(int32_t id)
 
 std::shared_ptr<Animation> PlayerCharacter::getCurrentAnimation() const
 {
-	if (!m_isUpdated)
+	if (m_isUpdated || m_died)
 	{
-		Modules::Sprite->getAnimation(currentAnimation)->Pause();
+        Modules::Sprite->getAnimation(currentAnimation)->Resume();
 	}
 	else {
-		Modules::Sprite->getAnimation(currentAnimation)->Resume();
+        Modules::Sprite->getAnimation(currentAnimation)->Pause();
 	}
+    if (m_died && !Modules::Sprite->getAnimation(currentAnimation)->isPlaying())
+    {
+        Modules::Game->playerDied();
+    }
 	return Modules::Sprite->getAnimation(currentAnimation);
 }
 

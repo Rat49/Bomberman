@@ -68,10 +68,8 @@ bool LevelHandlingModule::unloadLevel(LevelId levelId)
 		LOG("Level does not exist with level id : " + std::to_string(levelId));
 		return false;
 	}
-
-	// Reset the level and remove it from the map
-	it->second.reset();
-	m_levels.erase(it);
+    // Erase elements from physics module
+    it->second->eraseEverything();
 
 	return true;
 }

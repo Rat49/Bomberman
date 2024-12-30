@@ -36,8 +36,9 @@ namespace {
 	const std::string FONT = "font";
 	const std::string GAME_TIME = "gameTime";
 	const std::string STAGE = "stage";
-
-}
+    const std::string LIVES= "lives";
+	const std::string MAX_STAGE= "maxStage";
+    }
 
 using Time = std::chrono::high_resolution_clock;
 using Duration = std::chrono::duration<float, std::micro>;
@@ -65,7 +66,7 @@ bool GameModule::initialize()
 	Modules::Level->setCurrentLevel(currentLevel);
 
 	//set elements on level
-	if (!Modules::Level->setUpElementsOnLevel(elementsId))
+	if (!Modules::Level->setUpElementsOnLevel(currentStage))
 		return false;
 
 	if (!windowInfo.isSectionPresent(WINDOW))
@@ -81,7 +82,10 @@ bool GameModule::initialize()
 	gameTitle = windowSection.getValue(TITLE).getString();
 	const std::string& font = windowSection.getValue(FONT).getString();
 	gameTime = windowSection.getValue(GAME_TIME).getInt32();
+	maxStage = windowSection.getValue(MAX_STAGE).getInt32();
+	startingTime = gameTime;
 	currentStage = windowSection.getValue(STAGE).getInt32();
+    livesLeft = currentStage + 1;
 
 	// Creating Window and HUD
 	window.create(sf::VideoMode(width, height), gameTitle, sf::Style::Close);
@@ -100,6 +104,7 @@ bool GameModule::initialize()
 
 	auto hudScreen = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
     hudScreen->setTime(std::to_string(gameTime));
+    hudScreen->setLivesLeft(std::to_string(livesLeft));
 
 	if (!player.init())
 	{
@@ -109,7 +114,8 @@ bool GameModule::initialize()
 
 	gameStats = std::make_unique<GameStats>();
     gameStats->initialize(Modules::Level->getCurrentLevel());
-
+    Modules::Sounds->addMusic(1, "Game/Sounds/bgSound.wav");
+    Modules::Sounds->playMusic(1);
 	return true;
 }
 
@@ -258,6 +264,7 @@ void GameModule::checkTimeCounter()
 		}
         if (gameTime < 0)
         {
+            (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
             // Changing screen to game over, for now here
             setCurrentScreen(Screens::GAME_OVER);
 
@@ -311,6 +318,57 @@ void GameModule::addBooster(std::shared_ptr<BoosterComponent> newBooster)
 	m_boosters.push_back(newBooster);
 	
 	newBooster->applyEffect(player);
+}
+
+void GameModule::playerDied()
+{
+    if (--livesLeft >= 0)
+    {
+        auto hud = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
+        
+		hud->setLivesLeft(std::to_string(livesLeft));
+        gameTime = startingTime;
+        hud->setTime(std::to_string(gameTime));
+
+        player.resetToStart();
+
+		Modules::Level->unloadLevel(currentLevel);
+        Modules::Level->setUpElementsOnLevel(currentStage);
+
+        setCurrentScreen(Screens::STAGE);
+		//generate new level, same difficulty
+	}
+    else
+    {
+        (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
+        setCurrentScreen(Screens::GAME_OVER);
+	}
+}
+
+void GameModule::nextLevel()
+{
+    if (++currentStage > maxStage)
+    {
+        (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
+        setCurrentScreen(Screens::GAME_OVER);
+        return;
+	}
+    gameTime = startingTime;
+
+    livesLeft = currentStage + 1;
+
+    auto hud = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
+    hud->setLivesLeft(std::to_string(livesLeft));
+    hud->setTime(std::to_string(gameTime));
+
+	Modules::Level->unloadLevel(currentLevel);
+    Modules::Level->setUpElementsOnLevel(currentStage);
+
+    player.resetToStart();
+
+	(std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]))->setStage(currentStage);
+    setCurrentScreen(Screens::STAGE);
+    Modules::Sounds->playMusic(1);
 }
 
 void GameModule::removeAllBoosters()

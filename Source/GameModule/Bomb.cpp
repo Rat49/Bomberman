@@ -10,8 +10,6 @@ Bomb::Bomb()
 	collisionBox = std::make_unique<CollisionComponent>();
 
 	collisionBox->setObjectParent(this);
-
-	collisionBox->setRectangleProperties(position, sf::Vector2f(gridSize - 8.0f, gridSize - 8.0f));
 }
 
 bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius, float newTimer)
@@ -58,6 +56,10 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 	this->explosionRadius = newExplosionRadius;
 	this->timer = newTimer;
 
+	collisionBox->setRectangleProperties(position + sf::Vector2f((gridSize - collisionBoxSize) / 2,
+                                                                 (gridSize - collisionBoxSize) / 2),
+                                         sf::Vector2f(collisionBoxSize, collisionBoxSize));
+
 	return true;
 }
 
@@ -82,9 +84,8 @@ void Bomb::update(float deltaTime, bool canDetonate)
 
     if (timer < 0.0f)
     {
-		Modules::Physics->deleteObject(collisionBox.get());
+        Modules::Physics->deleteObject(collisionBox.get());
         explode();
-
     }
 }
 
@@ -222,12 +223,11 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
         }
         else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitResult.first->getObjectParent()))
         {
-            LOG("PLAYER!");
+            hitPlayer->die();
         }
         else if (auto* hitEnemy = dynamic_cast<EnemyBase*>(hitResult.first->getObjectParent()))
         {
             hitEnemy->initializeDeath();
-            LOG("ENEMY!");
         }
     }
 

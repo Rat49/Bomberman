@@ -6,7 +6,6 @@
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
 #include "GameModule/UnbreakableObstacle.hpp"
-#include "GameModule/Key.hpp"
 #include "GameModule/EnemyBase.hpp"
 #include "GameModule/Booster.hpp"
 #include "Common/Modules.hpp"
@@ -228,7 +227,6 @@ bool Level::setUpElements(int32_t levelElementsId)
 
 	//store generated elements on level
 	addObstacles(generatedElements.obstacles);
-	addKeys(generatedElements.keys);
 	addGates(generatedElements.gates);
 	addBoosters(generatedElements.boosters);
     addEnemies(generatedElements.enemies);
@@ -270,14 +268,6 @@ void Level::addGates(const std::vector<std::shared_ptr<Gate>>& gates)
 	for (const auto& gate : gates)
 	{
 		m_generatedElements.gates.push_back(gate);
-	}
-}
-
-void Level::addKeys(const std::vector<std::shared_ptr<Key>>& keys)
-{
-	for (const auto& key : keys)
-	{
-		m_generatedElements.keys.push_back(key);
 	}
 }
 
@@ -325,31 +315,25 @@ void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
         }
     }
 
-	for (const auto& key : m_generatedElements.keys)
-	{
-		target.draw(*key, states);
-	}
+    for (const auto& gate : m_generatedElements.gates)
+    {
+        target.draw(*gate, states);
+    }
 
-	for (const auto& gate: m_generatedElements.gates)
-	{
-		target.draw(*gate, states);
-	}
-	
-	for (const auto& booster : m_generatedElements.boosters)
-	{
+    for (const auto& booster : m_generatedElements.boosters)
+    {
         target.draw(*booster, states);
-        target.draw(booster->getCollisionBox().getRectangle(), states);
-	}
+    }
 
-	for (const auto& obstacle : m_generatedElements.obstacles)
-	{
+    for (const auto& obstacle : m_generatedElements.obstacles)
+    {
         target.draw(*obstacle->getCurrentAnimation(), states);
-	}
+    }
 
-	for (const auto& enemy : m_generatedElements.enemies)
-	{
+    for (const auto& enemy : m_generatedElements.enemies)
+    {
         target.draw(*enemy->getCurrentAnimation(), states);
-	}	
+    }
 }
 
 void Level::update(sf::RenderWindow* window, float deltaTime)
@@ -376,6 +360,7 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         enemy->updateVelocity(deltaTime);
         if (enemy->isDead())
         {
+            Modules::Physics->deleteObject(&(*enemy_it)->getCollisionBox());
             enemy_it = m_generatedElements.enemies.erase(enemy_it);
         }
         else
@@ -509,4 +494,42 @@ const std::vector<std::shared_ptr<Booster>>& Level::getBoosters() const
 const std::vector<std::shared_ptr<Obstacle>>& Level::getObstacles() const
 {
     return m_generatedElements.obstacles;
+}
+
+void Level::eraseEverything()
+{
+    auto boostersIterator = m_generatedElements.boosters.begin();
+    while (boostersIterator != m_generatedElements.boosters.end())
+    {
+        Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+        boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
+    }
+
+	auto obstaclesIterator = m_generatedElements.obstacles.begin();
+    while (obstaclesIterator != m_generatedElements.obstacles.end())
+    {
+        Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
+        obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
+    }
+
+	auto obstacles2Iterator = m_generatedElements.unbreakableObstacles.begin();
+    while (obstacles2Iterator != m_generatedElements.unbreakableObstacles.end())
+    {
+        Modules::Physics->deleteObject(&(*obstacles2Iterator)->getCollisionBox());
+        obstacles2Iterator = m_generatedElements.unbreakableObstacles.erase(obstacles2Iterator);
+    }
+
+    auto enemiesIterator = m_generatedElements.enemies.begin();
+    while (enemiesIterator != m_generatedElements.enemies.end())
+    {
+        Modules::Physics->deleteObject(&(*enemiesIterator)->getCollisionBox());
+        enemiesIterator = m_generatedElements.enemies.erase(enemiesIterator);
+    }
+
+	auto gatesIterator = m_generatedElements.gates.begin();
+    while (gatesIterator != m_generatedElements.gates.end())
+    {
+        Modules::Physics->deleteObject(&(*gatesIterator)->getCollisionBox());
+        gatesIterator = m_generatedElements.gates.erase(gatesIterator);
+    }
 }

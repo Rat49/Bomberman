@@ -49,9 +49,15 @@ public:
 
 	int32_t getCurrentStage() const { return currentStage; }
 
+	int32_t getMaxStage() const { return maxStage; }
+
 	PlayerCharacter& getPlayerCharacter() { return player; }
 
 	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+
+	void playerDied();
+
+	void nextLevel();
 
 private:
 
@@ -76,11 +82,15 @@ private:
 
 	Screens currentScreen = Screens::MAIN_MENU;
 	
-	int32_t currentStage = 0;
+	int32_t currentStage = 1;
+
+	int32_t maxStage = -1;
+
+	int32_t livesLeft;
 	
 	int32_t gameTime;
 
-	int32_t elementsId = 1;
+	int32_t startingTime;
 
 	float timeCounter = 0.0f;
 

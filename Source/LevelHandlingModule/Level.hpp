@@ -13,7 +13,6 @@ class Obstacle;
 class EnemyBase;
 class Booster;
 class Gate;
-class Key;
 
 struct FieldInfo
 {
@@ -55,6 +54,8 @@ public:
 
 	const std::vector<std::shared_ptr<Obstacle>>& getObstacles() const;
 
+	void eraseEverything();
+
 private:
     //draws all the tiles in the level to the specified render target
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -75,8 +76,6 @@ private:
 	void addEnemies(const std::vector<std::shared_ptr<EnemyBase>>& enemies);
 
 	void addGates(const std::vector<std::shared_ptr<Gate>>& gates);
-
-	void addKeys(const std::vector<std::shared_ptr<Key>>& keys);
 
 	void addBoosters(const std::vector<std::shared_ptr<Booster>>& boosters);
 

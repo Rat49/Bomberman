@@ -12,7 +12,6 @@
 class Obstacle;
 class Booster;
 class Gate;
-class Key;
 
 class ElementsGenerator
 {
@@ -36,8 +35,6 @@ private:
 	std::vector<std::shared_ptr<EnemyBase>> generateEnemies(std::mt19937& gen);
 	
 	std::vector<std::shared_ptr<Gate>> generateGates(std::mt19937& gen, const sf::Texture& atlasTexture);
-	
-	std::vector<std::shared_ptr<Key>> generateKeys(std::mt19937& gen, const sf::Texture& atlasTexture);
 	
 	std::vector<std::shared_ptr<Booster>> generateBoosters(std::mt19937& gen, const sf::Texture& atlasTexture);
 
