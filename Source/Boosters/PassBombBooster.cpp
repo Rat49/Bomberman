@@ -2,23 +2,20 @@
 
 void PassBombBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-    playerCharacter.PassThroughBombs(true);
+    playerCharacter.setPassThroughBombs(true);
     m_isEffectDone = false;
-    startTime      = std::chrono::high_resolution_clock::now();
+    m_startTime    = std::chrono::high_resolution_clock::now();
 }
 
 bool PassBombBooster::removeEffect(PlayerCharacter& playerCharacter)
 {
-    auto now = std::chrono::high_resolution_clock::now();
-    if (std::chrono::duration<float>(now - startTime).count() >= m_duration)
-    {
-        playerCharacter.PassThroughBombs(false);
-        m_isEffectDone = true;
-    }
+    playerCharacter.setPassThroughBombs(false);
     return m_isEffectDone;
 }
 
 bool PassBombBooster::shouldRemoveEffect()
 {
+    auto now       = std::chrono::high_resolution_clock::now();
+    m_isEffectDone = std::chrono::duration<float>(now - m_startTime).count() >= m_duration;
     return m_isEffectDone;
 }

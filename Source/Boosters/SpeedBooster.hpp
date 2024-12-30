@@ -12,5 +12,11 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-    int32_t m_boosterId;
+    
+    float m_duration = 20.f;
+
+    bool m_isEffectDone;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
+
 };

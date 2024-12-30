@@ -266,7 +266,10 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
         }
         else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitResult.first->getObjectParent()))
         {
-            hitPlayer->die();
+            if (!hitPlayer->getPassThroughFlame())
+            {
+                hitPlayer->die();
+            }
         }
         else if (auto* hitEnemy = dynamic_cast<EnemyBase*>(hitResult.first->getObjectParent()))
         {
@@ -282,8 +285,6 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
         animation->setPosition(directionAndPosition);
         animation->Play();
     }
-
-
 }
 
 int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const

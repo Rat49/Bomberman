@@ -176,7 +176,6 @@ void GameModule::run()
         Modules::Tests->update(deltaTime, &window);
 #endif
 		updateBoosters();
-		//gameStats->updateLevelStats();
 		window.clear(screens[currentScreen]->getBackgroundColor());
         if (currentScreen == Screens::LEVEL)
         {

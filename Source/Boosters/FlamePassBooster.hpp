@@ -18,9 +18,9 @@ public:
 
 private:
 
-    float duration = 15.f;
+    float m_duration = 20.f;
 
-    bool isEffectDone = false;
+    bool m_isEffectDone = false;
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
 };
