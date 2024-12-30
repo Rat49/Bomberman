@@ -1,11 +1,15 @@
 #include "ConfigFile.hpp"
+#include <SaveSystem/FileReader.hpp>
 #include <fstream>
 
 bool ConfigFile::open()
 {
-	std::ifstream file(m_name);
-	if (!file) return false;
-	return true;
+    FileReader reader;
+    if (!reader.open(m_name))
+    {
+        return false;
+    }
+    return true;
 }
 
 const std::vector<std::string> ConfigFile::getAllSections() const
