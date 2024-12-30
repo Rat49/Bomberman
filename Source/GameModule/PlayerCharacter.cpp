@@ -231,7 +231,7 @@ void PlayerCharacter::onBombPlant(void* state)
 
         // Need to add and then get Player's position here
         auto bomb = std::make_shared<Bomb>();
-        bomb->Initialize(getCurrentPosition(), 1, bombDuration);
+        bomb->Initialize(getCurrentPosition(), currentExposionRadius, bombDuration);
         activeBombs.push_back(bomb);
     }
 }

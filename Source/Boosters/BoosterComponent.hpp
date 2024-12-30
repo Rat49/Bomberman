@@ -13,17 +13,4 @@ public:
 
 	virtual bool shouldRemoveEffect() = 0;
 
-	void setCallback(EventID callbackID)
-	{
-        m_pickupID = callbackID;
-	}
-
-	void emitCallback() const
-	{
-        Modules::Events->emit(m_pickupID, nullptr);
-	}
-
-protected:
-    EventID m_pickupID = -1;
-
 };

@@ -47,6 +47,8 @@ private:
 	int32_t bombLeftID;
 	int32_t bombRightID;
 	int32_t bombCenterID;
+    int32_t bombHorizontalID;
+    int32_t bombVerticalID;
 
 	std::unique_ptr<CollisionComponent> collisionBox;
 

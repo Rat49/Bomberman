@@ -20,6 +20,8 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 	bombLeftID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionLeftAnimation.ini");
 	bombRightID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionRightAnimation.ini");
 	bombCenterID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionCenterAnimation.ini");
+    bombHorizontalID = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionHorizontallyAnimation.ini");
+    bombVerticalID   = Modules::Sprite->createAnimation("../../Data/Config/BombExplosionVerticallyAnimation.ini");
 
 	currentAnimation = bombIdleID;
 	sf::Vector2f pos = alignToGrid(newPosition);
@@ -135,15 +137,31 @@ void Bomb::draw(sf::RenderWindow& window)
 
 		for (const auto& direction : directions)
 		{
-			int32_t animationID = getExplosionAnimationID(direction);
-			animPos = directionToPosition(direction);
-			if (auto animation = Modules::Sprite->getAnimation(animationID))
-			{
-				sf::Vector2f pos = alignToGrid(position + (animPos * explosionRadius));
-				animation->setPosition(pos);
-				window.draw(*animation);
-			}
-		}
+            for (int i = 1; i <= explosionRadius; ++i)
+            {
+                sf::Vector2f offset = direction * (64.0f * i);
+                sf::Vector2f animPoss = alignToGrid(position + offset);
+
+                int32_t animationID;
+
+                if (i < explosionRadius)
+                {
+                    // Use horizontal or vertical animations for segments
+                    animationID = (direction.x != 0) ? bombHorizontalID : bombVerticalID;
+                }
+                else
+                {
+                    // Use end animations for the final segment
+                    animationID = getExplosionAnimationID(direction);
+                }
+
+                if (auto animation = Modules::Sprite->getAnimation(animationID))
+                {
+                    animation->setPosition(animPoss);
+                    window.draw(*animation);
+                }
+            }
+        }
 
 		// Draw the center of the explosion
 		if (auto animation = Modules::Sprite->getAnimation(bombCenterID))
@@ -189,11 +207,36 @@ void Bomb::explode()
 
 	for (const auto& direction : directions)
 	{
-		if (isDirectionSafe(position, direction, explosionRadius))
-		{
-			explosionEffect(direction);
-		}
-	}
+        if (isDirectionSafe(position, direction, explosionRadius))
+        {
+            explosionEffect(direction);
+
+            for (int i = 1; i <= explosionRadius; ++i)
+            {
+                sf::Vector2f offset  = direction * (64.0f * i);
+                sf::Vector2f animPos = alignToGrid(position + offset);
+
+                int32_t animationIDs;
+
+                if (i < explosionRadius)
+                {
+                    // Use horizontal or vertical animations for segments
+                    animationIDs = (direction.x != 0) ? bombHorizontalID : bombVerticalID;
+                }
+                else
+                {
+                    // Use end animations for the final segment
+                    animationIDs = getExplosionAnimationID(direction);
+                }
+
+                if (auto animationn = Modules::Sprite->getAnimation(animationIDs))
+                {
+                    animationn->setPosition(animPos);
+                    animationn->Play();
+                }
+            }
+        }
+    }
 }
 
 void Bomb::setTimer(int32_t inc)
@@ -211,7 +254,7 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
     sf::Vector2f alignPos = alignToGrid(position);
     sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-    hitResult = std::make_pair(Modules::Physics->rayCast(sf::Vector2f(alignPos.x+32.f, alignPos.y+32.f), newDirection, 1.0f, endPoint), directionAndPosition);
+    hitResult = std::make_pair(Modules::Physics->rayCast(sf::Vector2f(alignPos.x+32.f, alignPos.y+32.f), newDirection, explosionRadius, endPoint), directionAndPosition);
 
     if (hitResult.first)
     {
@@ -239,6 +282,8 @@ void Bomb::explosionEffect(const sf::Vector2f& direction)
         animation->setPosition(directionAndPosition);
         animation->Play();
     }
+
+
 }
 
 int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const

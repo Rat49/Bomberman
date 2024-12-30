@@ -344,6 +344,7 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         if ((*boostersIterator)->getIsPickedUp())
         {
             Modules::Physics->deleteObject(&(*boostersIterator)->getCollisionBox());
+            (*boostersIterator)->emitCallback();
             boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
         }
         else

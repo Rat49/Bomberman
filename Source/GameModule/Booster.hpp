@@ -35,6 +35,8 @@ public:
 
 	void setCallbackID(EventID boosterPickupID);
 
+	void emitCallback() const;
+
 private:
     std::unique_ptr<CollisionComponent> collisionBox;
 
