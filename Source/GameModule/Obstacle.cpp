@@ -25,17 +25,6 @@ Obstacle::Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate) 
 	collisionBox->setRectangleProperties(getPosition(), sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
-void Obstacle::changeAnim(sf::Vector2f obsPos)
-{
-	getCurrentAnimation()->Stop();
-	if (auto animation = Modules::Sprite->getAnimation(obstacleDestructionAnimID))
-	{ 
-		currentAnimation = obstacleDestructionAnimID;
-		animation->setPosition(obsPos);
-		animation->Play();
-	}
-}
-
 sf::Vector2f Obstacle::getPosition() const
 {
 	return obstaclePosition;

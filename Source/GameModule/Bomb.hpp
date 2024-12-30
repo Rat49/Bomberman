@@ -65,9 +65,6 @@ private:
 	// Bomb before explosion timer
 	float timer;
 
-	// Explosion timer
-	float explosionTimer = 1000000.0f;
-
 	// Detonate cool down
     float detonateCooldown = 500000.0f;
 
@@ -78,21 +75,15 @@ private:
 	// If true that means detonating key is pressed and detonating is enabled
 	bool isDetonating = false;
 
-    std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	bool canChangeObstacleAnim = false;
 
-    std::pair<const CollisionComponent*, sf::Vector2f> hitResult = {nullptr, sf::Vector2f()};
-
 	// Method about what will happen when there is an explosion
-	void explosionEffect(const sf::Vector2f& direction);
-
-	// Method to determine directions in which the bomb can explode
-	bool isDirectionSafe(const sf::Vector2f& position, const sf::Vector2f& direction, float maxDistance);
+    int32_t explosionEffect(const sf::Vector2f& direction);
 	
 	int32_t getExplosionAnimationID(const sf::Vector2f& direction) const;
 
 	sf::Vector2f alignToGrid(const sf::Vector2f& newPosition);
 
-	sf::Vector2f directionToPosition(sf::Vector2f newDirection);
+	sf::Vector2f directionToPosition(sf::Vector2f newDirection, int32_t numberOfBlocks);
 
 };
