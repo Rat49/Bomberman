@@ -7,10 +7,11 @@
 #include "Boosters/RemoteControlBooster.hpp"
 #include "Boosters/InvincibleBooster.hpp"
 #include "Boosters/PassBombBooster.hpp"
-#include <iostream>
-#include "Common/Modules.hpp"
+#include "Boosters/FlamePassBooster.hpp"
 #include "EventSystem/EventSystem.hpp"
-#include <Boosters/FlamePassBooster.hpp>
+#include "Boosters/WallPassBooster.hpp"
+#include "Common/Modules.hpp"
+#include <iostream>
 
 Booster::Booster(BoosterType type, float x, float y) : type(type)
 {
@@ -43,6 +44,8 @@ std::string Booster::getTypeAsString() const
             return "InvincibleBooster";
         case BoosterType::FlamePass:
             return "FlamePassBooster";
+        case BoosterType::WallPass:
+            return "WallPassBooster";
     }
     return "";
 }
@@ -68,6 +71,8 @@ std::shared_ptr<BoosterComponent> Booster::getBoosterComponent()
             return std::make_shared<InvincibleBooster>();
         case BoosterType::FlamePass:
             return std::make_shared<FlamePassBooster>();
+        case BoosterType::WallPass:
+            return std::make_shared<WallPassBooster>();
     }
     return std::make_shared<SpeedBooster>();
 }

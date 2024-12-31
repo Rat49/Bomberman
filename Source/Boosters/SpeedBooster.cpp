@@ -15,7 +15,6 @@ void SpeedBooster::applyEffect(PlayerCharacter& playerCharacter)
     {
         playerCharacter.setNewSpeed(SPEED_FACTOR);
         m_isEffectDone = false;
-        m_startTime    = std::chrono::high_resolution_clock::now();
     }
 }
 
@@ -28,10 +27,5 @@ bool SpeedBooster::removeEffect(PlayerCharacter& playerCharacter)
 bool SpeedBooster::shouldRemoveEffect()
 {
     // If speed booster shouldn't be removed this should just return true
-    if (Modules::Game->getCurrentStage() == BOOSTER_ENABLED_STAGE)
-    {
-        auto now       = std::chrono::high_resolution_clock::now();
-        m_isEffectDone = std::chrono::duration<float>(now - m_startTime).count() >= m_duration;
-    }
-    return m_isEffectDone;
+    return (Modules::Game->getCurrentStage() > BOOSTER_ENABLED_STAGE);
 }

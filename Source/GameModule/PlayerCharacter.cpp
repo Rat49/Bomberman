@@ -348,6 +348,11 @@ void PlayerCharacter::setPassThroughBombs(bool pass)
     canPassThroughBombs = pass;
 }
 
+void PlayerCharacter::setPassThroughWall(bool pass)
+{
+    canPassThroughWall = pass;
+}
+
 void PlayerCharacter::setPassThroughFlame(bool pass)
 {
     canPassThroughFlames = pass;

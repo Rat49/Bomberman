@@ -18,7 +18,10 @@ bool PlayerCollisionComponent::BeginOverlapHandler(void* other)
         }
         else if (dynamic_cast<Obstacle*>(otherComponent->getObjectParent()))
         {
-            player->handleObstacleOverlap(true);
+            if (!player->getPassThroughWall())
+            {
+                player->handleObstacleOverlap(true);
+            }
         }
         else if (dynamic_cast<UnbreakableObstacle*>(otherComponent->getObjectParent()))
         {

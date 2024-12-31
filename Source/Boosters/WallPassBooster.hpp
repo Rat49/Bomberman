@@ -1,9 +1,9 @@
 #pragma once
+
 #include "BoosterComponent.hpp"
 
-class SpeedBooster : public BoosterComponent
+class WallPassBooster : public BoosterComponent
 {
-public:
 
     void applyEffect(PlayerCharacter& playerCharacter) override;
 
@@ -13,5 +13,9 @@ public:
 
 private:
 
+    float m_duration = 20.f;
+
     bool m_isEffectDone;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_startTime;
 };

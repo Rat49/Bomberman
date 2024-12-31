@@ -51,6 +51,8 @@ public:
 	
 	bool getPassThroughFlame() const { return canPassThroughFlames; }
 	
+	bool getPassThroughWall() const { return canPassThroughWall; }
+	
 	bool getIsInvincible() const { return isInvincible; }
 	
 	std::shared_ptr<Animation> getCurrentAnimation() const;
@@ -75,6 +77,8 @@ public:
 	
 	void setPassThroughBombs(bool pass);
 
+	void setPassThroughWall(bool pass);
+
 	void setNewSpeed(float factor);
 	
 	void setInvincibility(bool isPlayerInvincible);
@@ -97,6 +101,7 @@ private:
 	float velocity = 0.f;
     bool canPassThroughBombs = false;
     bool canPassThroughFlames = false;
+    bool canPassThroughWall = false;
 
 
 	ActionID playerMovement;
