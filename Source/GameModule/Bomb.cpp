@@ -4,6 +4,8 @@
 #include "GameModule/PlayerCharacter.hpp"
 #include "GameModule/EnemyBase.hpp"
 #include "UnbreakableObstacle.hpp"
+#include "SoundSystem/SoundSystem.hpp"
+#include "MusicFactory.hpp"
 
 Bomb::Bomb()
 {
@@ -88,6 +90,9 @@ void Bomb::update(float deltaTime, bool canDetonate)
     {
         Modules::Physics->deleteObject(collisionBox.get());
         explode();
+
+		Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Bomb));
+        
     }
 }
 

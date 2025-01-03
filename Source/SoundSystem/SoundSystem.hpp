@@ -48,6 +48,8 @@ public:
 
 	void setMusicVolume(float volume);
 
+	void update(float, sf::Window*) override;
+
 private:
 	//SOUNDS
 	// Map that associates a soundID with a list of SoundBuffer objects

@@ -8,6 +8,7 @@
 #include <set>
 #include "GameModule/EnemyBase.hpp"
 
+enum class AllSounds;
 class Booster;
 class UnbreakableObstacle;
 class Obstacle;
@@ -71,7 +72,7 @@ public:
 
 	bool handleGateOverlap();
 
-	void handleObstacleOverlap(bool begin);
+	void handleObstacleOverlap();
 
 	void handleBoosterOverlap(Booster* booster);
 

@@ -59,6 +59,8 @@ public:
 
 	void nextLevel();
 
+	void freeze(AllSounds sound);
+
 private:
 
 	void removeAllBoosters();
@@ -95,6 +97,9 @@ private:
 	float timeCounter = 0.0f;
 
 	bool isPaused = false;
+    bool isFreezed = false;		// for freeze while freezeSound finishes playing
+
+	AllSounds freezeSound;
 
 	// RenderWindow doesn't have method getTitle
 	// We need this for creating new windows (changing resolution)

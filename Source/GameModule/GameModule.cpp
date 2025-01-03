@@ -13,6 +13,7 @@
 #include "PauseMenu.hpp"
 #include "Options.hpp"
 #include "GameOver.hpp"
+#include "MusicFactory.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -28,6 +29,8 @@ namespace {
 	const std::string PATH_LEADERBOARD = "../../Data/Config/leaderboardScreen.ini";
 	const std::string PATH_OPTIONS = "../../Data/Config/options.ini";
 	const std::string PATH_GAMEOVER = "../../Data/Config/gameOver.ini";
+    const std::string PATH_MUSIC      = "../../Data/Config/music.ini";
+    const std::string PATH_SOUNDS     = "../../Data/Config/sounds.ini";
 	const std::string BASE_LEVEL = "../../Data/Config/BaseLevelConfig.ini";
 	const std::string WINDOW = "Window";
 	const std::string WIDTH = "width";
@@ -54,6 +57,8 @@ bool GameModule::initialize()
 	Modules::Config->addFile(PATH_PAUSE_MENU);
 	Modules::Config->addFile(PATH_OPTIONS);
     Modules::Config->addFile(PATH_GAMEOVER);
+    Modules::Config->addFile(PATH_MUSIC);
+    Modules::Config->addFile(PATH_SOUNDS);
 	const ConfigFile& windowInfo = Modules::Config->getFile(PATH_WINDOW_INFO);
 
 	GAME_TIMER_FINISHED = Modules::Events->registerEvent();
@@ -105,6 +110,9 @@ bool GameModule::initialize()
 	auto hudScreen = (std::dynamic_pointer_cast<HUD>(screens[Screens::LEVEL]));
     hudScreen->setTime(std::to_string(gameTime));
     hudScreen->setLivesLeft(std::to_string(livesLeft));
+	
+	MusicFactory::loadAllMusic(PATH_MUSIC);
+    MusicFactory::loadAllSounds(PATH_SOUNDS);
 
 	if (!player.init())
 	{
@@ -114,8 +122,10 @@ bool GameModule::initialize()
 
 	gameStats = std::make_unique<GameStats>();
     gameStats->initialize(Modules::Level->getCurrentLevel());
-    Modules::Sounds->addMusic(1, "Game/Sounds/bgSound.wav");
-    Modules::Sounds->playMusic(1);
+
+	Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
+
+	freezeSound = AllSounds::Miss;
 	return true;
 }
 
@@ -215,9 +225,18 @@ void GameModule::run()
             screens[currentScreen]->getWindow()->setView(tempView);
 
 
-            if (isPaused)
+            if (isPaused && !isFreezed)
             {
                 screens[Screens::PAUSE_MENU]->draw(window, sf::RenderStates::Default);
+            }
+            else if (isFreezed && !Modules::Sounds->isSoundPlaying(static_cast<int32_t>(freezeSound)))
+            {
+                isFreezed = false;
+                isPaused  = false;
+                if (freezeSound == AllSounds::Miss)
+                    playerDied();
+                else if (freezeSound == AllSounds::Gate)
+                    nextLevel();
             }
         }
 		screens[currentScreen]->draw(window, sf::RenderStates::Default);
@@ -266,15 +285,18 @@ void GameModule::checkTimeCounter()
         {
             (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
             // Changing screen to game over, for now here
+            Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
             setCurrentScreen(Screens::GAME_OVER);
 
             Modules::Events->emit(GameModule::GAME_TIMER_FINISHED, nullptr);
         }
 		break;
 	case Screens::STAGE:
-		// Checking if 2 seconds has passed for updating Screen
-		if (timeCounter >= 2000000) {
+		// Checking if 3 seconds has passed for updating Screen
+		if (timeCounter >= 3000000) {
 			setCurrentScreen(Screens::LEVEL);
+            
+            Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Background));
 		}
 		break;
 	}
@@ -335,12 +357,14 @@ void GameModule::playerDied()
 		Modules::Level->unloadLevel(currentLevel);
         Modules::Level->setUpElementsOnLevel(currentStage);
 
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
         setCurrentScreen(Screens::STAGE);
 		//generate new level, same difficulty
 	}
     else
     {
         (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
         setCurrentScreen(Screens::GAME_OVER);
 	}
 }
@@ -350,6 +374,7 @@ void GameModule::nextLevel()
     if (++currentStage > maxStage)
     {
         (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
         setCurrentScreen(Screens::GAME_OVER);
         return;
 	}
@@ -366,9 +391,18 @@ void GameModule::nextLevel()
 
     player.resetToStart();
 
+    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 	(std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]))->setStage(currentStage);
     setCurrentScreen(Screens::STAGE);
-    Modules::Sounds->playMusic(1);
+}
+
+void GameModule::freeze(AllSounds sound)
+{
+    Modules::Sounds->stopMusic();
+    Modules::Sounds->playSound(static_cast<int32_t>(sound));
+    isFreezed = true;
+    isPaused  = true;
+    freezeSound = sound;
 }
 
 void GameModule::removeAllBoosters()

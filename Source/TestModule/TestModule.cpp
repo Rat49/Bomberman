@@ -84,8 +84,8 @@ void TestModule::CreateTests()
 	std::unique_ptr<TestRegisty> testRegisty = std::make_unique<TestRegisty>();
 
 	if (!testRegisty->initialize())
-	{
-		LOG("Some of the tests have failed to initialize");
+    {
+        // LOG("Some of the tests have failed to initialize");
 		return;
 	}
 

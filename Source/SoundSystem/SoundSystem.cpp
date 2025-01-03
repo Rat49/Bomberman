@@ -11,13 +11,6 @@
 
 bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 {
-	// Check if sound already in map
-	if (soundEffectBuffers.find(soundID) != soundEffectBuffers.end())
-	{
-		LOG("Sound effect already exists with id : $", soundID);
-		return false;
-	}
-
 	// Use AssetManager to get the sound buffer
 	auto buffer = Modules::Assets->getSound(filePath);
 
@@ -28,7 +21,6 @@ bool SoundSystem::addSound(int32_t soundID, const std::string& filePath)
 	}
 
 	soundEffectBuffers[soundID].emplace_back(std::move(buffer));
-	LOG("Successfully loaded sound: $", soundID);
 	return true;
 }
 
@@ -129,7 +121,6 @@ void SoundSystem::playSoundFromBuffer(const std::shared_ptr<sf::SoundBuffer>& bu
 
 	// Saving active sounds
 	activeSounds.emplace(soundID, std::move(sound));
-	LOG("Playing sound from buffer : $", soundID);
 }
 
 // Playing sound from the buffer
@@ -144,7 +135,6 @@ void SoundSystem::playSound(int32_t soundID)
 		if (buffers.size() == 1)
 		{
 			playSoundFromBuffer(buffers.front(), soundID);
-			LOG("Playing single sound: $", soundID);
 		}
 		// More than one sound, pick a random one
 		else
@@ -172,7 +162,6 @@ void SoundSystem::stopSound(int32_t soundID)
 	if (it != activeSounds.end())
 	{
 		it->second->stop();
-		LOG("Stopped sound: $", soundID);
 	}
 	else 
 	{
@@ -187,7 +176,6 @@ void SoundSystem::pauseSound(int32_t soundID)
 	if (it != activeSounds.end())
 	{
 		it->second->pause();
-		LOG("Paused sound: $", soundID);
 	}
 	else
 	{
@@ -235,7 +223,6 @@ bool SoundSystem::addMusic(int32_t musicID, const std::string& filePath)
 	}
 
 	musicTracks.emplace(musicID, std::move(music));
-	LOG("Successfully loaded music with id: $", musicID);
 	return true;
 }
 
@@ -243,17 +230,23 @@ bool SoundSystem::addMusic(int32_t musicID, const std::string& filePath)
 void SoundSystem::playMusic(int32_t musicID)
 {
 	auto it = musicTracks.find(musicID);
-	if (it != musicTracks.end())
+    if (it != musicTracks.end())
 	{
+        // check if it is currently playing
+        if (it->second == currentMusic && isMusicPlaying())
+        {
+            return;
+        }
+        stopMusic();
 		currentMusic = it->second;
 		currentMusic->setVolume(musicVolume);
+        currentMusic->setLoop(true);
 		currentMusic->play();
-		LOG("Playing music: $", musicID);
-	}
-	else
-	{
-		LOG("Music $ not found!", musicID);
-	}
+    }
+    else
+    {
+        LOG("Music $ not found!", musicID);
+    }
 }
 
 // Stop music
@@ -262,7 +255,6 @@ void SoundSystem::stopMusic()
 	if (currentMusic)
 	{
 		currentMusic->stop();
-		LOG("Stopped music");
 
 		// Clear current music after stopping
 		currentMusic.reset();
@@ -295,4 +287,19 @@ void SoundSystem::setMusicVolume(float volume)
 	for (auto& music : musicTracks) {
 		music.second->setVolume(volume);
 	}
+}
+
+void SoundSystem::update(float, sf::Window*)
+{
+    for (auto it = activeSounds.begin(); it != activeSounds.end();)
+    {
+        if (it->second->getStatus() == sf::SoundSource::Status::Stopped)
+        {
+            it = activeSounds.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }

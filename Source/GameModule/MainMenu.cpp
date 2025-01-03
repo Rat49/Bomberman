@@ -4,6 +4,8 @@
 #include "Common/Logs.hpp"
 #include "UIConstants.hpp"
 #include "GameModule.hpp"
+#include "MusicFactory.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 
 MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, const std::string& pathToIniFile) : UIScreen()
 {
@@ -21,6 +23,7 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 			};
 			if (element.first == Buttons::START) {
 				button->onRelease = []() {
+                    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 					Modules::Game->setCurrentScreen(Screens::STAGE);
 				};
 			}

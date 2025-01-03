@@ -7,6 +7,7 @@
 #include "GameModule/GameModule.hpp"
 #include "Common/Directions.hpp"
 #include "SoundSystem/SoundSystem.hpp"
+#include "MusicFactory.hpp"
 #include "Booster.hpp"
 #include <thread>
 #include <chrono>
@@ -104,14 +105,11 @@ bool PlayerCharacter::init()
 		LOG("Failed to play initial animation.");
 		return false;
 	}
-
-    Modules::Sounds->addSound(3, "Game/Sounds/BombermanSFX4.wav");
 	return true;
 }
 
 void PlayerCharacter::onMove(void* axis2DState)
 {
-
 	if (!Modules::Game->getIsPaused() && !m_died)
     {
         sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
@@ -119,22 +117,26 @@ void PlayerCharacter::onMove(void* axis2DState)
 		if (state == rightDirection)
         { //RIGHT
             x += velocity;
+            Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Move1));
             updateAnimation(rightId);
         }
         else if (state == downDirection)
         { //DOWN
             y += velocity;
+            Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Move2));
             updateAnimation(downId);
         }
         else if (state == leftDirection)
         { //LEFT
             x -= velocity;
+            Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Move1));
             updateAnimation(leftId);
         }
 
         else if (state == upDirection)
         { //UP
             y -= velocity;
+            Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Move2));
             updateAnimation(upId);
         }
         collisionBox->setRectangleProperties(getCurrentPosition() + sf::Vector2f(0.f, (gridSize - collisionBoxSize) / 2),
@@ -148,13 +150,13 @@ bool PlayerCharacter::handleGateOverlap()
 {
     // If all enemies are dead
     if (Modules::Level->getCurrentLevel()->getEnemies().size() == 0) {
-        Modules::Game->nextLevel();
+        Modules::Game->freeze(AllSounds::Gate);
         return true;
     }
     return false;
 }
 
-void PlayerCharacter::handleObstacleOverlap(bool)
+void PlayerCharacter::handleObstacleOverlap()
 {
     if (currentDirection == rightDirection)
     { //RIGHT
@@ -178,13 +180,16 @@ void PlayerCharacter::handleObstacleOverlap(bool)
 
 void PlayerCharacter::handleBoosterOverlap(Booster* booster)
 {
-    Modules::Sounds->playSound(3);
+    Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::Booster));
+    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::BoosterBackground));
     LOG("Picked up: $", booster->getTypeAsString());
     Modules::Game->addBooster(booster->getBoosterComponent());
 }
 
 void PlayerCharacter::die()
 {
+    Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::PlayersDeath));
+
     Modules::Sprite->getAnimation(currentAnimation)->Stop();
     m_died = true;
 
@@ -230,6 +235,9 @@ void PlayerCharacter::onBombPlant(void* state)
         }
 
         // Need to add and then get Player's position here
+
+        Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::PlantBomb));
+
         auto bomb = std::make_shared<Bomb>();
         bomb->Initialize(getCurrentPosition(), currentExposionRadius, bombDuration);
         activeBombs.push_back(bomb);
@@ -304,17 +312,19 @@ void PlayerCharacter::drawBombs(sf::RenderWindow& window)
 
 void PlayerCharacter::updateAnimation(int32_t id)
 {
-	m_isUpdated = true;
-	if (auto animation = Modules::Sprite->getAnimation(id))
-	{
-		animation->setPosition(x, y);
-		if (currentAnimation != id) {
-			Modules::Sprite->getAnimation(currentAnimation)->Stop();
 
-			animation->Play();
-			currentAnimation = id;
-		}
-	}
+    m_isUpdated = true;
+    if (auto animation = Modules::Sprite->getAnimation(id))
+    {
+        animation->setPosition(x, y);
+        if (currentAnimation != id)
+        {
+            Modules::Sprite->getAnimation(currentAnimation)->Stop();
+
+            animation->Play();
+            currentAnimation = id;
+        }
+    }
 }
 
 std::shared_ptr<Animation> PlayerCharacter::getCurrentAnimation() const
@@ -328,7 +338,7 @@ std::shared_ptr<Animation> PlayerCharacter::getCurrentAnimation() const
 	}
     if (m_died && !Modules::Sprite->getAnimation(currentAnimation)->isPlaying())
     {
-        Modules::Game->playerDied();
+        Modules::Game->freeze(AllSounds::Miss);
     }
 	return Modules::Sprite->getAnimation(currentAnimation);
 }

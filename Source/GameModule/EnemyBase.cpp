@@ -8,6 +8,9 @@
 #include <set>
 #include <utility>
 #include "EventSystem/EventSystem.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "SoundSystem/SoundSystem.hpp"
+#include "GameModule/MusicFactory.hpp"
 
 EnemyType EnemyBase::getType() const
 {
@@ -28,6 +31,11 @@ void EnemyBase::initializeDeath()
 {
     if (!isEnemyDead)
     {
+        if (Modules::Level->getCurrentLevel()->getEnemies().size() - 1 == 0)
+        {
+            Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::AllEnemiesDead));
+        }
+
         Modules::Sprite->getAnimation(m_currentAnimationId)->Stop();
         m_currentAnimationId = m_deatAnimationId;
         Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
