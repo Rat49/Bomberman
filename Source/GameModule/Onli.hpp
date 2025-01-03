@@ -13,5 +13,5 @@ public:
 
 private:
     std::shared_ptr<PatrollingState> patrollingState;
-    std::shared_ptr<RestState> restState;
+    std::shared_ptr<RestState>       restState;
 };

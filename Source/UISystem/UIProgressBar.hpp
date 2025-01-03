@@ -7,30 +7,30 @@
 class UIProgressBar : public UIElement
 {
 public:
-	UIProgressBar(const sf::Vector2f& newSize, float newMinValue = 0.0f, float newMaxValue = 100.0f);
+    UIProgressBar(const sf::Vector2f& newSize, float newMinValue = 0.0f, float newMaxValue = 100.0f);
 
-	// Setters
-	void setProgress(float value);
-	void setPosition(const sf::Vector2f& newPosition) override;
-	void setSize(const sf::Vector2f& barSize);
+    // Setters
+    void setProgress(float value);
+    void setPosition(const sf::Vector2f& newPosition) override;
+    void setSize(const sf::Vector2f& barSize);
 
-	// Getters
-	float getProgress() const;
-	sf::Vector2f getSize() const;
+    // Getters
+    float        getProgress() const;
+    sf::Vector2f getSize() const;
 
-	void setFillColor(const sf::Color& fillColor);
-	void setBackgroundColor(const sf::Color& bgColor);
-	void setBorderColor(const sf::Color& borderColor);
+    void setFillColor(const sf::Color& fillColor);
+    void setBackgroundColor(const sf::Color& bgColor);
+    void setBorderColor(const sf::Color& borderColor);
 
-	bool handleEvent(const sf::Event& event) override;
+    bool handleEvent(const sf::Event& event) override;
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 private:
-	sf::RectangleShape background;
-	sf::RectangleShape fill;
+    sf::RectangleShape background;
+    sf::RectangleShape fill;
 
-	float minValue;
-	float maxValue;
-	float currentValue;
+    float minValue;
+    float maxValue;
+    float currentValue;
 };

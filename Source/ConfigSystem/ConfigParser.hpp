@@ -1,13 +1,14 @@
 #pragma once
 
+#include "ConfigFile.hpp"
 #include <string>
 #include <unordered_map>
-#include "ConfigFile.hpp"
 
-class ConfigParser {
+class ConfigParser
+{
 public:
-	void parse(ConfigFile& configFile) const;
+    void parse(ConfigFile& configFile) const;
 
 private:
-	bool isSection(const std::string& line) const;
+    bool isSection(const std::string& line) const;
 };

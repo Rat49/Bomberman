@@ -1,10 +1,12 @@
 #include "EnemyFactory.hpp"
-#include "Common/Logs.hpp"
 #include "Ballom.hpp"
-#include "Onli.hpp"
+#include "Common/Logs.hpp"
 #include "Dahl.hpp"
+#include "Onli.hpp"
 
-std::shared_ptr<EnemyBase> EnemyFactory::createEnemy(EnemyType type, sf::Vector2f spawnPosition, std::shared_ptr<std::vector<std::vector<bool>>> navGrid)
+std::shared_ptr<EnemyBase> EnemyFactory::createEnemy(EnemyType                                       type,
+                                                     sf::Vector2f                                    spawnPosition,
+                                                     std::shared_ptr<std::vector<std::vector<bool>>> navGrid)
 {
     switch (type)
     {

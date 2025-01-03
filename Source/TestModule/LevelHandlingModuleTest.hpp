@@ -1,26 +1,23 @@
 #pragma once
 
-#include "TestBase.hpp"
 #include "SFML/Graphics/View.hpp"
+#include "TestBase.hpp"
 
 class LevelHandlingModuleTest : public TestBase
 {
 public:
+    const std::string& getName() const override;
 
-	const std::string& getName() const override;
+    void setup() override;
 
-	void setup() override;
+    void run() override;
 
-	void run() override;
+    void update(float, sf::RenderWindow*) override;
 
-	void update(float, sf::RenderWindow*) override;
-
-	bool isComplete() const override;
+    bool isComplete() const override;
 
 private:
+    const std::string m_name = "LevelHandlingTest";
 
-	const std::string m_name = "LevelHandlingTest";
-
-	int32_t m_firstLevel;
+    int32_t m_firstLevel;
 };
-

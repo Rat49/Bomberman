@@ -1,7 +1,7 @@
 #pragma once
 #include "LogModule/LogManager.hpp"
-#include "LogModule/FileLogListener.hpp"
 #include "LogModule/ConsoleLogListener.hpp"
+#include "LogModule/FileLogListener.hpp"
 #include <cassert>
 
 

@@ -1,12 +1,12 @@
 #pragma once
 #include "BaseModule/BaseModule.hpp"
-#include "UISystem/UIScreen.hpp"
-#include "UIConstants.hpp"
-#include "PlayerCharacter.hpp"
-#include "LevelHandlingModule/LevelHandlingModule.hpp"
 #include "Boosters/BoosterComponent.hpp"
-#include <functional>
 #include "GameStats.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "PlayerCharacter.hpp"
+#include "UIConstants.hpp"
+#include "UISystem/UIScreen.hpp"
+#include <functional>
 
 /*
 * This is a general manger class. Holder of all modules. You can access it from any part of the game
@@ -25,88 +25,104 @@ public:
     EventID PLAYER_DESTROYED;
     EventID OBJECTIVE_COMPLETED;
 
-	bool initialize() override;
+    bool initialize() override;
 
-	void run();
+    void run();
 
-	void terminate() override;
+    void terminate() override;
 
-	void setCurrentScreen(const Screens& newScreen);
+    void setCurrentScreen(const Screens& newScreen);
 
-	void setIsPaused(bool newPaused) { isPaused = newPaused; }
+    void setIsPaused(bool newPaused)
+    {
+        isPaused = newPaused;
+    }
 
-	bool getIsPaused() const { return isPaused; }
+    bool getIsPaused() const
+    {
+        return isPaused;
+    }
 
-	// Method for handling resize event (changing resolution, mode)
-	void handleResize(float x, float y);
+    // Method for handling resize event (changing resolution, mode)
+    void handleResize(float x, float y);
 
-	const std::string& getGameTitle() const { return gameTitle; }
-	
-	// Add new score into leader board
-	void addScore(int32_t newScore, const std::string& name);
+    const std::string& getGameTitle() const
+    {
+        return gameTitle;
+    }
 
-	float getHUDHeight();
+    // Add new score into leader board
+    void addScore(int32_t newScore, const std::string& name);
 
-	int32_t getCurrentStage() const { return currentStage; }
+    float getHUDHeight();
 
-	int32_t getMaxStage() const { return maxStage; }
+    int32_t getCurrentStage() const
+    {
+        return currentStage;
+    }
 
-	PlayerCharacter& getPlayerCharacter() { return player; }
+    int32_t getMaxStage() const
+    {
+        return maxStage;
+    }
 
-	void addBooster(std::shared_ptr<BoosterComponent> newBooster);
+    PlayerCharacter& getPlayerCharacter()
+    {
+        return player;
+    }
 
-	void playerDied();
+    void addBooster(std::shared_ptr<BoosterComponent> newBooster);
 
-	void nextLevel();
+    void playerDied();
 
-	void freeze(AllSounds sound);
+    void nextLevel();
+
+    void freeze(AllSounds sound);
 
 private:
+    void removeAllBoosters();
 
-	void removeAllBoosters();
+    void updateBoosters();
 
-	void updateBoosters();
+    // Save leader board results into save file
+    void saveResults();
 
-	// Save leader board results into save file
-	void saveResults();
-	
-	void checkTimeCounter();
+    void checkTimeCounter();
 
-	sf::RenderWindow window;
+    sf::RenderWindow window;
 
-	PlayerCharacter player;
-	
-	LevelId currentLevel;
-	
-	std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
+    PlayerCharacter player;
 
-	std::vector<std::shared_ptr<BoosterComponent>> m_boosters;
+    LevelId currentLevel;
 
-	Screens currentScreen = Screens::MAIN_MENU;
-	
-	int32_t currentStage = 1;
+    std::unordered_map<Screens, std::shared_ptr<UIScreen>> screens;
 
-	int32_t maxStage = -1;
+    std::vector<std::shared_ptr<BoosterComponent>> m_boosters;
 
-	int32_t livesLeft;
-	
-	int32_t gameTime;
+    Screens currentScreen = Screens::MAIN_MENU;
 
-	int32_t startingTime;
+    int32_t currentStage = 1;
 
-	float timeCounter = 0.0f;
+    int32_t maxStage = -1;
 
-	bool isPaused = false;
-    bool isFreezed = false;		// for freeze while freezeSound finishes playing
+    int32_t livesLeft;
 
-	AllSounds freezeSound;
+    int32_t gameTime;
 
-	// RenderWindow doesn't have method getTitle
-	// We need this for creating new windows (changing resolution)
-	std::string gameTitle;
-	
-	bool resized = false;
+    int32_t startingTime;
 
-	std::unique_ptr<GameStats> gameStats;
+    float timeCounter = 0.0f;
 
+    bool isPaused  = false;
+    bool isFreezed = false; // for freeze while freezeSound finishes playing
+
+    AllSounds freezeSound;
+
+    // RenderWindow doesn't have method getTitle
+    // We need this for creating new windows (changing resolution)
+    std::string gameTitle;
+
+    bool resized = false;
+
+    std::unique_ptr<GameStats> gameStats;
 };

@@ -13,11 +13,9 @@ public:
 private:
     bool saveResult();
 
-    int32_t     playerScore = 0;
+    int32_t playerScore = 0;
 
     std::string playerName;
 
     bool invalidClickMenu = false;
-
-
 };

@@ -1,16 +1,15 @@
 #include "GameModule/Booster.hpp"
-#include "Common/Modules.hpp"
-#include "GameModule/GameModule.hpp"
-#include "Boosters/SpeedBooster.hpp"
-#include "Boosters/FireUpBooster.hpp"
 #include "Boosters/BombUpBooster.hpp"
-#include "Boosters/RemoteControlBooster.hpp"
+#include "Boosters/FireUpBooster.hpp"
+#include "Boosters/FlamePassBooster.hpp"
 #include "Boosters/InvincibleBooster.hpp"
 #include "Boosters/PassBombBooster.hpp"
-#include "Boosters/FlamePassBooster.hpp"
-#include "EventSystem/EventSystem.hpp"
+#include "Boosters/RemoteControlBooster.hpp"
+#include "Boosters/SpeedBooster.hpp"
 #include "Boosters/WallPassBooster.hpp"
 #include "Common/Modules.hpp"
+#include "EventSystem/EventSystem.hpp"
+#include "GameModule/GameModule.hpp"
 #include <iostream>
 
 Booster::Booster(BoosterType type, float x, float y) : type(type)
@@ -21,7 +20,8 @@ Booster::Booster(BoosterType type, float x, float y) : type(type)
 
     collisionBox->setObjectParent(this);
 
-    collisionBox->setRectangleProperties((getPosition() + sf::Vector2f((gridSize - collisionBoxSize) / 2, (gridSize - collisionBoxSize) / 2)),
+    collisionBox->setRectangleProperties((getPosition() + sf::Vector2f((gridSize - collisionBoxSize) / 2,
+                                                                       (gridSize - collisionBoxSize) / 2)),
                                          sf::Vector2f(collisionBoxSize, collisionBoxSize));
 }
 
@@ -79,7 +79,7 @@ std::shared_ptr<BoosterComponent> Booster::getBoosterComponent()
 
 void Booster::setCallbackID(EventID boosterPickupID)
 {
-	m_boosterPickupID = boosterPickupID;
+    m_boosterPickupID = boosterPickupID;
 }
 
 void Booster::emitCallback() const

@@ -1,10 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include "SFML/Graphics.hpp"
+#include <iostream>
 
 class Sprite : public sf::Sprite
 {
-
 };
-

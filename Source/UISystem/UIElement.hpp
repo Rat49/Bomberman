@@ -1,11 +1,11 @@
 #pragma once
 
+#include "Common/Logs.hpp"
 #include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <functional>
-#include "Common/Logs.hpp"
 
 // Base abstract class for all UI elements
 // Coordinates are resolution-independent, referring to the top-left corner of each UI element.
@@ -13,50 +13,64 @@
 class UIElement : public sf::Drawable
 {
 public:
-	UIElement() : isInteractable(true) {}
+    UIElement() : isInteractable(true)
+    {
+    }
 
-	virtual ~UIElement() = default;
+    virtual ~UIElement() = default;
 
-	// Set and get methods for position
-	virtual void setPosition(const sf::Vector2f& pos);
-	sf::Vector2f getPosition() const { return position; }
+    // Set and get methods for position
+    virtual void setPosition(const sf::Vector2f& pos);
+    sf::Vector2f getPosition() const
+    {
+        return position;
+    }
 
-	// Set and get methods for dimensions
-	void setSize(const sf::Vector2f& newSize);
-	sf::Vector2f getSize() const { return elementSize; }
+    // Set and get methods for dimensions
+    void         setSize(const sf::Vector2f& newSize);
+    sf::Vector2f getSize() const
+    {
+        return elementSize;
+    }
 
-	// Set and get methods for visibility
-	void setVisible(bool visibility);
-	bool isVisible() const { return visible; }
+    // Set and get methods for visibility
+    void setVisible(bool visibility);
+    bool isVisible() const
+    {
+        return visible;
+    }
 
-	// Function for event management
-	virtual bool handleEvent(const sf::Event& event) = 0;
+    // Function for event management
+    virtual bool handleEvent(const sf::Event& event) = 0;
 
-	virtual void handleResize(const sf::Vector2f& scale);
+    virtual void handleResize(const sf::Vector2f& scale);
 
-	// Checks if the coordinates are within the bounds of the element
-	bool containsPoint(const sf::Vector2f& point) const;
-	
-	// Returns the current interactability status of the UI element
-	bool getIsInteractable() const { return isInteractable; }
+    // Checks if the coordinates are within the bounds of the element
+    bool containsPoint(const sf::Vector2f& point) const;
 
-	// Sets the interactability status of the UI element.
-	void setIsInteractable(bool interactable);
+    // Returns the current interactability status of the UI element
+    bool getIsInteractable() const
+    {
+        return isInteractable;
+    }
+
+    // Sets the interactability status of the UI element.
+    void setIsInteractable(bool interactable);
 
 protected:
-	// Override the pure virtual draw method from sf::Drawable
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
+    // Override the pure virtual draw method from sf::Drawable
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override = 0;
 
 private:
-	// Position of the UI element
-	sf::Vector2f position;
+    // Position of the UI element
+    sf::Vector2f position;
 
-	// Dimensions of the UI element
-	sf::Vector2f elementSize;
+    // Dimensions of the UI element
+    sf::Vector2f elementSize;
 
-	// Visibility of UI element
-	bool visible = true;
+    // Visibility of UI element
+    bool visible = true;
 
-	// Flag indicating whether the UI element can respond to user interactions
-	bool isInteractable;
+    // Flag indicating whether the UI element can respond to user interactions
+    bool isInteractable;
 };

@@ -5,7 +5,7 @@ void BombUpBooster::applyEffect(PlayerCharacter& playerCharacter)
     playerCharacter.addMaxBombs();
 }
 
-bool BombUpBooster::removeEffect(PlayerCharacter& )
+bool BombUpBooster::removeEffect(PlayerCharacter&)
 {
     return isEffectDone;
 }

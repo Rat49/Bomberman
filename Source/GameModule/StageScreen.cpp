@@ -4,19 +4,20 @@
 
 namespace
 {
-	const std::string& STAGE = "STAGE";
+const std::string& STAGE = "STAGE";
 }
 
-StageScreen::StageScreen(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile) : UIScreen()
+StageScreen::StageScreen(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile)
+    : UIScreen()
 {
-	setWindow(renderWindow);
+    setWindow(renderWindow);
 
-	UIFactory::makeScreen(pathToIniFile, this, hudFont);
+    UIFactory::makeScreen(pathToIniFile, this, hudFont);
 }
 
 void StageScreen::setStage(int32_t newStage)
 {
-	auto stageLabel = std::dynamic_pointer_cast<UILabel>(getElement(STAGE));
-	if (stageLabel)
+    auto stageLabel = std::dynamic_pointer_cast<UILabel>(getElement(STAGE));
+    if (stageLabel)
         stageLabel->setText(STAGE + " " + std::to_string(newStage));
 }

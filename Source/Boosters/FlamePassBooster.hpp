@@ -6,7 +6,6 @@
 class FlamePassBooster : public BoosterComponent
 {
 public:
-
     void applyEffect(PlayerCharacter& playerCharacter) override;
 
     bool removeEffect(PlayerCharacter& playerCharacter) override;
@@ -17,7 +16,6 @@ public:
     void extendEffect();
 
 private:
-
     float m_duration = 20.f;
 
     bool m_isEffectDone = false;

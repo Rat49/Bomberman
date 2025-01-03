@@ -1,13 +1,13 @@
 #pragma once
 
-#include "LevelHandlingModule/LevelShared.hpp"
 #include "EnemyBase.hpp"
+#include "LevelHandlingModule/LevelShared.hpp"
 #include <SFML/System.hpp>
-#include <unordered_map>
 #include <fstream>
-#include <vector>
 #include <random>
 #include <set>
+#include <unordered_map>
+#include <vector>
 
 class Obstacle;
 class Booster;
@@ -16,56 +16,53 @@ class Gate;
 class ElementsGenerator
 {
 public:
+    ElementsGenerator();
 
-	ElementsGenerator();
-	
-	bool initialize(const LevelConfigs& levelConfig);
+    bool initialize(const LevelConfigs& levelConfig);
 
-	const GeneratedElements& generateElements(const std::vector<sf::Vector2f>& walkablePositions, const sf::Texture& atlasTexture);
+    const GeneratedElements& generateElements(const std::vector<sf::Vector2f>& walkablePositions,
+                                              const sf::Texture&               atlasTexture);
 
-	template <typename ObjectType>
-	bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
+    template <typename ObjectType>
+    bool isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const;
 
 private:
+    //core functions for various level elements
 
-	//core functions for various level elements
+    std::vector<std::shared_ptr<Obstacle>> generateObstacles(std::mt19937& gen);
 
-	std::vector<std::shared_ptr<Obstacle>> generateObstacles(std::mt19937& gen);
+    std::vector<std::shared_ptr<EnemyBase>> generateEnemies(std::mt19937& gen);
 
-	std::vector<std::shared_ptr<EnemyBase>> generateEnemies(std::mt19937& gen);
-	
-	std::vector<std::shared_ptr<Gate>> generateGates(std::mt19937& gen, const sf::Texture& atlasTexture);
-	
-	std::vector<std::shared_ptr<Booster>> generateBoosters(std::mt19937& gen, const sf::Texture& atlasTexture);
+    std::vector<std::shared_ptr<Gate>> generateGates(std::mt19937& gen, const sf::Texture& atlasTexture);
 
-	std::vector<std::vector<bool>> generateNavGrid(const std::string& navGridPath);
+    std::vector<std::shared_ptr<Booster>> generateBoosters(std::mt19937& gen, const sf::Texture& atlasTexture);
 
-	std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType levelType) const;
-	
-	std::set<std::pair<int32_t, int32_t>> generateSafetyZone() const;
+    std::vector<std::vector<bool>> generateNavGrid(const std::string& navGridPath);
 
-	sf::IntRect getTextureRect(const std::string& textureName) const;
+    std::vector<EnemyType> getAvailableEnemyTypes(GameLevelType levelType) const;
 
-	bool parseConfigFile(const std::string& configFilePath);
+    std::set<std::pair<int32_t, int32_t>> generateSafetyZone() const;
+
+    sf::IntRect getTextureRect(const std::string& textureName) const;
+
+    bool parseConfigFile(const std::string& configFilePath);
 
 
-	
 private:
+    std::shared_ptr<std::vector<std::vector<bool>>> grid;
 
-	std::shared_ptr<std::vector<std::vector<bool>>> grid;
+    LevelConfigs m_levelConfig;
 
-	LevelConfigs m_levelConfig;
+    GeneratedElements m_generatedElements;
 
-	GeneratedElements m_generatedElements;
-    
-	std::vector<sf::Vector2f> breakableObstaclesPositions;
-	std::vector<sf::Vector2f> freePositions;
-	std::set<std::pair<int32_t, int32_t>> safePositions;
+    std::vector<sf::Vector2f>             breakableObstaclesPositions;
+    std::vector<sf::Vector2f>             freePositions;
+    std::set<std::pair<int32_t, int32_t>> safePositions;
 
-	std::string m_atlasPath;
-	float m_renderDuration;
-	bool m_isLooping;
-	std::unordered_map<std::string, sf::IntRect> m_texturesRect;
+    std::string                                  m_atlasPath;
+    float                                        m_renderDuration;
+    bool                                         m_isLooping;
+    std::unordered_map<std::string, sf::IntRect> m_texturesRect;
 
     std::shared_ptr<Booster> createBooster(float x, float y);
 };
@@ -73,12 +70,12 @@ private:
 template <typename ObjectType>
 bool ElementsGenerator::isObjectOnTile(const sf::Vector2i& tilePosition, const std::vector<ObjectType>& objects) const
 {
-	for (const auto& object : objects)
-	{
-		if (object.getPosition() == tilePosition)
-		{
-			return true;
-		}
-	}
-	return false;
+    for (const auto& object : objects)
+    {
+        if (object.getPosition() == tilePosition)
+        {
+            return true;
+        }
+    }
+    return false;
 }

@@ -1,73 +1,77 @@
 #pragma once
 
 #include "CollisionModule/CollisionComponent.hpp"
-#include "SpriteModule/SpriteModule.hpp"
-#include "CollisionModule/CollisionRectangle.hpp"
-#include "SpriteModule/Animation.hpp"
 #include "CollisionModule/CollisionObject.hpp"
+#include "CollisionModule/CollisionRectangle.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
-#include <vector>
 #include "EventSystem/EventTypes.hpp"
-#include "CollisionModule/CollisionComponent.hpp"
+#include "SpriteModule/Animation.hpp"
+#include "SpriteModule/SpriteModule.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+#include <vector>
 
 enum class ObstacleType
 {
-	Unbreakable,
-	Breakable
+    Unbreakable,
+    Breakable
 };
 
 class Obstacle : public sf::Sprite, public CollisionObject
 {
 public:
-	Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate = false);
+    Obstacle(ObstacleType type, sf::Vector2f position, bool hasKeyOrGate = false);
 
-	virtual ~Obstacle() = default;
+    virtual ~Obstacle() = default;
 
-	sf::Vector2f getPosition() const;
+    sf::Vector2f getPosition() const;
 
-	ObstacleType getType() const;
+    ObstacleType getType() const;
 
-	bool hasKeyOrGate() const;
+    bool hasKeyOrGate() const;
 
-	void setHasKeyOrGate(bool value);
+    void setHasKeyOrGate(bool value);
 
-	void changeAnim(sf::Vector2f obsPos);
+    void changeAnim(sf::Vector2f obsPos);
 
-	static bool isValidUnbreakablePosition(const sf::Vector2f& position);
+    static bool isValidUnbreakablePosition(const sf::Vector2f& position);
 
-	std::shared_ptr<Animation> getCurrentAnimation() const;
+    std::shared_ptr<Animation> getCurrentAnimation() const;
 
-	CollisionComponent& getCollisionBox() const { return *collisionBox; }
+    CollisionComponent& getCollisionBox() const
+    {
+        return *collisionBox;
+    }
 
-	CollisionRectangle& getCollision() { return collision; }
+    CollisionRectangle& getCollision()
+    {
+        return collision;
+    }
 
-	void initializeDestruction();
+    void initializeDestruction();
 
-	bool hasExploded() const;
+    bool hasExploded() const;
 
-	void setCallbackID(EventID obstacleDestructionID);
+    void setCallbackID(EventID obstacleDestructionID);
 
 private:
-	ObstacleType obstacleType;
-	sf::Vector2f obstaclePosition;
+    ObstacleType obstacleType;
+    sf::Vector2f obstaclePosition;
 
-	int32_t currentAnimation = -1;
-	int32_t idleBreakableObstacleAnimID;
-	int32_t obstacleDestructionAnimID;
+    int32_t currentAnimation = -1;
+    int32_t idleBreakableObstacleAnimID;
+    int32_t obstacleDestructionAnimID;
 
-	float collisionBoxSize = 64.0f;
+    float collisionBoxSize = 64.0f;
 
-	// True if there is a key or gate under the obstacle
-	bool obstacleHasKeyOrGate;
+    // True if there is a key or gate under the obstacle
+    bool obstacleHasKeyOrGate;
 
-	EventID m_obstacleDestructionID = -1;
-	
-	CollisionRectangle collision;
+    EventID m_obstacleDestructionID = -1;
+
+    CollisionRectangle collision;
 
     std::unique_ptr<CollisionComponent> collisionBox;
 
     bool m_hasExploded;
-
 };

@@ -21,7 +21,7 @@ void Dahl::initialize(EnemyType type, sf::Vector2f spawnPosition)
     collisionBox->setRectangleProperties(spawnPosition, {64.f, 64.f});
     ai->setParent(this);
 
-    m_folowState = std::make_shared<FollowState>();
+    m_folowState   = std::make_shared<FollowState>();
     m_standbyState = std::make_shared<StandbyState>();
 
     ai->fsm->SetInitialState(m_standbyState);

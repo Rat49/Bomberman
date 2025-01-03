@@ -2,7 +2,9 @@
 #include "Common/Modules.hpp"
 #include "EventSystem/EventSystem.hpp"
 
-FailObjective::FailObjective(int32_t eventId, int32_t eventFailed) : BaseObjective(eventId, eventFailed) { }
+FailObjective::FailObjective(int32_t eventId, int32_t eventFailed) : BaseObjective(eventId, eventFailed)
+{
+}
 
 void FailObjective::checkCompletion()
 {

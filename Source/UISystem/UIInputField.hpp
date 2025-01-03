@@ -1,93 +1,103 @@
 #pragma once
 
-#include "UISystem/UIElement.hpp"
 #include "SFML/Graphics.hpp"
+#include "UISystem/UIElement.hpp"
 
 
 class UIInputField : public UIElement
 {
 public:
+    //constructor to initialize the input field
+    UIInputField(const sf::Font& font, uint32_t characterSize, const sf::Vector2f& fieldSize);
 
-	//constructor to initialize the input field
-	UIInputField(const sf::Font& font, uint32_t characterSize, const sf::Vector2f& fieldSize);
+    //event handler from UIElement to handle user input
+    bool handleEvent(const sf::Event& event) override;
 
-	//event handler from UIElement to handle user input
-	bool handleEvent(const sf::Event& event) override;
+    //draw method to render the input field
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-	//draw method to render the input field
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+    //set the position of the input field
+    void setPosition(const sf::Vector2f& position) override;
 
-	//set the position of the input field
-	void setPosition(const sf::Vector2f& position) override;
+    //set the font of the text in the input field
+    void setFont(const sf::Font& font);
 
-	//set the font of the text in the input field
-	void setFont(const sf::Font& font);
-	
-	//set the size of the input field
-	void setSize(const sf::Vector2f& inputFieldSize);
+    //set the size of the input field
+    void setSize(const sf::Vector2f& inputFieldSize);
 
-	//set color for field and text
-	void setColor(const sf::Color& fieldColor, const sf::Color& inputTextColor);
+    //set color for field and text
+    void setColor(const sf::Color& fieldColor, const sf::Color& inputTextColor);
 
-	//set max characters allowed to input
-	void setMaxCharacters(uint32_t maxChar);
+    //set max characters allowed to input
+    void setMaxCharacters(uint32_t maxChar);
 
-	//set new size of characters
-	void setCharactersSize(uint32_t charSize);
-	
-	//get the current text displayed in the input field
-	std::string getText() const { return m_inputText.getString(); }
+    //set new size of characters
+    void setCharactersSize(uint32_t charSize);
 
-	//set the text displayed in the input field
-	void setText(const std::string& newText);
+    //get the current text displayed in the input field
+    std::string getText() const
+    {
+        return m_inputText.getString();
+    }
 
-	void setWritable(bool writable);
+    //set the text displayed in the input field
+    void setText(const std::string& newText);
 
-	bool getWritable() const { return m_isWriteable; }
+    void setWritable(bool writable);
 
-	void setHasPlaceholder(bool hasPlaceholder) { m_hasPlaceholder = hasPlaceholder; }
+    bool getWritable() const
+    {
+        return m_isWriteable;
+    }
 
-	void setInitialText(const std::string& initialText) { m_initialText = initialText; }
-	
-	const std::string& getInitialText() const { return m_initialText; }
+    void setHasPlaceholder(bool hasPlaceholder)
+    {
+        m_hasPlaceholder = hasPlaceholder;
+    }
 
-	void handleResize(const sf::Vector2f& scale) override;
+    void setInitialText(const std::string& initialText)
+    {
+        m_initialText = initialText;
+    }
+
+    const std::string& getInitialText() const
+    {
+        return m_initialText;
+    }
+
+    void handleResize(const sf::Vector2f& scale) override;
 
 private:
+    //method to allow cursor to follow text
+    void cursorMovement();
 
-	//method to allow cursor to follow text 
-	void cursorMovement();
-
-	//method to manage bounds of field
-	bool isFieldEnd();
+    //method to manage bounds of field
+    bool isFieldEnd();
 
 private:
+    //background rectangle for the input field
+    sf::RectangleShape m_fieldBackground;
 
-	//background rectangle for the input field
-	sf::RectangleShape m_fieldBackground;
+    //cursor for input field
+    sf::RectangleShape m_cursor;
 
-	//cursor for input field
-	sf::RectangleShape m_cursor;
+    //text displayed within the input field
+    sf::Text m_inputText;
 
-	//text displayed within the input field
-	sf::Text m_inputText;
+    //buffer to store the entered text
+    std::string m_textBuffer;
 
-	//buffer to store the entered text
-	std::string m_textBuffer;
+    std::string m_initialText;
 
-	std::string m_initialText;
+    //max number of characters allowed
+    uint32_t m_maxCharacters;
 
-	//max number of characters allowed
-	uint32_t m_maxCharacters;
+    //original size of characters
+    uint32_t m_characterSizeOriginal;
 
-	//original size of characters
-	uint32_t m_characterSizeOriginal;
-	
-	//flag to indicate if the field is writable
-	bool m_isWriteable;
+    //flag to indicate if the field is writable
+    bool m_isWriteable;
 
-	//flag for initial text
-	bool m_hasPlaceholder;
-
+    //flag for initial text
+    bool m_hasPlaceholder;
 };
-

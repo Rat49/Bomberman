@@ -1,15 +1,21 @@
 #pragma once
 
-namespace sf {
-	class Window;
+namespace sf
+{
+class Window;
 }
 
-class BaseModule {
+class BaseModule
+{
 public:
+    virtual bool initialize()
+    {
+        return true;
+    }
 
-	virtual bool initialize() { return true; }
+    virtual void terminate() = 0;
 
-	virtual void terminate() = 0;
-
-	virtual void update(float, sf::Window*) {}
+    virtual void update(float, sf::Window*)
+    {
+    }
 };

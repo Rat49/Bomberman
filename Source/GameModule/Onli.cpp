@@ -1,12 +1,12 @@
 #include "Onli.hpp"
-#include "OnliStates.hpp"
 #include "Common/Modules.hpp"
+#include "OnliStates.hpp"
 #include "SpriteModule/Animation.hpp"
-#include "SpriteModule/SpriteModule.hpp"
 #include "SpriteModule/Sprite.hpp"
+#include "SpriteModule/SpriteModule.hpp"
 
 // can be deleted when finish
-#include "Common/Logs.hpp"    
+#include "Common/Logs.hpp"
 
 void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition)
 {
@@ -26,7 +26,7 @@ void Onli::initialize(EnemyType type, sf::Vector2f spawnPosition)
     ai->setParent(this);
 
     patrollingState = std::make_shared<PatrollingState>();
-    restState  = std::make_shared<RestState>();
+    restState       = std::make_shared<RestState>();
 
     ai->fsm->SetInitialState(restState);
 

@@ -7,12 +7,15 @@ class ConfigSystem;
 class ConfigSystemTest : public TestBase
 {
 public:
-	const std::string& getName() const override;
-	void setup() override;
-	void run() override;
-	void update(float deltaTime, sf::RenderWindow*) override { deltaTime = 0.0f; }
-	bool isComplete() const override;
+    const std::string& getName() const override;
+    void               setup() override;
+    void               run() override;
+    void               update(float deltaTime, sf::RenderWindow*) override
+    {
+        deltaTime = 0.0f;
+    }
+    bool isComplete() const override;
 
 private:
-	const std::string Name = "ConfigSystemTest";
+    const std::string Name = "ConfigSystemTest";
 };

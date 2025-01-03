@@ -13,7 +13,10 @@ public:
 
     virtual ~UnbreakableObstacle() = default;
 
-    CollisionComponent& getCollisionBox() const { return *collisionBox; }
+    CollisionComponent& getCollisionBox() const
+    {
+        return *collisionBox;
+    }
 
 private:
     std::unique_ptr<CollisionComponent> collisionBox;

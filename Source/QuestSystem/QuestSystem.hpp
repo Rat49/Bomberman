@@ -1,9 +1,11 @@
 #pragma once
 #include "Quest.hpp"
 
-class QuestSystem {
+class QuestSystem
+{
 public:
-	void addQuest(const std::string& file, const std::string& questName);
+    void addQuest(const std::string& file, const std::string& questName);
+
 private:
-	std::vector<std::unique_ptr<Quest>> quests;
+    std::vector<std::unique_ptr<Quest>> quests;
 };

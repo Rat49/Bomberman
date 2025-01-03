@@ -1,37 +1,41 @@
 #pragma once
 
+#include "BaseModule/BaseModule.hpp"
+#include "ConfigFile.hpp"
+#include "ConfigParser.hpp"
 #include <string>
 #include <unordered_map>
-#include "ConfigParser.hpp"
-#include "ConfigFile.hpp"
-#include "BaseModule/BaseModule.hpp"
 
 class ConfigSystem : public BaseModule
 {
 public:
+    const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const;
 
-	const ConfigFile& ConfigSystem::getFile(const std::string& configFile) const;
+    void ConfigSystem::addFile(const std::string& configFile);
 
-	void ConfigSystem::addFile(const std::string& configFile);
+    void removeFile(const std::string& configFile);
 
-	void removeFile(const std::string& configFile);
+    bool isFilePresent(const std::string& configFile) const;
 
-	bool isFilePresent(const std::string& configFile) const;
+    bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
 
-	bool isSectionPresent(const std::string& configFile, const std::string& sectionName) const;
+    bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
-	bool isValuePresent(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
+    bool areValuesPresent(const std::string&              configFile,
+                          const std::string&              sectionName,
+                          const std::vector<std::string>& keys) const;
 
-	bool areValuesPresent(const std::string& configFile, const std::string& sectionName, const std::vector<std::string>& keys) const;
+    const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
 
-	const ConfigValue& getValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName) const;
+    void setValue(const std::string& configFile,
+                  const std::string& sectionName,
+                  const std::string& valueName,
+                  const std::string& value);
 
-	void setValue(const std::string& configFile, const std::string& sectionName, const std::string& valueName, const std::string& value);
-
-	void terminate() override;
+    void terminate() override;
 
 private:
-	std::unordered_map<std::string, ConfigFile> configFiles;
+    std::unordered_map<std::string, ConfigFile> configFiles;
 
-	ConfigParser parser;
+    ConfigParser parser;
 };

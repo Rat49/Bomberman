@@ -3,12 +3,12 @@
 #include "AIModule/State.hpp"
 #include "AIModule/Transition.hpp"
 #include "Common/Logs.hpp"
+#include "Dahl.hpp"
 #include <chrono>
 #include <memory>
 #include <random>
 #include <unordered_map>
 #include <utility>
-#include "Dahl.hpp"
 
 enum Directions
 {
@@ -21,7 +21,9 @@ enum Directions
 class FollowState : public State
 {
 public:
-    FollowState() : m_gen(m_rd()), m_d(0.5) {}
+    FollowState() : m_gen(m_rd()), m_d(0.5)
+    {
+    }
 
     void Enter(AIController* ai) override;
 
@@ -38,11 +40,11 @@ private:
     void switchAnimation(Dahl* parent);
 
 private:
-    const std::string m_name = "FollowState";
+    const std::string                     m_name = "FollowState";
     std::chrono::steady_clock::time_point m_startTime;
-    std::random_device m_rd;
-    std::mt19937 m_gen;
-    std::bernoulli_distribution m_d;
+    std::random_device                    m_rd;
+    std::mt19937                          m_gen;
+    std::bernoulli_distribution           m_d;
 
     bool m_changeAnimation = true;
 

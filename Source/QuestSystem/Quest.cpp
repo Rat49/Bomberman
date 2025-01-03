@@ -5,12 +5,12 @@
 
 namespace
 {
-	const std::string REWARD = "reward";
+const std::string REWARD = "reward";
 }
 
 Quest::Quest(const std::string& id, const std::string& fileName) : fileName(fileName), id(id)
 {
-	reward = Modules::Config->getValue(fileName, id, REWARD).getInt32();
+    reward = Modules::Config->getValue(fileName, id, REWARD).getInt32();
 }
 
 void Quest::addObjective(std::unique_ptr<BaseObjective> objective)

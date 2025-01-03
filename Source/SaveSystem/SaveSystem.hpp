@@ -7,7 +7,6 @@
 class SaveSystem : public BaseModule
 {
 public:
-	
     /**
     * Saves the provided data map to a file in the Save folder.
     *
@@ -20,8 +19,7 @@ public:
     * and written to a binary file in the designated Save folder.
     */
 
-	bool saveGameData(const std::string& fileName, const std::unordered_map <std::string, std::string>& dataMap);
-
+    bool saveGameData(const std::string& fileName, const std::unordered_map<std::string, std::string>& dataMap);
 
 
     /**
@@ -35,13 +33,12 @@ public:
      * The data is then deserialized into key-value pairs and stored in the provided map.
      */
 
-	bool loadGameData(const std::string& fileName, std::unordered_map <std::string, std::string>& dataMap);
+    bool loadGameData(const std::string& fileName, std::unordered_map<std::string, std::string>& dataMap);
 
 
-	void terminate() override;
+    void terminate() override;
 
 private:
-
     /**
     * Ensures the specified folder exists, creates it if necessary.
     *
@@ -53,7 +50,5 @@ private:
     * creation process are logged.
     */
 
-	bool createSaveFolder(const std::string& folderPath);
-
+    bool createSaveFolder(const std::string& folderPath);
 };
-

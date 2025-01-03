@@ -1,52 +1,50 @@
 #include "Leaderboard.hpp"
-#include "UISystem/UIFactory.hpp"
+#include "Common/Logs.hpp"
 #include "Common/Modules.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
-#include "UISystem/UILabel.hpp"
-#include "UISystem/UIButton.hpp"
 #include "GameModule/GameModule.hpp"
-#include "Common/Logs.hpp"
+#include "GameModule/MusicFactory.hpp"
 #include "SaveSystem/SaveSystem.hpp"
 #include "SoundSystem/SoundSystem.hpp"
-#include "GameModule/MusicFactory.hpp"
+#include "UISystem/UIButton.hpp"
+#include "UISystem/UIFactory.hpp"
+#include "UISystem/UILabel.hpp"
 
 namespace
 {
-	const std::string PLAYER = "Player";
-	const std::string NAME = "Name";
-	const std::string VALUE = "Value";
-    const std::string FILE_NAME  = "leaderboardResults";
-    const int32_t numberOfPlayers = 5;   // number of players that are written on leader board screen
-    }
+const std::string PLAYER          = "Player";
+const std::string NAME            = "Name";
+const std::string VALUE           = "Value";
+const std::string FILE_NAME       = "leaderboardResults";
+const int32_t     numberOfPlayers = 5; // number of players that are written on leader board screen
+} // namespace
 
-Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile) : UIScreen()
+Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile)
+    : UIScreen()
 {
-	setWindow(renderWindow);
+    setWindow(renderWindow);
 
-	UIFactory::makeScreen(pathToIniFile, this, hudFont);
+    UIFactory::makeScreen(pathToIniFile, this, hudFont);
 
-	readLeaderboard();
+    readLeaderboard();
 
-	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
+    std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
 
-	menuButton->onHover = [menuButton]() {
-		menuButton->dropShadows(Colors::YELLOW, Colors::RED);
-		};
-	menuButton->onClick = [menuButton]() {
-		menuButton->dropShadows(Colors::RED, Colors::YELLOW);
-		};
-	menuButton->onRelease = []() {
-		Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+    menuButton->onHover   = [menuButton]() { menuButton->dropShadows(Colors::YELLOW, Colors::RED); };
+    menuButton->onClick   = [menuButton]() { menuButton->dropShadows(Colors::RED, Colors::YELLOW); };
+    menuButton->onRelease = []()
+    {
+        Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
         Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
-		};
+    };
 }
 
 void Leaderboard::readLeaderboard()
 {
     std::unordered_map<std::string, std::string> dataMap;
-	Modules::Save->loadGameData(FILE_NAME, dataMap);
+    Modules::Save->loadGameData(FILE_NAME, dataMap);
 
-	int32_t i = 1;
+    int32_t i = 1;
     while (i <= numberOfPlayers)
     {
         std::string playerName = PLAYER + std::to_string(i);
@@ -68,7 +66,7 @@ void Leaderboard::readLeaderboard()
                 animations[playerName]->Stop();
             (std::dynamic_pointer_cast<UILabel>(elements[score]))->setVisible(false);
         }
-		
+
 
         i++;
     }
@@ -76,14 +74,16 @@ void Leaderboard::readLeaderboard()
 
 bool Leaderboard::handleEvent(const sf::Event& event)
 {
-	if (event.type == sf::Event::Resized) {
-		return UIScreen::handleEvent(event);
-	}
-	std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
-	if (!menuButton->handleEvent(event)) {
-		menuButton->dropShadows(Colors::WHITE, Colors::GREY);
-	}
-	return true;
+    if (event.type == sf::Event::Resized)
+    {
+        return UIScreen::handleEvent(event);
+    }
+    std::shared_ptr<UIButton> menuButton = std::dynamic_pointer_cast<UIButton>(getElement(Buttons::MENU));
+    if (!menuButton->handleEvent(event))
+    {
+        menuButton->dropShadows(Colors::WHITE, Colors::GREY);
+    }
+    return true;
 }
 
 void Leaderboard::addScore(int32_t newScore, const std::string& name)
@@ -94,7 +94,6 @@ void Leaderboard::addScore(int32_t newScore, const std::string& name)
     {
         if (results[i].second < newResult.second)
             std::swap(results[i], newResult);
-        
     }
     if (results.size() < numberOfPlayers)
         results.push_back(newResult);
@@ -102,8 +101,8 @@ void Leaderboard::addScore(int32_t newScore, const std::string& name)
     int32_t i = 0;
     while (i < results.size())
     {
-        std::string playerName = PLAYER + std::to_string(i+1);
-        
+        std::string playerName = PLAYER + std::to_string(i + 1);
+
         // Setting name and result for that player
         auto nameLabel = (std::dynamic_pointer_cast<UILabel>(elements[playerName]));
         nameLabel->setText(results[i].first);
@@ -116,7 +115,7 @@ void Leaderboard::addScore(int32_t newScore, const std::string& name)
         auto scoreLabel = (std::dynamic_pointer_cast<UILabel>(elements[playerName]));
         scoreLabel->setText(std::to_string(results[i].second));
         scoreLabel->setVisible(true);
-       
+
         i++;
     }
 }

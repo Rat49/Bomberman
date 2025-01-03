@@ -1,11 +1,11 @@
 #include "PlayerCollisionComponent.hpp"
 #include "Common/Logs.hpp"
-#include "GameModule/PlayerCharacter.hpp"
-#include "GameModule/UnbreakableObstacle.hpp"
+#include "GameModule/Bomb.hpp"
 #include "GameModule/Booster.hpp"
 #include "GameModule/EnemyBase.hpp"
 #include "GameModule/Gate.hpp"
-#include "GameModule/Bomb.hpp"
+#include "GameModule/PlayerCharacter.hpp"
+#include "GameModule/UnbreakableObstacle.hpp"
 
 bool PlayerCollisionComponent::BeginOverlapHandler(void* other)
 {
@@ -47,8 +47,6 @@ bool PlayerCollisionComponent::BeginOverlapHandler(void* other)
     return false;
 }
 
-void PlayerCollisionComponent::EndOverlapHandler(void* )
+void PlayerCollisionComponent::EndOverlapHandler(void*)
 {
-    
-    
 }

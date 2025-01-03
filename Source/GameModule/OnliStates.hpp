@@ -1,13 +1,13 @@
 #pragma once
+#include "AIModule/AIController.hpp"
 #include "AIModule/State.hpp"
 #include "AIModule/Transition.hpp"
-#include "AIModule/AIController.hpp"
+#include "Common/Logs.hpp"
+#include <chrono>
 #include <memory>
 #include <random>
-#include <chrono>
-#include "Common/Logs.hpp"
-#include <utility>
 #include <unordered_map>
+#include <utility>
 
 enum Directions
 {
@@ -26,8 +26,8 @@ public:
 
         m_directionPairs[Directions::Right] = Directions::Left;
         m_directionPairs[Directions::Left]  = Directions::Right;
-        m_directionPairs[Directions::Down] = Directions::Up;
-        m_directionPairs[Directions::Up]  = Directions::Down;
+        m_directionPairs[Directions::Down]  = Directions::Up;
+        m_directionPairs[Directions::Up]    = Directions::Down;
     }
 
     void Enter(AIController* ai) override;
@@ -36,22 +36,21 @@ public:
 
     void Exit(AIController* ai) override;
 
-    std::string GetName() const override 
-    { 
-        return m_name; 
+    std::string GetName() const override
+    {
+        return m_name;
     }
 
 private:
-    const std::string m_name = "PatrollingState";
+    const std::string                     m_name = "PatrollingState";
     std::chrono::steady_clock::time_point startTime;
-    std::random_device rd;
-    std::mt19937 gen;
-    std::bernoulli_distribution d;
-    std::vector<sf::Vector2f> directions;
-    int8_t m_currentDirection;
-    std::unordered_map<int8_t, int8_t> m_directionPairs;
-    bool m_changeAnimation = true;
-
+    std::random_device                    rd;
+    std::mt19937                          gen;
+    std::bernoulli_distribution           d;
+    std::vector<sf::Vector2f>             directions;
+    int8_t                                m_currentDirection;
+    std::unordered_map<int8_t, int8_t>    m_directionPairs;
+    bool                                  m_changeAnimation = true;
 };
 
 class RestState : public State
@@ -73,12 +72,12 @@ public:
     }
 
 private:
-    const std::string m_name = "RestState";
+    const std::string                     m_name = "RestState";
     std::chrono::steady_clock::time_point startTime;
-    std::random_device rd;
-    std::mt19937 gen;
-    std::bernoulli_distribution d;
-    std::vector<sf::Vector2f> directions;
+    std::random_device                    rd;
+    std::mt19937                          gen;
+    std::bernoulli_distribution           d;
+    std::vector<sf::Vector2f>             directions;
 };
 
 class RestToPatrollingTransition : public Transition

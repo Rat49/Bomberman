@@ -1,7 +1,7 @@
 #pragma once
 #include "EnemyBase.hpp"
-#include "NavigationModule/Navigation.hpp"
 #include "NavigationModule/Algorithm.hpp"
+#include "NavigationModule/Navigation.hpp"
 
 class FollowState;
 class StandbyState;
@@ -18,7 +18,6 @@ public:
     std::unique_ptr<NavigationModule> m_navModule;
 
 private:
-    std::shared_ptr<FollowState> m_folowState;
+    std::shared_ptr<FollowState>  m_folowState;
     std::shared_ptr<StandbyState> m_standbyState;
-
 };

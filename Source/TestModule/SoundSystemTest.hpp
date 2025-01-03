@@ -6,18 +6,16 @@
 class SoundSystemTest : public TestBase
 {
 public:
-	const std::string& getName() const override;
+    const std::string& getName() const override;
 
-	void setup() override;
+    void setup() override;
 
-	void run() override;
+    void run() override;
 
-	void update(float, sf::RenderWindow*) override;
+    void update(float, sf::RenderWindow*) override;
 
-	bool isComplete() const override;
+    bool isComplete() const override;
 
 private:
-	const std::string m_name = "SoundSystemTest";
+    const std::string m_name = "SoundSystemTest";
 };
-
-

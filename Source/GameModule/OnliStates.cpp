@@ -1,18 +1,18 @@
 #include "OnliStates.hpp"
+#include "CollisionModule/PhysicsModule.hpp"
 #include "Common/Logs.hpp"
 #include "EnemyBase.hpp"
-#include "CollisionModule/PhysicsModule.hpp"
 #include "LevelHandlingModule/LevelHandlingModule.hpp"
 
 namespace
 {
-    const int32_t RAYCAST_OFFSET = 30;
-    const int32_t PARENT_OFFSET  = 64;
-    const int32_t TILE_SIZE      = 64;
-    const float RAYCAST_LENGTH   = 17.f;
-    const int32_t ANIMATION_CHANGE_TIME = 2;
-    const float   COLLISION_SIZE        = 64.f;
-    }
+const int32_t RAYCAST_OFFSET        = 30;
+const int32_t PARENT_OFFSET         = 64;
+const int32_t TILE_SIZE             = 64;
+const float   RAYCAST_LENGTH        = 17.f;
+const int32_t ANIMATION_CHANGE_TIME = 2;
+const float   COLLISION_SIZE        = 64.f;
+} // namespace
 
 /*
  * look right state 
@@ -22,7 +22,7 @@ void PatrollingState::Enter(AIController* ai)
 
     auto parent = static_cast<EnemyBase*>(ai->getParent());
     parent->playRightAnimation();
-    startTime = std::chrono::steady_clock::now();
+    startTime                    = std::chrono::steady_clock::now();
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
     sf::Vector2i parentPosition  = static_cast<sf::Vector2i>(parent->getPosition()) / TILE_SIZE;
 
@@ -36,7 +36,8 @@ void PatrollingState::Enter(AIController* ai)
 
         bool isNotColiding = Modules::Physics->rayCast(raycastStartingPos, direction, RAYCAST_LENGTH, endPoint) == nullptr;
         isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
-                                                     parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkable";
+                                                     parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkabl"
+                                                                                                              "e";
 
         if (isNotColiding)
         {
@@ -50,18 +51,25 @@ void PatrollingState::Enter(AIController* ai)
 void PatrollingState::Update(AIController* ai)
 {
 
-    auto parent  = static_cast<EnemyBase*>(ai->getParent());
+    auto         parent = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f endPoint;
 
-    parent->getCollisionBox().setRectangleProperties(parent->getPosition() /*+ sf::Vector2f(2.f, 2.f)*/, {COLLISION_SIZE, COLLISION_SIZE});
-    sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
-    sf::Vector2f parentPosition = parent->getPosition();
-    sf::Vector2f raycastStartingPos = collisionCenter + (directions[m_currentDirection] *  static_cast<float>(RAYCAST_OFFSET));
+    parent->getCollisionBox().setRectangleProperties(parent->getPosition() /*+ sf::Vector2f(2.f, 2.f)*/,
+                                                     {COLLISION_SIZE, COLLISION_SIZE});
+    sf::Vector2f collisionCenter    = parent->getCollisionBox().getCenter();
+    sf::Vector2f parentPosition     = parent->getPosition();
+    sf::Vector2f raycastStartingPos = collisionCenter +
+                                      (directions[m_currentDirection] * static_cast<float>(RAYCAST_OFFSET));
 
     auto obstacleComponent = Modules::Physics->rayCast(raycastStartingPos, directions[m_currentDirection], RAYCAST_LENGTH, endPoint);
     bool isNotColiding = obstacleComponent == nullptr;
-    isNotColiding &= Modules::Level->getTileInfo((static_cast<int32_t>(collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET) ) ) / TILE_SIZE,
-                                                 (static_cast<int32_t>(collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET) ) ) / TILE_SIZE) == "Walkable";
+    isNotColiding &= Modules::Level
+                         ->getTileInfo((static_cast<int32_t>(
+                                           collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET))) /
+                                           TILE_SIZE,
+                                       (static_cast<int32_t>(
+                                           collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET))) /
+                                           TILE_SIZE) == "Walkable";
 
     EnemyBase* enemy = nullptr;
     if (obstacleComponent != nullptr)
@@ -115,7 +123,7 @@ void PatrollingState::Exit(AIController*)
  */
 void RestState::Enter(AIController* ai)
 {
-    auto parent = static_cast<EnemyBase*>(ai->getParent());
+    auto         parent          = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
     sf::Vector2i parentPosition  = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
                                     static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
@@ -131,7 +139,8 @@ void RestState::Enter(AIController* ai)
 
         bool isNotColiding = Modules::Physics->rayCast(raycastStartingPos, direction, RAYCAST_LENGTH, endPoint) == nullptr;
         isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
-                                                     parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkable";
+                                                     parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkabl"
+                                                                                                              "e";
 
         if (isNotColiding)
         {
@@ -143,7 +152,7 @@ void RestState::Enter(AIController* ai)
 
 void RestState::Update(AIController* ai)
 {
-    auto parent  = static_cast<EnemyBase*>(ai->getParent());
+    auto         parent          = static_cast<EnemyBase*>(ai->getParent());
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
     sf::Vector2i parentPosition  = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
                                     static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
@@ -160,7 +169,8 @@ void RestState::Update(AIController* ai)
 
             bool isNotColiding = Modules::Physics->rayCast(raycastStartingPos, direction, RAYCAST_LENGTH, endPoint) == nullptr;
             isNotColiding &= Modules::Level->getTileInfo(parentPosition.x + static_cast<int32_t>(direction.x),
-                                                         parentPosition.y + static_cast<int32_t>(direction.y)) == "Walkable";
+                                                         parentPosition.y + static_cast<int32_t>(direction.y)) ==
+                             "Walkable";
 
             if (isNotColiding)
             {
@@ -178,7 +188,7 @@ void RestState::Update(AIController* ai)
             parent->playRightAnimation();
         }
 
-         startTime = std::chrono::steady_clock::now();
+        startTime = std::chrono::steady_clock::now();
     }
 }
 

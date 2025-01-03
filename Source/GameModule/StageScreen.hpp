@@ -4,7 +4,7 @@
 class StageScreen : public UIScreen
 {
 public:
-	StageScreen(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile);
+    StageScreen(sf::RenderWindow* renderWindow, const std::string& hudFont, const std::string& pathToIniFile);
 
-	void setStage(int32_t newStage);
+    void setStage(int32_t newStage);
 };

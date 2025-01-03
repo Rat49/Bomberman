@@ -1,238 +1,238 @@
 #include "Level.hpp"
 #include "AssetManager/AssetManager.hpp"
+#include "Common/Logs.hpp"
+#include "Common/Modules.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
+#include "GameModule/Booster.hpp"
 #include "GameModule/ElementsGenerator.hpp"
+#include "GameModule/EnemyBase.hpp"
 #include "GameModule/GameModule.hpp"
 #include "GameModule/Gate.hpp"
 #include "GameModule/Obstacle.hpp"
 #include "GameModule/UnbreakableObstacle.hpp"
-#include "GameModule/EnemyBase.hpp"
-#include "GameModule/Booster.hpp"
-#include "Common/Modules.hpp"
-#include "SFML/Graphics.hpp"
-#include <Common/Logs.hpp>
 #include "LevelData.hpp"
+#include "SFML/Graphics.hpp"
 #include "Tile.hpp"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <algorithm>
-
-#include "Common/Logs.hpp"
+#include <Common/Logs.hpp>
 
 namespace
 {
-	//atlas
-	const std::string ID = "id";
-	const std::string X_COORD = "x";
-	const std::string Y_COORD = "y";
-	const std::string ATLAS_PATH = "Game/Textures/levelAtlas.png";
-	const int8_t ATLAS_SPRITE_SIZE = 64;
+//atlas
+const std::string ID                = "id";
+const std::string X_COORD           = "x";
+const std::string Y_COORD           = "y";
+const std::string ATLAS_PATH        = "Game/Textures/levelAtlas.png";
+const int8_t      ATLAS_SPRITE_SIZE = 64;
 
-	//levelConfig
-	const std::string ID_CONFIG = "id";
-	const std::string LEVEL_TYPE = "levelType";
-	const std::string ENEMY_COUNT = "enemyCount";
-	const std::string BREAKABLE_COUNT = "breakableCount";
-	const std::string BOOSTERS_COUNT = "boostersCount";
+//levelConfig
+const std::string ID_CONFIG       = "id";
+const std::string LEVEL_TYPE      = "levelType";
+const std::string ENEMY_COUNT     = "enemyCount";
+const std::string BREAKABLE_COUNT = "breakableCount";
+const std::string BOOSTERS_COUNT  = "boostersCount";
 
-	const int32_t numberOfTilesWidth = 14;	// number of tiles by width that player can see in one moment
-	const int32_t numberOfTilesHeight = 11;	// 16 x 13 in the original game
+const int32_t numberOfTilesWidth  = 14; // number of tiles by width that player can see in one moment
+const int32_t numberOfTilesHeight = 11; // 16 x 13 in the original game
 
-	//const std::string UNBREAKABLE_OBSTACLE = "Undestroyable";
-    //const std::string WALKABLE_TILE = "Walkable";
-    } // namespace
+//const std::string UNBREAKABLE_OBSTACLE = "Undestroyable";
+//const std::string WALKABLE_TILE = "Walkable";
+} // namespace
 
-Level::Level(const std::string baseLevelConfigPath)
-	:m_configPath(baseLevelConfigPath)
-{}
+Level::Level(const std::string baseLevelConfigPath) : m_configPath(baseLevelConfigPath)
+{
+}
 
 bool Level::initialize()
 {
-	//load level configuration data
-	if (!m_levelData.loadLevelConfigData(m_configPath))
-	{
-		LOG("Failed to load level data from: " + m_configPath);
-		return false;
-	}
+    //load level configuration data
+    if (!m_levelData.loadLevelConfigData(m_configPath))
+    {
+        LOG("Failed to load level data from: " + m_configPath);
+        return false;
+    }
 
-	//load tileSet configuration data (tileTypes)
-	if (!m_levelData.loadTilesetConfigData(m_levelData.getTilesetPath()))
-	{
-		LOG("Failed to load tileSet data from : " + m_levelData.getTilesetPath());
-		return false;
-	}
+    //load tileSet configuration data (tileTypes)
+    if (!m_levelData.loadTilesetConfigData(m_levelData.getTilesetPath()))
+    {
+        LOG("Failed to load tileSet data from : " + m_levelData.getTilesetPath());
+        return false;
+    }
 
-	//initialize level tiles based on tile IDs
-	if (!loadTiles())
-	{
-		LOG("Failed to load tiles for the level");
-		return false;
-	}
+    //initialize level tiles based on tile IDs
+    if (!loadTiles())
+    {
+        LOG("Failed to load tiles for the level");
+        return false;
+    }
 
-	//initialize level tiles based on tile IDs
-	if (!loadLevel(m_levelData.getLevelPath()))
-	{
-		LOG("Failed to load level from : " + m_levelData.getLevelPath());
-		return false;
-	}
+    //initialize level tiles based on tile IDs
+    if (!loadLevel(m_levelData.getLevelPath()))
+    {
+        LOG("Failed to load level from : " + m_levelData.getLevelPath());
+        return false;
+    }
 
-	//initialize levelElementsConfig for generating elements on level
-	if (!loadConfig(m_levelData.getLevelElementsConfigPath()))
-	{
-		LOG("Failed to load level config from file [$]:", m_levelData.getLevelElementsConfigPath());
-		return false;
-	}
+    //initialize levelElementsConfig for generating elements on level
+    if (!loadConfig(m_levelData.getLevelElementsConfigPath()))
+    {
+        LOG("Failed to load level config from file [$]:", m_levelData.getLevelElementsConfigPath());
+        return false;
+    }
 
     // Setting view to be defined size
     sf::Vector2f viewSize(numberOfTilesWidth * ATLAS_SPRITE_SIZE, numberOfTilesHeight * ATLAS_SPRITE_SIZE);
     m_view.setSize(viewSize);
 
-	return true;
+    return true;
 }
 
 
-bool Level::loadTiles() 
+bool Level::loadTiles()
 {
-	m_atlasTexture = Modules::Assets->getTexture(ATLAS_PATH);
+    m_atlasTexture = Modules::Assets->getTexture(ATLAS_PATH);
 
-	Modules::Config->addFile(m_levelData.getTilesetAssetConfigPath());
-	const ConfigFile& tileTexturesSettings = Modules::Config->getFile(m_levelData.getTilesetAssetConfigPath());
-	const auto& sections = tileTexturesSettings.getAllSections();
+    Modules::Config->addFile(m_levelData.getTilesetAssetConfigPath());
+    const ConfigFile& tileTexturesSettings = Modules::Config->getFile(m_levelData.getTilesetAssetConfigPath());
+    const auto&       sections             = tileTexturesSettings.getAllSections();
 
-	for (const auto& section : sections)
-	{
-		int32_t id = tileTexturesSettings.getSection(section).getValue(ID).getInt32();
-		int32_t x = tileTexturesSettings.getSection(section).getValue(X_COORD).getInt32();
-		int32_t y = tileTexturesSettings.getSection(section).getValue(Y_COORD).getInt32();
+    for (const auto& section : sections)
+    {
+        int32_t id = tileTexturesSettings.getSection(section).getValue(ID).getInt32();
+        int32_t x  = tileTexturesSettings.getSection(section).getValue(X_COORD).getInt32();
+        int32_t y  = tileTexturesSettings.getSection(section).getValue(Y_COORD).getInt32();
 
-		Tile newTile;
-		sf::IntRect newRect(x, y, ATLAS_SPRITE_SIZE, ATLAS_SPRITE_SIZE);
-		newTile.initialize(id, newRect, m_atlasTexture);
-		m_availableTiles.emplace(id, std::make_shared<Tile>(newTile));
-		if (!m_availableTiles[id])
-		{
-			return false;
-		}
-	}
+        Tile        newTile;
+        sf::IntRect newRect(x, y, ATLAS_SPRITE_SIZE, ATLAS_SPRITE_SIZE);
+        newTile.initialize(id, newRect, m_atlasTexture);
+        m_availableTiles.emplace(id, std::make_shared<Tile>(newTile));
+        if (!m_availableTiles[id])
+        {
+            return false;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 
 bool Level::loadLevel(const std::string& levelPath)
 {
-	//use Asset Manager to get level file data
-	const auto levelData = Modules::Assets->getLevel(levelPath);
+    //use Asset Manager to get level file data
+    const auto levelData = Modules::Assets->getLevel(levelPath);
 
-	if (levelData->empty())
-	{
-		LOG("Failed to load level .csv file from [$]", levelPath);
-		return false;
-	}
+    if (levelData->empty())
+    {
+        LOG("Failed to load level .csv file from [$]", levelPath);
+        return false;
+    }
 
-	//convert data in string stream
-	std::string levelString(levelData->begin(), levelData->end());
-	std::istringstream file(levelString);
+    //convert data in string stream
+    std::string        levelString(levelData->begin(), levelData->end());
+    std::istringstream file(levelString);
 
-	//read each line of file
-	int32_t row = 0;
-	std::string line;
-	while (std::getline(file, line))
-	{
-		std::vector<FieldInfo> tileRow;
-		std::stringstream sStream(line);
-		std::string value;
-		int32_t col = 0;
+    //read each line of file
+    int32_t     row = 0;
+    std::string line;
+    while (std::getline(file, line))
+    {
+        std::vector<FieldInfo> tileRow;
+        std::stringstream      sStream(line);
+        std::string            value;
+        int32_t                col = 0;
 
-		//read row value
-		while (std::getline(sStream, value, ','))
-		{
-			int32_t tempId = std::stoi(value);
-			
-			FieldInfo newFieldInfo;
-			newFieldInfo.tile = m_availableTiles[tempId];
-			newFieldInfo.tilePosition = { (float)(col * m_levelData.getTileWidth()), (float)(row * m_levelData.getTileHeight()) };
-			tileRow.push_back(newFieldInfo);
-			++col;
-		}
+        //read row value
+        while (std::getline(sStream, value, ','))
+        {
+            int32_t tempId = std::stoi(value);
 
-		m_fields.push_back(tileRow);
-		++row;
-	}
+            FieldInfo newFieldInfo;
+            newFieldInfo.tile         = m_availableTiles[tempId];
+            newFieldInfo.tilePosition = {(float)(col * m_levelData.getTileWidth()),
+                                         (float)(row * m_levelData.getTileHeight())};
+            tileRow.push_back(newFieldInfo);
+            ++col;
+        }
 
-	return true;
+        m_fields.push_back(tileRow);
+        ++row;
+    }
+
+    return true;
 }
 
 bool Level::loadConfig(const std::string levelConfigPath)
 {
-	//init config file
-	Modules::Config->addFile(levelConfigPath);
-	const ConfigFile& LevelManagerFile = Modules::Config->getFile(levelConfigPath);
+    //init config file
+    Modules::Config->addFile(levelConfigPath);
+    const ConfigFile& LevelManagerFile = Modules::Config->getFile(levelConfigPath);
 
-	bool valuesFound = false;
-	std::vector<std::string> configNames = { ID_CONFIG, LEVEL_TYPE, ENEMY_COUNT, BREAKABLE_COUNT, BOOSTERS_COUNT };
+    bool                     valuesFound = false;
+    std::vector<std::string> configNames = {ID_CONFIG, LEVEL_TYPE, ENEMY_COUNT, BREAKABLE_COUNT, BOOSTERS_COUNT};
 
-	//check all sections
-	const auto& sections = LevelManagerFile.getAllSections();
-	for (const auto& sectionName : sections)
-	{
+    //check all sections
+    const auto& sections = LevelManagerFile.getAllSections();
+    for (const auto& sectionName : sections)
+    {
 
-		if (!LevelManagerFile.isSectionPresent(sectionName))
-			break;
+        if (!LevelManagerFile.isSectionPresent(sectionName))
+            break;
 
-		if (LevelManagerFile.getSection(sectionName).areValuesPresent(configNames))
-		{
-			const ConfigSection& mySection = LevelManagerFile.getSection(sectionName);
+        if (LevelManagerFile.getSection(sectionName).areValuesPresent(configNames))
+        {
+            const ConfigSection& mySection = LevelManagerFile.getSection(sectionName);
 
-			//store values in map
-			m_levelConfig.levelType = static_cast<GameLevelType>(mySection.getValue(LEVEL_TYPE).getInt32());
-			m_levelConfig.enemyCount = mySection.getValue(ENEMY_COUNT).getInt32();
-			m_levelConfig.breakableCount = mySection.getValue(BREAKABLE_COUNT).getInt32();
-			m_levelConfig.boostersCount = mySection.getValue(BOOSTERS_COUNT).getInt32();
+            //store values in map
+            m_levelConfig.levelType      = static_cast<GameLevelType>(mySection.getValue(LEVEL_TYPE).getInt32());
+            m_levelConfig.enemyCount     = mySection.getValue(ENEMY_COUNT).getInt32();
+            m_levelConfig.breakableCount = mySection.getValue(BREAKABLE_COUNT).getInt32();
+            m_levelConfig.boostersCount  = mySection.getValue(BOOSTERS_COUNT).getInt32();
 
-			m_levelConfigData[mySection.getValue(ID_CONFIG).getInt32()] = m_levelConfig;
+            m_levelConfigData[mySection.getValue(ID_CONFIG).getInt32()] = m_levelConfig;
 
-			valuesFound = true;
-		}
-	}
+            valuesFound = true;
+        }
+    }
 
-	return valuesFound;
+    return valuesFound;
 }
 
 bool Level::setUpElements(int32_t levelElementsId)
 {
-	auto it = m_levelConfigData.find(levelElementsId);
-	if (it == m_levelConfigData.end())
-	{
-		LOG("Level with id [$] not found (not initialized from file).", levelElementsId);
-		return false;
-	}
+    auto it = m_levelConfigData.find(levelElementsId);
+    if (it == m_levelConfigData.end())
+    {
+        LOG("Level with id [$] not found (not initialized from file).", levelElementsId);
+        return false;
+    }
 
-	//walkable positions
-	const std::vector<sf::Vector2f>& walkablePositions = getWalkablePositions();
+    //walkable positions
+    const std::vector<sf::Vector2f>& walkablePositions = getWalkablePositions();
 
-	initializeUnbreakableObstacle();
+    initializeUnbreakableObstacle();
 
-	//initialize elements generator
-	m_elementsGenerator = std::make_unique<ElementsGenerator>();
-	if (!m_elementsGenerator->initialize(it->second))
-	{
-		LOG("Failed to initialize elements generator with id [$]" , levelElementsId);
-		return false;
-	}
+    //initialize elements generator
+    m_elementsGenerator = std::make_unique<ElementsGenerator>();
+    if (!m_elementsGenerator->initialize(it->second))
+    {
+        LOG("Failed to initialize elements generator with id [$]", levelElementsId);
+        return false;
+    }
 
-	//generate elements
-	const auto& generatedElements = m_elementsGenerator->generateElements(walkablePositions, *m_atlasTexture);
+    //generate elements
+    const auto& generatedElements = m_elementsGenerator->generateElements(walkablePositions, *m_atlasTexture);
 
-	//store generated elements on level
-	addObstacles(generatedElements.obstacles);
-	addGates(generatedElements.gates);
-	addBoosters(generatedElements.boosters);
+    //store generated elements on level
+    addObstacles(generatedElements.obstacles);
+    addGates(generatedElements.gates);
+    addBoosters(generatedElements.boosters);
     addEnemies(generatedElements.enemies);
     m_generatedElements.navGrid = generatedElements.navGrid;
 
-	return true;
+    return true;
 }
 
 void Level::initializeUnbreakableObstacle()
@@ -241,42 +241,44 @@ void Level::initializeUnbreakableObstacle()
 
     for (const auto& position : unbreakablePositions)
     {
-        auto collisionObject = std::make_unique<UnbreakableObstacle>(position, sf::Vector2f(unbreakableObstacleCollisionSize, unbreakableObstacleCollisionSize));
+        auto collisionObject = std::make_unique<UnbreakableObstacle>(position,
+                                                                     sf::Vector2f(unbreakableObstacleCollisionSize,
+                                                                                  unbreakableObstacleCollisionSize));
 
-		m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
+        m_generatedElements.unbreakableObstacles.push_back(std::move(collisionObject));
     }
 }
 
 void Level::addObstacles(const std::vector<std::shared_ptr<Obstacle>>& obstacles)
 {
-	for (const auto& obstacle : obstacles)
-	{
-		m_generatedElements.obstacles.push_back(obstacle);
-	}
+    for (const auto& obstacle : obstacles)
+    {
+        m_generatedElements.obstacles.push_back(obstacle);
+    }
 }
 
 void Level::addEnemies(const std::vector<std::shared_ptr<EnemyBase>>& enemies)
 {
-	for (const auto& enemy : enemies)
-	{
-		m_generatedElements.enemies.push_back(enemy);
-	}
+    for (const auto& enemy : enemies)
+    {
+        m_generatedElements.enemies.push_back(enemy);
+    }
 }
 
 void Level::addGates(const std::vector<std::shared_ptr<Gate>>& gates)
 {
-	for (const auto& gate : gates)
-	{
-		m_generatedElements.gates.push_back(gate);
-	}
+    for (const auto& gate : gates)
+    {
+        m_generatedElements.gates.push_back(gate);
+    }
 }
 
 void Level::addBoosters(const std::vector<std::shared_ptr<Booster>>& boosters)
 {
-	for (const auto& booster : boosters)
-	{
-		m_generatedElements.boosters.push_back(booster);
-	}
+    for (const auto& booster : boosters)
+    {
+        m_generatedElements.boosters.push_back(booster);
+    }
 }
 
 void Level::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -354,8 +356,8 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
     }
 
     auto enemy_it = m_generatedElements.enemies.begin();
-	while (enemy_it != m_generatedElements.enemies.end())
-	{
+    while (enemy_it != m_generatedElements.enemies.end())
+    {
         auto* enemy = enemy_it->get();
         enemy->getAIController().fsm->Update();
         enemy->updateVelocity(deltaTime);
@@ -368,26 +370,26 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
         {
             ++enemy_it;
         }
-	}
-	
-	auto obstacle_it = m_generatedElements.obstacles.begin();
-	while (obstacle_it != m_generatedElements.obstacles.end())
-	{
+    }
+
+    auto obstacle_it = m_generatedElements.obstacles.begin();
+    while (obstacle_it != m_generatedElements.obstacles.end())
+    {
         auto* obstacle = obstacle_it->get();
-		if (obstacle->hasExploded())
-		{
+        if (obstacle->hasExploded())
+        {
             Modules::Physics->deleteObject(&obstacle->getCollisionBox());
             sf::Vector2i gridPos = static_cast<sf::Vector2i>(obstacle->getCollisionBox().getCenter()) / 64;
             (*m_generatedElements.navGrid)[gridPos.y][gridPos.x] = 0;
-            obstacle_it = m_generatedElements.obstacles.erase(obstacle_it);
-		}
-		else
-		{
+            obstacle_it                                          = m_generatedElements.obstacles.erase(obstacle_it);
+        }
+        else
+        {
             ++obstacle_it;
-		}
-	}
+        }
+    }
 
-	draw(*window, sf::RenderStates::Default);
+    draw(*window, sf::RenderStates::Default);
 }
 
 void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
@@ -412,56 +414,56 @@ void Level::setViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& wi
     //set view center
     m_view.setCenter(viewCenter);
 
-	// setting viewport of the view to be:
-	// height maximum possible (window.y - HUD.y)
-	// width based on height so that proportion stays the same
+    // setting viewport of the view to be:
+    // height maximum possible (window.y - HUD.y)
+    // width based on height so that proportion stays the same
 
-	float hudPercentage = Modules::Game->getHUDHeight() / window.getSize().y;
-    float factor = (((window.getSize().y - Modules::Game->getHUDHeight()) * numberOfTilesWidth / numberOfTilesHeight) / window.getSize().x);
-	
+    float hudPercentage = Modules::Game->getHUDHeight() / window.getSize().y;
+    float factor = (((window.getSize().y - Modules::Game->getHUDHeight()) * numberOfTilesWidth / numberOfTilesHeight) /
+                    window.getSize().x);
+
     m_view.setViewport(sf::FloatRect((1.0f - factor) / 2, hudPercentage, factor, 1.f - hudPercentage));
-    
 }
 
 TileInfo Level::getTileInfos(int32_t x, int32_t y) const
 {
-	if (y >= 0 && y < m_fields.size() && x >= 0 && x < m_fields[0].size())
-	{
-		//get tile id based on x and y 
-		auto tileId = m_fields[y][x].tile->getId();
+    if (y >= 0 && y < m_fields.size() && x >= 0 && x < m_fields[0].size())
+    {
+        //get tile id based on x and y
+        auto tileId = m_fields[y][x].tile->getId();
 
-		//get loaded tileSet infos
-		auto tilesetInfoMap = m_levelData.getTilesetInfo();
-		auto tileInfoIt = tilesetInfoMap.find(tileId);
+        //get loaded tileSet infos
+        auto tilesetInfoMap = m_levelData.getTilesetInfo();
+        auto tileInfoIt     = tilesetInfoMap.find(tileId);
 
-		//return the tile info
-		if (tileInfoIt != tilesetInfoMap.end())
-		{
-			//LOG("Tile is : " + tileInfoIt->second);
-			return tileInfoIt->second;
-		}
-	}
+        //return the tile info
+        if (tileInfoIt != tilesetInfoMap.end())
+        {
+            //LOG("Tile is : " + tileInfoIt->second);
+            return tileInfoIt->second;
+        }
+    }
 
-	return TileInfo();
+    return TileInfo();
 }
 
 
 std::vector<sf::Vector2f> Level::getWalkablePositions() const
 {
-	std::vector<sf::Vector2f> walkablePositions;
+    std::vector<sf::Vector2f> walkablePositions;
 
-	for (std::size_t y = 0; y < m_fields.size(); ++y)
-	{
-		for (std::size_t x = 0; x < m_fields[y].size(); ++x)
-		{
+    for (std::size_t y = 0; y < m_fields.size(); ++y)
+    {
+        for (std::size_t x = 0; x < m_fields[y].size(); ++x)
+        {
             if (getTileInfos(static_cast<int32_t>(x), static_cast<int32_t>(y)) == "Walkable")
-			{
-				walkablePositions.push_back(m_fields[y][x].tilePosition);
-			}
-		}
-	}
+            {
+                walkablePositions.push_back(m_fields[y][x].tilePosition);
+            }
+        }
+    }
 
-	return walkablePositions;
+    return walkablePositions;
 }
 
 std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
@@ -482,7 +484,7 @@ std::vector<sf::Vector2f> Level::getUnbreakableObstaclePositions() const
     return unbreakablePositions;
 }
 
-const std::vector<std::shared_ptr<EnemyBase>>&  Level::getEnemies() const
+const std::vector<std::shared_ptr<EnemyBase>>& Level::getEnemies() const
 {
     return m_generatedElements.enemies;
 }
@@ -506,14 +508,14 @@ void Level::eraseEverything()
         boostersIterator = m_generatedElements.boosters.erase(boostersIterator);
     }
 
-	auto obstaclesIterator = m_generatedElements.obstacles.begin();
+    auto obstaclesIterator = m_generatedElements.obstacles.begin();
     while (obstaclesIterator != m_generatedElements.obstacles.end())
     {
         Modules::Physics->deleteObject(&(*obstaclesIterator)->getCollisionBox());
         obstaclesIterator = m_generatedElements.obstacles.erase(obstaclesIterator);
     }
 
-	auto obstacles2Iterator = m_generatedElements.unbreakableObstacles.begin();
+    auto obstacles2Iterator = m_generatedElements.unbreakableObstacles.begin();
     while (obstacles2Iterator != m_generatedElements.unbreakableObstacles.end())
     {
         Modules::Physics->deleteObject(&(*obstacles2Iterator)->getCollisionBox());
@@ -527,7 +529,7 @@ void Level::eraseEverything()
         enemiesIterator = m_generatedElements.enemies.erase(enemiesIterator);
     }
 
-	auto gatesIterator = m_generatedElements.gates.begin();
+    auto gatesIterator = m_generatedElements.gates.begin();
     while (gatesIterator != m_generatedElements.gates.end())
     {
         Modules::Physics->deleteObject(&(*gatesIterator)->getCollisionBox());

@@ -1,16 +1,16 @@
+#include "GameModule/EnemyBase.hpp"
 #include "Common/Logs.hpp"
 #include "Common/Modules.hpp"
-#include "GameModule/EnemyBase.hpp"
+#include "EventSystem/EventSystem.hpp"
+#include "GameModule/MusicFactory.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 #include "SpriteModule/Animation.hpp"
 #include "SpriteModule/Sprite.hpp"
 #include "SpriteModule/SpriteModule.hpp"
 #include <random>
 #include <set>
 #include <utility>
-#include "EventSystem/EventSystem.hpp"
-#include "LevelHandlingModule/LevelHandlingModule.hpp"
-#include "SoundSystem/SoundSystem.hpp"
-#include "GameModule/MusicFactory.hpp"
 
 EnemyType EnemyBase::getType() const
 {
@@ -40,7 +40,7 @@ void EnemyBase::initializeDeath()
         m_currentAnimationId = m_deatAnimationId;
         Modules::Sprite->getAnimation(m_currentAnimationId)->Play();
         Modules::Sprite->getAnimation(m_currentAnimationId)->setPosition(position);
-        isEnemyDead = true;
+        isEnemyDead        = true;
         isDeathInitialized = true;
     }
 }

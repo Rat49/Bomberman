@@ -4,13 +4,13 @@
 
 namespace
 {
-    const int32_t BOOSTER_ENABLED_STAGE = 4;   // speed booster works only on this stage
-    const float SPEED_FACTOR = 1.1f;          // slightly increasing speed value (10%)
-}
+const int32_t BOOSTER_ENABLED_STAGE = 4;    // speed booster works only on this stage
+const float   SPEED_FACTOR          = 1.1f; // slightly increasing speed value (10%)
+} // namespace
 
 void SpeedBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-    // If it is expected that game is made so that speed up booster only exists on stage 4, no need for this check 
+    // If it is expected that game is made so that speed up booster only exists on stage 4, no need for this check
     if (Modules::Game->getCurrentStage() == BOOSTER_ENABLED_STAGE)
     {
         playerCharacter.setNewSpeed(SPEED_FACTOR);

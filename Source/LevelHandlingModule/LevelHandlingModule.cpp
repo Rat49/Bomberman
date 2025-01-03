@@ -1,95 +1,95 @@
 #include "LevelHandlingModule.hpp"
-#include "SFML/Graphics.hpp"
-#include "LevelData.hpp"
 #include "Level.hpp"
+#include "LevelData.hpp"
+#include "SFML/Graphics.hpp"
 #include <Common/Logs.hpp>
 
 LevelId LevelHandlingModule::loadLevel(const std::string& baseLevelConfigPath)
 {
-	//create a new level and store it in the vector
-	auto newLevel = std::make_shared<Level>(baseLevelConfigPath);
+    //create a new level and store it in the vector
+    auto newLevel = std::make_shared<Level>(baseLevelConfigPath);
 
-	//initialize level
-	if (!newLevel->initialize())
-	{
-		LOG("Failed to initialize level from path : " + baseLevelConfigPath);
-		return INVALID_LEVEL_ID;
-	}
+    //initialize level
+    if (!newLevel->initialize())
+    {
+        LOG("Failed to initialize level from path : " + baseLevelConfigPath);
+        return INVALID_LEVEL_ID;
+    }
 
-	//add level in map
-	m_levelId++;
-	m_levels[m_levelId] = newLevel;
+    //add level in map
+    m_levelId++;
+    m_levels[m_levelId] = newLevel;
 
-	return m_levelId;
+    return m_levelId;
 }
 
 bool LevelHandlingModule::loadLevels(const std::vector<std::string>& configPaths)
 {
-	//temp level id vector
-	std::vector<LevelId> loadedLevelIds;
+    //temp level id vector
+    std::vector<LevelId> loadedLevelIds;
 
-	for (const auto& configPath : configPaths)
-	{
-		LevelId id = loadLevel(configPath);
+    for (const auto& configPath : configPaths)
+    {
+        LevelId id = loadLevel(configPath);
 
-		if (id == INVALID_LEVEL_ID)
-		{
-			LOG("Failed to load all levels. Partial levels will be discarded.");
+        if (id == INVALID_LEVEL_ID)
+        {
+            LOG("Failed to load all levels. Partial levels will be discarded.");
 
-			// Unload any successfully loaded levels
-			for (LevelId loadedId : loadedLevelIds)
-			{
-				unloadLevel(loadedId);
-			}
+            // Unload any successfully loaded levels
+            for (LevelId loadedId : loadedLevelIds)
+            {
+                unloadLevel(loadedId);
+            }
 
-			loadedLevelIds.clear();
-			return false;
-		}
+            loadedLevelIds.clear();
+            return false;
+        }
 
-		loadedLevelIds.push_back(id);
-	}
-	return true;
+        loadedLevelIds.push_back(id);
+    }
+    return true;
 }
 
 bool LevelHandlingModule::setUpElementsOnLevel(int32_t levelElementsId)
 {
-	if (isLevelLoaded(m_currentLevelID))
-		return m_levels[m_currentLevelID]->setUpElements(levelElementsId);
+    if (isLevelLoaded(m_currentLevelID))
+        return m_levels[m_currentLevelID]->setUpElements(levelElementsId);
 
-	return false;
+    return false;
 }
 
 bool LevelHandlingModule::unloadLevel(LevelId levelId)
 {
-	auto it = m_levels.find(levelId);
+    auto it = m_levels.find(levelId);
 
-	if (it == m_levels.end())
-	{
-		LOG("Level does not exist with level id : " + std::to_string(levelId));
-		return false;
-	}
+    if (it == m_levels.end())
+    {
+        LOG("Level does not exist with level id : " + std::to_string(levelId));
+        return false;
+    }
     // Erase elements from physics module
     it->second->eraseEverything();
 
-	return true;
+    return true;
 }
 
 void LevelHandlingModule::setCurrentLevel(LevelId levelId)
 {
-	//set loaded level as current 
-	if (isLevelLoaded(levelId))
-	{
-		m_currentLevelID = levelId;
-	}
-	else 
-	{
-		LOG("Attempted to set a non-loaded level as current.");
-	}
+    //set loaded level as current
+    if (isLevelLoaded(levelId))
+    {
+        m_currentLevelID = levelId;
+    }
+    else
+    {
+        LOG("Attempted to set a non-loaded level as current.");
+    }
 }
 
 LevelId LevelHandlingModule::getCurrentLevelID() const
 {
-	return m_currentLevelID;
+    return m_currentLevelID;
 }
 
 std::shared_ptr<Level> LevelHandlingModule::getCurrentLevel() const
@@ -99,40 +99,40 @@ std::shared_ptr<Level> LevelHandlingModule::getCurrentLevel() const
 
 bool LevelHandlingModule::isLevelLoaded(LevelId levelId) const
 {
-	// Check if the level ID exists in the map
-	return m_levels.find(levelId) != m_levels.end();
+    // Check if the level ID exists in the map
+    return m_levels.find(levelId) != m_levels.end();
 }
 
 void LevelHandlingModule::setLevelViewOffset(const sf::Vector2f& offset, const sf::RenderWindow& window)
 {
-	//set level view based on player position
-	if (isLevelLoaded(m_currentLevelID))
+    //set level view based on player position
+    if (isLevelLoaded(m_currentLevelID))
         m_levels[m_currentLevelID]->setViewOffset(offset, window);
 }
 
 TileInfo LevelHandlingModule::getTileInfo(int32_t x, int32_t y)
 {
     if (isLevelLoaded(m_currentLevelID))
-	{
+    {
         auto info = m_levels[m_currentLevelID]->getTileInfos(x, y);
-		return info;
-	}
+        return info;
+    }
 
-	LOG("Can't return tile info, level is not loaded");
-	return TileInfo();
+    LOG("Can't return tile info, level is not loaded");
+    return TileInfo();
 }
 
 std::vector<sf::Vector2f> LevelHandlingModule::getWalkablePositions() const
 {
     auto it = m_levels.find(m_currentLevelID);
 
-	if (it != m_levels.end())
-	{
-		return it->second->getWalkablePositions();
-	}
+    if (it != m_levels.end())
+    {
+        return it->second->getWalkablePositions();
+    }
 
-	LOG("Level not found");
-	return std::vector<sf::Vector2f>();
+    LOG("Level not found");
+    return std::vector<sf::Vector2f>();
 }
 
 std::vector<sf::Vector2f> LevelHandlingModule::getUnbreakableObstaclePositions() const
@@ -152,19 +152,19 @@ std::vector<sf::Vector2f> LevelHandlingModule::getUnbreakableObstaclePositions()
 void LevelHandlingModule::update(float deltaTime, sf::Window* window)
 {
     if (isLevelLoaded(m_currentLevelID))
-	{
-		//draw level on screen
-		auto* renderWindow = dynamic_cast<sf::RenderWindow*>(window);
+    {
+        //draw level on screen
+        auto* renderWindow = dynamic_cast<sf::RenderWindow*>(window);
         m_levels[m_currentLevelID]->update(renderWindow, deltaTime);
-	}
+    }
 }
 
 void LevelHandlingModule::terminate()
 {
-	// Reset all levels and clear the map
-	for (auto& level : m_levels)
-		level.second.reset();
+    // Reset all levels and clear the map
+    for (auto& level : m_levels)
+        level.second.reset();
 
-	//clear level map
-	m_levels.clear();
+    //clear level map
+    m_levels.clear();
 }

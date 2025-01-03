@@ -1,13 +1,13 @@
 #include "GameOver.hpp"
 #include "Common/Modules.hpp"
 #include "GameModule.hpp"
+#include "GameModule/MusicFactory.hpp"
+#include "SoundSystem/SoundSystem.hpp"
 #include "UIConstants.hpp"
 #include "UISystem/UIButton.hpp"
 #include "UISystem/UIFactory.hpp"
 #include "UISystem/UIInputField.hpp"
 #include "UISystem/UILabel.hpp"
-#include "SoundSystem/SoundSystem.hpp"
-#include "GameModule/MusicFactory.hpp"
 
 namespace
 {

@@ -3,7 +3,7 @@
 
 // logs could be used only while development
 #ifndef FINAL
-	#define LOG(...) Modules::Logs->Log(__VA_ARGS__)
+#define LOG(...) Modules::Logs->Log(__VA_ARGS__)
 #else
-	#define LOG(...) 
+#define LOG(...)
 #endif

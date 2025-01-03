@@ -1,36 +1,46 @@
 #pragma once
 
-#include "AIModule/Transition.hpp"
 #include "AIModule/AIController.hpp"
+#include "AIModule/Transition.hpp"
 
-class IdleToChaseTransition : public Transition {
+class IdleToChaseTransition : public Transition
+{
 public:
-	IdleToChaseTransition(std::shared_ptr<State> targetState) : targetState(targetState) {}
+    IdleToChaseTransition(std::shared_ptr<State> targetState) : targetState(targetState)
+    {
+    }
 
-	bool ShouldTrigger(AIController* ai) const override {
-		return ai->getIsPlayerInRange();
-	}
+    bool ShouldTrigger(AIController* ai) const override
+    {
+        return ai->getIsPlayerInRange();
+    }
 
-	std::shared_ptr<State> GetTargetState() const override {
-		return targetState;
-	}
+    std::shared_ptr<State> GetTargetState() const override
+    {
+        return targetState;
+    }
 
 private:
-	std::shared_ptr<State> targetState;
+    std::shared_ptr<State> targetState;
 };
 
-class ChaseToIdleTransition : public Transition {
+class ChaseToIdleTransition : public Transition
+{
 public:
-	ChaseToIdleTransition(std::shared_ptr<State> targetState) : targetState(targetState) {}
+    ChaseToIdleTransition(std::shared_ptr<State> targetState) : targetState(targetState)
+    {
+    }
 
-	bool ShouldTrigger(AIController* ai) const override {
-		return !ai->getIsPlayerInRange();
-	}
+    bool ShouldTrigger(AIController* ai) const override
+    {
+        return !ai->getIsPlayerInRange();
+    }
 
-	std::shared_ptr<State> GetTargetState() const override {
-		return targetState;
-	}
+    std::shared_ptr<State> GetTargetState() const override
+    {
+        return targetState;
+    }
 
 private:
-	std::shared_ptr<State> targetState;
+    std::shared_ptr<State> targetState;
 };

@@ -2,7 +2,7 @@
 
 void InvincibleBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-	playerCharacter.setInvincibility(true);
+    playerCharacter.setInvincibility(true);
     m_isEffectDone = false;
     m_startTime    = std::chrono::high_resolution_clock::now();
 }
