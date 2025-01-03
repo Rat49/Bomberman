@@ -2,7 +2,6 @@
 #include "Common/Logs.hpp"
 #include "Common/Modules.hpp"
 #include "ConfigSystem/ConfigSystem.hpp"
-#include <iostream>
 
 // instead of namespace this could be also defined inside run() method, because it is only used there
 namespace
@@ -47,6 +46,12 @@ void ConfigSystemTest::run()
             float                y         = mySection.getValue(Y).getFloat();
             int32_t              width     = mySection.getValue(WIDTH).getInt32();
             int32_t              height    = mySection.getValue(HEIGHT).getInt32();
+
+            _CRT_UNUSED(x);
+            _CRT_UNUSED(y);
+            _CRT_UNUSED(width);
+            _CRT_UNUSED(height);
+            
             LOG("x: $, y: $, width: $, heigth: $", x, y, width, height);
         }
     }

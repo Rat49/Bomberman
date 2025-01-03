@@ -274,6 +274,7 @@ bool AssetManager::loadMetadata()
 
     for (const auto& el : assetsMetadata)
     {
+        _CRT_UNUSED(el);
         LOG("$:$:$", el.first, el.second.size, el.second.offset);
     }
 

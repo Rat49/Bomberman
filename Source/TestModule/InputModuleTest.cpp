@@ -11,18 +11,21 @@ void InputModuleTest::buttonTest(void* buttonState)
 {
     bool state = *reinterpret_cast<bool*>(buttonState);
     LOG("InputModuleTest button binding test: $", state);
+    _CRT_UNUSED(state);
 }
 
 void InputModuleTest::axis1DTest(void* axis1DState)
 {
     float state = *reinterpret_cast<float*>(axis1DState);
     LOG("InputModuleTest button binding test: $", state);
+    _CRT_UNUSED(state);
 }
 
 void InputModuleTest::axis2DTest(void* axis2DState)
 {
     sf::Vector2f state = *reinterpret_cast<sf::Vector2f*>(axis2DState);
     LOG("InputModuleTest button binding test: $:$", state.x, state.y);
+    _CRT_UNUSED(state);
 }
 
 void InputModuleTest::setup()
