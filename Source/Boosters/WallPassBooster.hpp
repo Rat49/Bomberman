@@ -1,10 +1,9 @@
 #pragma once
-#include "BoosterComponent.hpp"
-#include <chrono>
 
-class RemoteControlBooster : public BoosterComponent
+#include "BoosterComponent.hpp"
+
+class WallPassBooster : public BoosterComponent
 {
-public:
 
     void applyEffect(PlayerCharacter& playerCharacter) override;
 

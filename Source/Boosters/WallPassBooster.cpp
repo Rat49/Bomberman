@@ -1,19 +1,19 @@
-#include "PassBombBooster.hpp"
+#include "WallPassBooster.hpp"
 
-void PassBombBooster::applyEffect(PlayerCharacter& playerCharacter)
+void WallPassBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-    playerCharacter.setPassThroughBombs(true);
+    playerCharacter.setPassThroughWall(true);
     m_isEffectDone = false;
     m_startTime    = std::chrono::high_resolution_clock::now();
 }
 
-bool PassBombBooster::removeEffect(PlayerCharacter& playerCharacter)
+bool WallPassBooster::removeEffect(PlayerCharacter& playerCharacter)
 {
-    playerCharacter.setPassThroughBombs(false);
+    playerCharacter.setPassThroughWall(false);
     return m_isEffectDone;
 }
 
-bool PassBombBooster::shouldRemoveEffect()
+bool WallPassBooster::shouldRemoveEffect()
 {
     auto now       = std::chrono::high_resolution_clock::now();
     m_isEffectDone = std::chrono::duration<float>(now - m_startTime).count() >= m_duration;

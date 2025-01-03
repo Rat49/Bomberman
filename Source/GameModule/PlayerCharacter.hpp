@@ -1,12 +1,12 @@
 #pragma once
-#include "InputModule/InputTypes.hpp"
-#include "GameModule/Bomb.hpp"
 #include "CollisionModule/PlayerCollisionComponent.hpp"
 #include "CollisionModule/CollisionObject.hpp"
 #include "CollisionModule/PhysicsModule.hpp"
+#include "InputModule/InputTypes.hpp"
+#include "GameModule/EnemyBase.hpp"
+#include "GameModule/Bomb.hpp"
 #include <chrono>
 #include <set>
-#include "GameModule/EnemyBase.hpp"
 
 class Booster;
 class UnbreakableObstacle;
@@ -29,45 +29,39 @@ public:
 
 	void onBombDetonate(void* buttonState);
 
-	void setCanDetonate(bool detonate) { canDetonate = detonate; }
-
 	void updateAnimation(int32_t id);
-
-	std::shared_ptr<Animation> getCurrentAnimation() const;
-
-	bool getIsUpdated() const { return m_isUpdated; }
 
 	void setIsUpdated(bool isUpdated) { m_isUpdated = isUpdated; }
 
-	sf::Vector2f getCurrentPosition() const;
-
-	void PassThroughBombs(bool pass);
-
-    bool getPassThroughBombs() {return canPassThroughBombs;}
-
 	void updateVelocity(float deltaTime);
-
-	void updateSpeed(float factor);
 
 	void updateBombs(float deltaTime);
 
-	void addMaxBombs();
-
-	void addExplosionRadius();
-
-	void setPassThroughFlame(bool shouldPassThroughFlame){ canPassThroughFlames = shouldPassThroughFlame; }
-
 	void drawBombs(sf::RenderWindow& window);
+
+	void die();
+
+	void resetToStart();
+	
+	//Getters
+
+	bool getIsUpdated() const { return m_isUpdated; }
+
+    bool getPassThroughBombs() const {return canPassThroughBombs;}
+	
+	bool getPassThroughFlame() const { return canPassThroughFlames; }
+	
+	bool getPassThroughWall() const { return canPassThroughWall; }
+	
+	bool getIsInvincible() const { return isInvincible; }
+	
+	std::shared_ptr<Animation> getCurrentAnimation() const;
+
+	sf::Vector2f getCurrentPosition() const;
 
 	CollisionComponent& getCollisionBox() const { return *collisionBox; }
 
-	void startInvincibility();
-
-	void updateInvincibility();
-
-	bool getIsInvincible() const;
-
-	void setIsInvincible(bool isPlayerInvincible) { isInvincible = isPlayerInvincible; }
+	//handlers
 
 	bool handleGateOverlap();
 
@@ -75,11 +69,26 @@ public:
 
 	void handleBoosterOverlap(Booster* booster);
 
-	void die();
+	//Boosters effect functions
 
-	void resetToStart();
+	void addMaxBombs();
+	
+	void setCanDetonate(bool detonate);
+	
+	void setPassThroughBombs(bool pass);
+
+	void setPassThroughWall(bool pass);
+
+	void setNewSpeed(float factor);
+	
+	void setInvincibility(bool isPlayerInvincible);
+	
+	void setPassThroughFlame(bool pass);
+	
+	void addExplosionRadius();
 
 private:
+
 	int32_t currentAnimation = -1;
 	float x = 64.f;
 	float y = 64.f;
@@ -92,6 +101,7 @@ private:
 	float velocity = 0.f;
     bool canPassThroughBombs = false;
     bool canPassThroughFlames = false;
+    bool canPassThroughWall = false;
 
 
 	ActionID playerMovement;

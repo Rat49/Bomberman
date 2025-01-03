@@ -254,7 +254,10 @@ int32_t Bomb::explosionEffect(const sf::Vector2f& direction)
         }
         else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitObject->getObjectParent()))
         {
-            hitPlayer->die();
+            if (!hitPlayer->getPassThroughFlame())
+            {
+                hitPlayer->die();
+            }
         }
         else if (auto* hitEnemy = dynamic_cast<EnemyBase*>(hitObject->getObjectParent()))
         {

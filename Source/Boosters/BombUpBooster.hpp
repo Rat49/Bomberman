@@ -12,5 +12,6 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
+
     bool    isEffectDone = false;
 };

@@ -12,5 +12,6 @@ public:
     bool shouldRemoveEffect() override;
 
 private:
-    int32_t m_boosterId;
+
+    bool m_isEffectDone;
 };
