@@ -4,6 +4,8 @@
 #include "Common/Modules.hpp"
 #include "GameModule/GameModule.hpp"
 #include "InputModule/InputModule.hpp"
+#include "SoundSystem/SoundSystem.hpp"
+#include "GameModule/MusicFactory.hpp"
 
 PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFont, const std::string& pathToIniFile) 
 {
@@ -32,6 +34,7 @@ PauseMenu::PauseMenu(sf::RenderWindow* renderWindow, const std::string& pauseFon
 				button->onRelease = []() {
 					Modules::Game->setIsPaused(false);
 					Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+                    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
 				};
 			}
 			else if (element.first == Buttons::OPTIONS) {

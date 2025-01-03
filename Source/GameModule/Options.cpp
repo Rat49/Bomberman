@@ -10,6 +10,7 @@
 #include "ConfigSystem/ConfigSystem.hpp"
 #include "SoundSystem/SoundSystem.hpp"
 #include "InputModule/InputModule.hpp"
+#include "GameModule/MusicFactory.hpp"
 
 namespace
 {
@@ -54,10 +55,16 @@ Options::Options(sf::RenderWindow* renderWindow, const std::string& optionsFont,
 			if (element.first == BACK) {
 				button->onRelease = [this]() {
 					hideScreen();
-					if (Modules::Game->getIsPaused())
-						Modules::Game->setCurrentScreen(Screens::LEVEL);
-					else
-						Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+                    if (Modules::Game->getIsPaused())
+                    {
+                        Modules::Game->setCurrentScreen(Screens::LEVEL);
+                        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Background));
+                    }
+                    else
+                    {
+                        Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+                        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
+                    }
 				};
 			}
 			else if (element.first == FULLSCREEN) {

@@ -251,6 +251,7 @@ void GameModule::terminate()
 
 void GameModule::setCurrentScreen(const Screens& newScreen)
 {
+    Modules::Sounds->stopMusic();
 	currentScreen = newScreen;
 	timeCounter = 0.0f;
 }
@@ -285,8 +286,8 @@ void GameModule::checkTimeCounter()
         {
             (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
             // Changing screen to game over, for now here
-            Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
             setCurrentScreen(Screens::GAME_OVER);
+            Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
 
             Modules::Events->emit(GameModule::GAME_TIMER_FINISHED, nullptr);
         }
@@ -357,15 +358,15 @@ void GameModule::playerDied()
 		Modules::Level->unloadLevel(currentLevel);
         Modules::Level->setUpElementsOnLevel(currentStage);
 
-        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
         setCurrentScreen(Screens::STAGE);
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 		//generate new level, same difficulty
 	}
     else
     {
         (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
-        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
         setCurrentScreen(Screens::GAME_OVER);
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
 	}
 }
 
@@ -374,8 +375,8 @@ void GameModule::nextLevel()
     if (++currentStage > maxStage)
     {
         (std::dynamic_pointer_cast<GameOver>(screens[Screens::GAME_OVER]))->setScore(gameStats->getPoints());
-        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
         setCurrentScreen(Screens::GAME_OVER);
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::GameOver));
         return;
 	}
     gameTime = startingTime;
@@ -391,9 +392,9 @@ void GameModule::nextLevel()
 
     player.resetToStart();
 
-    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 	(std::dynamic_pointer_cast<StageScreen>(screens[Screens::STAGE]))->setStage(currentStage);
     setCurrentScreen(Screens::STAGE);
+    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 }
 
 void GameModule::freeze(AllSounds sound)

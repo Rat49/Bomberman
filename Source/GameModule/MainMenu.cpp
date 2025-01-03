@@ -23,13 +23,14 @@ MainMenu::MainMenu(sf::RenderWindow* renderWindow, const std::string& font, cons
 			};
 			if (element.first == Buttons::START) {
 				button->onRelease = []() {
-                    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 					Modules::Game->setCurrentScreen(Screens::STAGE);
+                    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Stage));
 				};
 			}
 			else if (element.first == Buttons::LEADERBOARD) {
 				button->onRelease = []() {
 					Modules::Game->setCurrentScreen(Screens::LEADERBOARD);
+                    Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Leaderboard));
 					};
 			}
 			else if (element.first == Buttons::OPTIONS) {

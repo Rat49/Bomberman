@@ -6,6 +6,8 @@
 #include "UISystem/UIFactory.hpp"
 #include "UISystem/UIInputField.hpp"
 #include "UISystem/UILabel.hpp"
+#include "SoundSystem/SoundSystem.hpp"
+#include "GameModule/MusicFactory.hpp"
 
 namespace
 {
@@ -31,7 +33,10 @@ GameOver::GameOver(sf::RenderWindow* renderWindow, const std::string& screenFont
                 button->onRelease = [this]()
                 {
                     if (saveResult())
+                    {
                         Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+                        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
+                    }
                     else
                         invalidClickMenu = true;
                 };

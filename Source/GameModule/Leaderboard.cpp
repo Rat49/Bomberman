@@ -7,6 +7,8 @@
 #include "GameModule/GameModule.hpp"
 #include "Common/Logs.hpp"
 #include "SaveSystem/SaveSystem.hpp"
+#include "SoundSystem/SoundSystem.hpp"
+#include "GameModule/MusicFactory.hpp"
 
 namespace
 {
@@ -35,6 +37,7 @@ Leaderboard::Leaderboard(sf::RenderWindow* renderWindow, const std::string& hudF
 		};
 	menuButton->onRelease = []() {
 		Modules::Game->setCurrentScreen(Screens::MAIN_MENU);
+        Modules::Sounds->playMusic(static_cast<int32_t>(AllMusic::Title));
 		};
 }
 

@@ -4,7 +4,7 @@
 
 enum class AllMusic
 {
-	Background, Title, GameOver, Stage, BoosterBackground
+	Background, Title, GameOver, Stage, BoosterBackground, Leaderboard
 };
 
 enum class AllSounds
