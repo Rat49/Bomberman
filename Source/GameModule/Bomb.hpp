@@ -74,6 +74,10 @@ private:
 	// If true that means detonating key is pressed and detonating is enabled
 	bool isDetonating = false;
 
+	int32_t xIdx = -1;
+
+	int32_t yIdx = -1;
+
     std::vector<std::pair<Obstacle*, sf::Vector2f>> obstaclesHit;
 	bool canChangeObstacleAnim = false;
 

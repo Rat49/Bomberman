@@ -55,6 +55,8 @@ public:
 
 	const std::vector<std::shared_ptr<Obstacle>>& getObstacles() const;
 
+	const std::shared_ptr<std::vector<std::vector<bool>>> getNavGrid() const;
+
 private:
     //draws all the tiles in the level to the specified render target
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

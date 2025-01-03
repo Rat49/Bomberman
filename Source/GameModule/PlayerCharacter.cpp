@@ -179,6 +179,15 @@ void PlayerCharacter::onBombPlant(void* state)
 
 	if (isPressed)
     {
+        int32_t xIdx = static_cast<int32_t>(getCurrentPosition().x + 32) / 64;
+        int32_t yIdx = static_cast<int32_t>(getCurrentPosition().y + 32) / 64;
+
+        if ((*Modules::Level->getCurrentLevelPtr()->getNavGrid())[yIdx][xIdx] == 1)
+        {
+            LOG("Bomb already placed there");
+            return;
+        }
+
         if (activeBombs.size() >= static_cast<size_t>(maxBombs))
         {
             LOG("Cannot plant more bombs. Maximum reached.");

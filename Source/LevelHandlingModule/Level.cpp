@@ -402,6 +402,17 @@ void Level::update(sf::RenderWindow* window, float deltaTime)
 		}
 	}
 
+	//for (int i = 0; i < m_generatedElements.navGrid->size(); ++i)
+	//{
+	//	for (int j = 0; j < (*m_generatedElements.navGrid)[0].size(); ++j)
+	//	{
+ //           std::cout << (*m_generatedElements.navGrid)[i][j];
+	//	}
+ //       std::cout << std::endl;
+	//}
+
+	//system("cls");
+
 	draw(*window, sf::RenderStates::Default);
 }
 
@@ -510,4 +521,9 @@ const std::vector<std::shared_ptr<Booster>>& Level::getBoosters() const
 const std::vector<std::shared_ptr<Obstacle>>& Level::getObstacles() const
 {
     return m_generatedElements.obstacles;
+}
+
+const std::shared_ptr<std::vector<std::vector<bool>>> Level::getNavGrid() const
+{
+    return m_generatedElements.navGrid;
 }

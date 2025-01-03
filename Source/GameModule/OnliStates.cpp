@@ -20,7 +20,7 @@ namespace
 void PatrollingState::Enter(AIController* ai)
 {
 
-    auto parent = static_cast<EnemyBase*>(ai->getParent());
+    auto parent = static_cast<Onli*>(ai->getParent());
     parent->playRightAnimation();
     startTime = std::chrono::steady_clock::now();
     sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
@@ -28,6 +28,7 @@ void PatrollingState::Enter(AIController* ai)
 
     ai->setIsPlayerInRange(false);
 
+    
     int8_t newDirection = 0;
     for (const auto& direction : directions)
     {
@@ -40,7 +41,7 @@ void PatrollingState::Enter(AIController* ai)
 
         if (isNotColiding)
         {
-            m_currentDirection = newDirection;
+            parent->setCurrentDirection(newDirection);
             break;
         }
         ++newDirection;
@@ -50,42 +51,36 @@ void PatrollingState::Enter(AIController* ai)
 void PatrollingState::Update(AIController* ai)
 {
 
-    auto parent  = static_cast<EnemyBase*>(ai->getParent());
+    auto parent              = static_cast<Onli*>(ai->getParent());
+    int32_t currentDirection = parent->getCurrentDirection();
     sf::Vector2f endPoint;
 
-    parent->getCollisionBox().setRectangleProperties(parent->getPosition() /*+ sf::Vector2f(2.f, 2.f)*/, {COLLISION_SIZE, COLLISION_SIZE});
-    sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
-    sf::Vector2f parentPosition = parent->getPosition();
-    sf::Vector2f raycastStartingPos = collisionCenter + (directions[m_currentDirection] *  static_cast<float>(RAYCAST_OFFSET));
+    parent->getCollisionOnliBox().setRectangleProperties(parent->getPosition(), {COLLISION_SIZE, COLLISION_SIZE});
+    sf::Vector2f collisionCenter    = parent->getCollisionOnliBox().getCenter();
+    sf::Vector2f parentPosition     = parent->getPosition();
+    sf::Vector2f raycastStartingPos = collisionCenter + (directions[currentDirection] * static_cast<float>(RAYCAST_OFFSET));
 
-    auto obstacleComponent = Modules::Physics->rayCast(raycastStartingPos, directions[m_currentDirection], RAYCAST_LENGTH, endPoint);
-    bool isNotColiding = obstacleComponent == nullptr;
-    isNotColiding &= Modules::Level->getTileInfo((static_cast<int32_t>(collisionCenter.x + (directions[m_currentDirection].x * RAYCAST_OFFSET) ) ) / TILE_SIZE,
-                                                 (static_cast<int32_t>(collisionCenter.y + (directions[m_currentDirection].y * RAYCAST_OFFSET) ) ) / TILE_SIZE) == "Walkable";
+    bool isNotColiding = Modules::Level->getTileInfo((static_cast<int32_t>(collisionCenter.x + (directions[currentDirection].x * RAYCAST_OFFSET))) / TILE_SIZE, 
+                                                     (static_cast<int32_t>(collisionCenter.y + (directions[currentDirection].y * RAYCAST_OFFSET) ) ) / TILE_SIZE) == "Walkable";
 
-    EnemyBase* enemy = nullptr;
-    if (obstacleComponent != nullptr)
+    if (!parent->getIsDeathInitialized())
     {
-        enemy = dynamic_cast<EnemyBase*>(obstacleComponent->getObjectParent());
+        parent->setPosition({parentPosition.x + (directions[currentDirection].x * parent->getVelocity()), parentPosition.y + (directions[currentDirection].y * parent->getVelocity())});
     }
 
-    if (!parent->getIsDeathInitialized() && (isNotColiding || enemy))
+    if (!isNotColiding)
     {
-        parent->setPosition({parentPosition.x + (directions[m_currentDirection].x * parent->getVelocity()),
-                             parentPosition.y + (directions[m_currentDirection].y * parent->getVelocity())});
-    }
-    else
-    {
-        m_currentDirection = m_directionPairs[m_currentDirection];
-        m_changeAnimation  = true;
+        parent->swapDirections();
+        parent->setShouldChangeAnimation(true);
     }
 
-    if (!parent->getIsDeathInitialized() && m_changeAnimation)
+    if (!parent->getIsDeathInitialized() && parent->getShouldChangeAnimation())
     {
-        m_changeAnimation = false;
-        switch (m_currentDirection)
+        parent->setShouldChangeAnimation(false);
+        switch (parent->getCurrentDirection())
         {
             case Directions::Right:
+
                 parent->playRightAnimation();
                 break;
             case Directions::Left:
@@ -115,8 +110,8 @@ void PatrollingState::Exit(AIController*)
  */
 void RestState::Enter(AIController* ai)
 {
-    auto parent = static_cast<EnemyBase*>(ai->getParent());
-    sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
+    auto parent = static_cast<Onli*>(ai->getParent());
+    sf::Vector2f collisionCenter = parent->getCollisionOnliBox().getCenter();
     sf::Vector2i parentPosition  = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
                                     static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
 
@@ -143,8 +138,8 @@ void RestState::Enter(AIController* ai)
 
 void RestState::Update(AIController* ai)
 {
-    auto parent  = static_cast<EnemyBase*>(ai->getParent());
-    sf::Vector2f collisionCenter = parent->getCollisionBox().getCenter();
+    auto parent  = static_cast<Onli*>(ai->getParent());
+    sf::Vector2f collisionCenter = parent->getCollisionOnliBox().getCenter();
     sf::Vector2i parentPosition  = {static_cast<int32_t>(parent->getPosition().x) / TILE_SIZE,
                                     static_cast<int32_t>(parent->getPosition().y) / TILE_SIZE};
 

@@ -8,22 +8,14 @@
 #include "Common/Logs.hpp"
 #include <utility>
 #include <unordered_map>
-
-enum Directions
-{
-    Right,
-    Left,
-    Down,
-    Up
-};
+#include "CollisionModule/CollisionComponent.hpp"
+#include "Onli.hpp"
 
 class PatrollingState : public State
 {
 public:
     PatrollingState() : gen(rd()), d(0.5), directions({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) // right, left, down, up
     {
-        m_currentDirection = Directions::Left;
-
         m_directionPairs[Directions::Right] = Directions::Left;
         m_directionPairs[Directions::Left]  = Directions::Right;
         m_directionPairs[Directions::Down] = Directions::Up;
@@ -48,10 +40,7 @@ private:
     std::mt19937 gen;
     std::bernoulli_distribution d;
     std::vector<sf::Vector2f> directions;
-    int8_t m_currentDirection;
     std::unordered_map<int8_t, int8_t> m_directionPairs;
-    bool m_changeAnimation = true;
-
 };
 
 class RestState : public State

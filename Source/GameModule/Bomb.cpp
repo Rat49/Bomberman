@@ -4,6 +4,7 @@
 #include "GameModule/PlayerCharacter.hpp"
 #include "GameModule/EnemyBase.hpp"
 #include "UnbreakableObstacle.hpp"
+#include "LevelHandlingModule/LevelHandlingModule.hpp"
 
 Bomb::Bomb()
 {
@@ -58,6 +59,10 @@ bool Bomb::Initialize(const sf::Vector2f& newPosition, float newExplosionRadius,
 	this->explosionRadius = newExplosionRadius;
 	this->timer = newTimer;
 
+    xIdx = static_cast<int32_t>(pos.x) / 64;
+    yIdx = static_cast<int32_t>(pos.y) / 64;
+    (*Modules::Level->getCurrentLevelPtr()->getNavGrid())[yIdx][xIdx] = 1;
+
 	return true;
 }
 
@@ -84,7 +89,7 @@ void Bomb::update(float deltaTime, bool canDetonate)
     {
 		Modules::Physics->deleteObject(collisionBox.get());
         explode();
-
+        (*Modules::Level->getCurrentLevelPtr()->getNavGrid())[yIdx][xIdx] = 0;
     }
 }
 
