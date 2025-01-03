@@ -11,6 +11,7 @@
 #include "Booster.hpp"
 #include <thread>
 #include <chrono>
+#include <random>
 
 PlayerCharacter::PlayerCharacter()
 {
@@ -32,7 +33,6 @@ bool PlayerCharacter::init()
 	maxBombs = playerConfig.getSection("PlayersBomb").getValue("maxBombs").getInt32();
     bombCapacity = playerConfig.getSection("BombUpBooster").getValue("bombCapacity").getInt32();
 	bombDuration = playerConfig.getSection("BombsDuration").getValue("bombDuration").getFloat();
-    invincibilityDuration = playerConfig.getSection("InvincibeBooster").getValue("invincibilityDuration").getFloat();
     currentExposionRadius = playerConfig.getSection("ExplosionRadius").getValue("explosionRadius").getFloat();
     maxExposionRadius = playerConfig.getSection("MaxExplosionRadius").getValue("maxExplosionRadius").getFloat();
 
@@ -188,6 +188,9 @@ void PlayerCharacter::handleBoosterOverlap(Booster* booster)
 
 void PlayerCharacter::die()
 {
+	if (getIsInvincible())
+		return;
+		
     Modules::Sounds->playSound(static_cast<int32_t>(AllSounds::PlayersDeath));
 
     Modules::Sprite->getAnimation(currentAnimation)->Stop();
@@ -195,9 +198,9 @@ void PlayerCharacter::die()
 
     if (auto animation = Modules::Sprite->getAnimation(deathId))
     {
-        animation->setPosition(x, y);
-        animation->Play();
-        currentAnimation = deathId;
+            animation->setPosition(x, y);
+            animation->Play();
+            currentAnimation = deathId;
     }
 }
 
@@ -258,6 +261,14 @@ void PlayerCharacter::onBombDetonate(void*)
 	}
 }
 
+void PlayerCharacter::drawBombs(sf::RenderWindow& window)
+{
+ 	for (const auto& bomb : activeBombs)
+	{
+		bomb->draw(window);
+	}
+}
+
 void PlayerCharacter::updateBombs(float deltaTime)
 {
 	for (auto it = activeBombs.begin(); it != activeBombs.end();)
@@ -286,28 +297,9 @@ void PlayerCharacter::updateBombs(float deltaTime)
         
 }
 
-void PlayerCharacter::addMaxBombs()
+void PlayerCharacter::updateVelocity(float deltaTime)
 {
-    if (maxBombs<bombCapacity)
-    {
-        maxBombs++;
-    }
-}
-void PlayerCharacter::addExplosionRadius()
-{
-    if (currentExposionRadius < maxExposionRadius)
-    {
-        currentExposionRadius++;
-    }
-}
-
-void PlayerCharacter::drawBombs(sf::RenderWindow& window)
-{
- 	for (const auto& bomb : activeBombs)
-	{
-		//window.draw(*bomb->getCurrentAnimation());
-		bomb->draw(window);
-	}
+    velocity = speed * deltaTime;
 }
 
 void PlayerCharacter::updateAnimation(int32_t id)
@@ -348,20 +340,50 @@ sf::Vector2f PlayerCharacter::getCurrentPosition() const
 	return { x , y };
 }
 
-void PlayerCharacter::PassThroughBombs(bool pass)
+void PlayerCharacter::addMaxBombs()
+{
+    if (maxBombs < bombCapacity)
+    {
+        maxBombs ++;
+    }
+}
+
+void PlayerCharacter::setCanDetonate(bool detonate)
+{
+    canDetonate = detonate;
+}
+
+void PlayerCharacter::setPassThroughBombs(bool pass)
 {
     canPassThroughBombs = pass;
 }
 
-void PlayerCharacter::updateVelocity(float deltaTime)
+void PlayerCharacter::setPassThroughWall(bool pass)
 {
-    velocity = speed * deltaTime;
+    canPassThroughWall = pass;
 }
 
-void PlayerCharacter::updateSpeed(float factor)
+void PlayerCharacter::setPassThroughFlame(bool pass)
+{
+    canPassThroughFlames = pass;
+}
+
+void PlayerCharacter::setNewSpeed(float factor)
 {
     speed *= factor;
-    LOG("Speed: $", speed);
+}
+
+void PlayerCharacter::setInvincibility(bool isPlayerInvincible)
+{
+    isInvincible = isPlayerInvincible;
+}
+
+void PlayerCharacter::addExplosionRadius()
+{
+    if (currentExposionRadius < maxExposionRadius)
+    {
+        currentExposionRadius++;
+    }
 }
 
 PlayerCharacter::~PlayerCharacter()
@@ -371,35 +393,3 @@ PlayerCharacter::~PlayerCharacter()
 	Modules::Input->UnregisterEvent(playerMovement, playerMovementHandle);
 	Modules::Input->UnregisterEvent(plantBombHandle, plantBombHandle);
 }
-
-void PlayerCharacter::startInvincibility()
-{
-	isInvincible = true;
-	invincibilityStartTime = std::chrono::high_resolution_clock::now();
-}
-
-void PlayerCharacter::updateInvincibility()
-{
-	if (isInvincible)
-	{
-		auto now = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration<float>(invincibilityDuration);
-
-        if (now - invincibilityStartTime >= duration)
-        {
-            isInvincible = false;
-        }
-	}
-}
-
-bool PlayerCharacter::getIsInvincible() const
-{
-	return isInvincible;
-}
-
-// TODO
-// To check collision with player use this to avoid booster effect if booster effect is active:
-// if (!player.getIsInvincible())
-// {
-//		Handle damage from bombs or enemies
-// }

@@ -72,12 +72,14 @@ void Bomb::update(float deltaTime, bool canDetonate)
 {
 	if (exploded)
 	{
-		explosionTimer -= deltaTime;
-		if (explosionTimer <= 0.0f)
-		{
-			animExploded = true;
-            isDetonating = false;
-		}
+        if (auto animation = Modules::Sprite->getAnimation(bombCenterID))
+        {
+            if (!animation->isPlaying())
+            {
+                animExploded = true;
+                isDetonating = false;
+            }
+        }
         return;
 	}
     // when player canDetonate (booster picked) and key for detonating isn't pressed previously -> timer should stay the same
@@ -101,18 +103,6 @@ void Bomb::draw(sf::RenderWindow& window)
 {
 	if (!Modules::Sprite->getAnimation(bombIdleID)->isPlaying())
 		exploded = true;
-
-	if (canChangeObstacleAnim)
-	{
-		for (auto& [obstacle, pos] : obstaclesHit)
-		{
-			if (obstacle)
-			{
-				obstacle->changeAnim(pos);
-			}
-		}
-		canChangeObstacleAnim = false;
-	}
 
 	// Draws a bomb if it hasn't exploded
 	if (!exploded)
@@ -140,11 +130,19 @@ void Bomb::draw(sf::RenderWindow& window)
 		
 		sf::Vector2f animPos;
 
-		for (const auto& direction : directions)
-		{
-            for (int i = 1; i <= explosionRadius; ++i)
+		// Draw the center of the explosion
+        if (auto animation = Modules::Sprite->getAnimation(bombCenterID))
+        {
+            sf::Vector2f pos = alignToGrid(position);
+            animation->setPosition(pos);
+            window.draw(*animation);
+        }
+        for (const auto& direction : directions)
+        {
+            auto numberOfBlocks = explosionEffect(direction) - 1;
+            for (int i = 1; i <= numberOfBlocks; ++i)
             {
-                sf::Vector2f offset = direction * (64.0f * i);
+                sf::Vector2f offset   = direction * (64.0f * i);
                 sf::Vector2f animPoss = alignToGrid(position + offset);
 
                 int32_t animationID;
@@ -167,14 +165,6 @@ void Bomb::draw(sf::RenderWindow& window)
                 }
             }
         }
-
-		// Draw the center of the explosion
-		if (auto animation = Modules::Sprite->getAnimation(bombCenterID))
-		{
-			sf::Vector2f pos = alignToGrid(position);
-			animation->setPosition(pos);
-			window.draw(*animation);
-		}
 	}
 }
 
@@ -212,35 +202,32 @@ void Bomb::explode()
 
 	for (const auto& direction : directions)
 	{
-        if (isDirectionSafe(position, direction, explosionRadius))
+        auto numberOfBlocks = explosionEffect(direction) - 1;
+        for (int i = 1; i <= numberOfBlocks; ++i)
         {
-            explosionEffect(direction);
+            sf::Vector2f offset  = direction * (64.0f * i);
+            sf::Vector2f animPos = alignToGrid(position + offset);
 
-            for (int i = 1; i <= explosionRadius; ++i)
+            int32_t animationIDs;
+
+            if (i < explosionRadius)
             {
-                sf::Vector2f offset  = direction * (64.0f * i);
-                sf::Vector2f animPos = alignToGrid(position + offset);
+                // Use horizontal or vertical animations for segments
+                animationIDs = (direction.x != 0) ? bombHorizontalID : bombVerticalID;
+            }
+            else
+            {
+                // Use end animations for the final segment
+                animationIDs = getExplosionAnimationID(direction);
+            }
 
-                int32_t animationIDs;
-
-                if (i < explosionRadius)
-                {
-                    // Use horizontal or vertical animations for segments
-                    animationIDs = (direction.x != 0) ? bombHorizontalID : bombVerticalID;
-                }
-                else
-                {
-                    // Use end animations for the final segment
-                    animationIDs = getExplosionAnimationID(direction);
-                }
-
-                if (auto animationn = Modules::Sprite->getAnimation(animationIDs))
-                {
-                    animationn->setPosition(animPos);
-                    animationn->Play();
-                }
+            if (auto animationn = Modules::Sprite->getAnimation(animationIDs))
+            {
+                animationn->setPosition(animPos);
+                animationn->Play();
             }
         }
+        
     }
 }
 
@@ -251,44 +238,38 @@ void Bomb::setTimer(int32_t inc)
 }
 
 // Method about what will happen when there is an explosion
-void Bomb::explosionEffect(const sf::Vector2f& direction)
+int32_t Bomb::explosionEffect(const sf::Vector2f& direction)
 {
     sf::Vector2f endPoint;
 
-    sf::Vector2f newDirection = directionToPosition(direction);
     sf::Vector2f alignPos = alignToGrid(position);
+    sf::Vector2f origin  = sf::Vector2f(alignPos.x + 32.f, alignPos.y + 32.f);
+
+	const auto& hitObject = Modules::Physics->rayCast(origin, direction, explosionRadius * 64, endPoint);
+
+	int32_t numberOfBlocks = static_cast<int32_t>(abs(endPoint.x - origin.x) + abs(endPoint.y - origin.y))/64 + 1;
+	sf::Vector2f newDirection = directionToPosition(direction, numberOfBlocks);
     sf::Vector2f directionAndPosition = alignPos + newDirection;
 
-    hitResult = std::make_pair(Modules::Physics->rayCast(sf::Vector2f(alignPos.x+32.f, alignPos.y+32.f), newDirection, explosionRadius, endPoint), directionAndPosition);
-
-    if (hitResult.first)
+    if (hitObject)
     {
-        if (auto* hitObstacle = dynamic_cast<Obstacle*>(hitResult.first->getObjectParent()))
+        if (auto* hitObstacle = dynamic_cast<Obstacle*>(hitObject->getObjectParent()))
         {
-            canChangeObstacleAnim = true;
-            obstaclesHit.push_back(std::make_pair(hitObstacle, directionAndPosition));
             hitObstacle->initializeDestruction();
         }
-        else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitResult.first->getObjectParent()))
+        else if (auto* hitPlayer = dynamic_cast<PlayerCharacter*>(hitObject->getObjectParent()))
         {
-            hitPlayer->die();
+            if (!hitPlayer->getPassThroughFlame())
+            {
+                hitPlayer->die();
+            }
         }
-        else if (auto* hitEnemy = dynamic_cast<EnemyBase*>(hitResult.first->getObjectParent()))
+        else if (auto* hitEnemy = dynamic_cast<EnemyBase*>(hitObject->getObjectParent()))
         {
             hitEnemy->initializeDeath();
         }
     }
-
-    // Activation of direction animation
-    int32_t animationID = getExplosionAnimationID(direction);
-    currentAnimation    = animationID;
-    if (auto animation = Modules::Sprite->getAnimation(animationID))
-    {
-        animation->setPosition(directionAndPosition);
-        animation->Play();
-    }
-
-
+    return numberOfBlocks;
 }
 
 int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
@@ -302,31 +283,11 @@ int32_t Bomb::getExplosionAnimationID(const sf::Vector2f& direction) const
 	return 0;
 }
 
-sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection)
+sf::Vector2f Bomb::directionToPosition(sf::Vector2f newDirection, int32_t numberOfBlocks)
 {
-	sf::Vector2f dir = sf::Vector2f(newDirection.x * 64.0f, newDirection.y * 64.0f);
+	sf::Vector2f dir = sf::Vector2f(newDirection*(numberOfBlocks*64.f));
 
 	return dir;
-}
-
-bool Bomb::isDirectionSafe(const sf::Vector2f& origin, const sf::Vector2f& direction, float maxDistance)
-{
-    sf::Vector2f endPoint;
-    sf::Vector2f newDirection = directionToPosition(direction);
-    auto hitObject = Modules::Physics->rayCast(origin, newDirection, maxDistance, endPoint);
-
-    if (hitObject)
-    {
-        auto* obstacle = dynamic_cast<UnbreakableObstacle*>(hitObject->getObjectParent());
-        if (obstacle)
-        {
-            //direction is blocked
-            return false; 
-        }
-    }
-
-	//direction is safe
-    return true; 
 }
 
 sf::Vector2f Bomb::alignToGrid(const sf::Vector2f& newPosition)

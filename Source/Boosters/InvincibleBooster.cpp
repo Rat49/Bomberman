@@ -2,21 +2,20 @@
 
 void InvincibleBooster::applyEffect(PlayerCharacter& playerCharacter)
 {
-	playerCharacter.startInvincibility();
-	isEffectDone = false;
+	playerCharacter.setInvincibility(true);
+    m_isEffectDone = false;
+    m_startTime    = std::chrono::high_resolution_clock::now();
 }
 
 bool InvincibleBooster::removeEffect(PlayerCharacter& playerCharacter)
 {
-	playerCharacter.updateInvincibility();
-	if (!playerCharacter.getIsInvincible())
-	{
-		isEffectDone = true;
-	}
-	return isEffectDone;
+    playerCharacter.setInvincibility(false);
+    return m_isEffectDone;
 }
 
 bool InvincibleBooster::shouldRemoveEffect()
 {
-	return isEffectDone;
+    auto now       = std::chrono::high_resolution_clock::now();
+    m_isEffectDone = std::chrono::duration<float>(now - m_startTime).count() >= m_duration;
+    return m_isEffectDone;
 }
